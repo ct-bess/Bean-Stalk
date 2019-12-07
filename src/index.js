@@ -19,11 +19,11 @@ bot.on( "message", (message) => {
     c4board = board;
     message.channel.send( !!board ? board : "BIG ERROR LMAO" );
   }
-  else if( /place \d \d \w/i.test( msg ) ) {
+  else if( /place \d \w/i.test( msg ) ) {
     const input = message.content.split( /\s/ );
-    const nextBoard = c4place( input[1], input[2], c4board, input[3] );
-    c4board = nextBoard;
-    message.channel.send( nextBoard );
+    const nextBoard = c4place( input[1], input[2], c4board );
+    c4board = !!nextBoard ? nextBoard : c4board;
+    message.channel.send( !!nextBoard ? nextBoard : "VERY GOOD ERROR" );
   }
   
 });

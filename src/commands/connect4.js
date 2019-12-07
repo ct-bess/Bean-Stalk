@@ -3,6 +3,18 @@ function c4start( /* cols, rows */ ) {
   const cols = 7, rows = 6;
   let board = [];
 
+  for( let i = 0; i < cols; ++i ) {
+    board.push( 0x30 + i );
+    board.push( 0x20 );
+  }
+  board.push( 0xA );
+
+  for( let i = 0; i < cols; ++i ) {
+    board.push( 0x2D );
+    board.push( 0x20 );
+  }
+  board.push( 0xA );
+
   for( let i = 0; i < rows; ++i ) {
     for( let j = 0; j < cols; ++j ) {
       board.push( 0x30 );
@@ -15,11 +27,12 @@ function c4start( /* cols, rows */ ) {
 
 } // eo c4start
 
-function c4place( row, col, board, marker ) {
+function c4place( col, marker, board ) {
 
-  // TODO: you can litterally plop a marker anywhere
+  //const regex = new RegExp( `(?<=((\\S\\s)+\\n){${row}}(\\S\\s){${col}})(\\S)` );
 
-  const regex = new RegExp( `(?<=((\\S\\s)+\\n){${row}}(\\S\\s){${col}})(0)` );
+  // -- Fuck it, we're playing inverted connect 4
+  const regex = new RegExp( `(?<=(.+\\n)+(\\w+\\s){${col}})(0)` );
   const nextBoard = board.replace( regex, marker );
   return( nextBoard );
 

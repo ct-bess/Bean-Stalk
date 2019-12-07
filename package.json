@@ -1,0 +1,29 @@
+{
+  "name": "beanstalk",
+  "version": "1.0.0",
+  "description": "Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "bundle": "babel src -d lib",
+    "start": "node lib/index.js",
+    "both": "npm run bundle && npm run start",
+    "test": "babel src -d lib && node lib/test.js",
+    "clean": "rm -r lib/"
+  },
+  "keywords": [
+    "bot"
+  ],
+  "author": "connor",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/preset-env": "^7.7.1",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1",
+    "describe": "^1.2.0",
+    "discord": "^0.8.2",
+    "discord.io": "^2.5.3",
+    "discord.js": "^11.5.1",
+    "winston": "^3.2.1"
+  }
+}

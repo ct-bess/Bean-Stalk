@@ -1,41 +1,68 @@
-function c4start( /* cols, rows */ ) {
+class connect4 {
 
-  const cols = 7, rows = 6;
-  let board = [];
-
-  for( let i = 0; i < cols; ++i ) {
-    board.push( 0x30 + i );
-    board.push( 0x20 );
+  constructor( rows, cols, board ) {
+    this.rows = rows;
+    this.cols = cols;
+    this.board = board;
   }
-  board.push( 0xA );
 
-  for( let i = 0; i < cols; ++i ) {
-    board.push( 0x2D );
-    board.push( 0x20 );
+  setBoard( rows, cols ) {
+    this.rows = rows;
+    this.cols = cols;
   }
-  board.push( 0xA );
 
-  for( let i = 0; i < rows; ++i ) {
-    for( let j = 0; j < cols; ++j ) {
-      board.push( 0x30 );
+  buildBoard() {
+
+    //const cols = !!this.cols ? this.cols : 7;
+    //const rows = !!this.rows ? this.rows : 6;
+    let board = [];
+
+    for( let i = 0; i < this.cols; ++i ) {
+      board.push( 0x30 + i );
       board.push( 0x20 );
     }
     board.push( 0xA );
-  }
 
-  return( String.fromCharCode( ...board ) );
+    for( let i = 0; i < this.cols; ++i ) {
+      board.push( 0x2D );
+      board.push( 0x20 );
+    }
+    board.push( 0xA );
 
-} // eo c4start
+    for( let i = 0; i < this.rows; ++i ) {
+      for( let j = 0; j < this.cols; ++j ) {
+        board.push( 0x30 );
+        board.push( 0x20 );
+      }
+      board.push( 0xA );
+    }
 
-function c4place( col, marker, board ) {
+    this.board = String.fromCharCode( ...board );
 
-  //const regex = new RegExp( `(?<=((\\S\\s)+\\n){${row}}(\\S\\s){${col}})(\\S)` );
+  } // eo buildBoard
 
-  // -- Fuck it, we're playing inverted connect 4
-  const regex = new RegExp( `(?<=(.+\\n)+(\\w+\\s){${col}})(0)` );
-  const nextBoard = board.replace( regex, marker );
-  return( nextBoard );
+  placeMarker( col, marker ) {
 
-} // eo c4place
+    // -- Fuck it, we're playing inverted connect 4
+    const regex = new RegExp( `(?<=(.+\\n)+(\\w+\\s){${col}})(0)` );
+    this.board = this.board.replace( regex, marker );
 
-export { c4start, c4place };
+  } // eo placeMarker
+
+  winCheck( marker ) {
+
+    // -- Vertical
+    const regex = new RegExp( `(.*(${marker}\\s)((\\w+\\s)+\\n|\\n)){4}` );
+    if( regex.test( this.board ) ) return( true );
+
+    // -- Horizontal
+    // -- Diagonal \
+    // -- Diagonal /
+
+    return( false );
+
+  } // eo winCheck
+
+}
+
+export default connect4;

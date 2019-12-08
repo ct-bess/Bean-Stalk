@@ -1,23 +1,35 @@
-import { c4start, c4place } from "./commands/connect4.js";
+import connect4 from "./commands/connect4.js";
 
 console.log( "Use describe you stupid beast" );
 
-let board = c4start();
-console.log( "c4start()" );
-console.log( board );
+{
+  let initInput = "fresh goku";
+  console.log( initInput.split( /(\d+)/ ) );
+  initInput = "fresh goku 8 9";
+  console.log( initInput.split( /(\d+)/ ) );
+}
+{
+  let placeInput = "place 1 X";
+  console.log( placeInput.split( /(?:place\s)?(\S+)/ ) );
+  placeInput = "place 2 YEET";
+  console.log( placeInput.split( /(?:place\s)?(\S+)/ ) );
+}
 
-board = c4place( 1, "X", board );
-console.log( "c4place( 1 )" );
-console.log( board );
+/*
+let c4 = new connect4();
+c4.buildBoard();
+console.log( c4.board );
 
-board = c4place( 3, "X", board );
-console.log( "c4place( 3 )" );
-console.log( board );
+const marker = "X";
+c4.placeMarker( 0, marker );
+c4.placeMarker( 0, marker );
+c4.placeMarker( 0, marker );
+c4.placeMarker( 0, marker );
 
-board = c4place( 5, "X", board );
-console.log( "c4place( 5 )" );
-console.log( board );
+console.log( c4.board );
 
-board = c4place( 5, "X", board );
-console.log( "c4place( 5 )" );
-console.log( board );
+if( c4.winCheck( marker ) )
+  console.log( `Winner: ${marker}` );
+else
+  console.log( "lmao" );
+*/

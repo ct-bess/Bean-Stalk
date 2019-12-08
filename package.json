@@ -6,7 +6,7 @@
   "scripts": {
     "bundle": "babel src -d lib",
     "start": "node lib/index.js",
-    "both": "npm run bundle && npm run start",
+    "dab": "npm run bundle && npm run start",
     "test": "babel src -d lib && node lib/test.js",
     "clean": "rm -r lib/"
   },

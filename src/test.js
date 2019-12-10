@@ -1,35 +1,34 @@
-import connect4 from "./commands/connect4.js";
+import * as commands from "./commands/commands.js";
+import expect from "expect";
 
-console.log( "Use describe you stupid beast" );
+console.log( "THIS IS A NO DESCRIBE ZONE" );
 
-{
-  let initInput = "fresh goku";
-  console.log( initInput.split( /(\d+)/ ) );
-  initInput = "fresh goku 8 9";
-  console.log( initInput.split( /(\d+)/ ) );
-}
-{
-  let placeInput = "place 1 X";
-  console.log( placeInput.split( /(?:place\s)?(\S+)/ ) );
-  placeInput = "place 2 YEET";
-  console.log( placeInput.split( /(?:place\s)?(\S+)/ ) );
+function freshGokuTest( input ) {
+  const response = commands.freshGoku( input );
+  console.log( response );
+  expect( response ).toBeTruthy();
 }
 
-/*
-let c4 = new connect4();
-c4.buildBoard();
-console.log( c4.board );
+function placeTest( input ) {
+  const response = commands.place( input );
+  console.log( response );
+}
 
-const marker = "X";
-c4.placeMarker( 0, marker );
-c4.placeMarker( 0, marker );
-c4.placeMarker( 0, marker );
-c4.placeMarker( 0, marker );
+try {
 
-console.log( c4.board );
+  // while tests do:
+  let input = null;
 
-if( c4.winCheck( marker ) )
-  console.log( `Winner: ${marker}` );
-else
-  console.log( "lmao" );
-*/
+  input = "fresh goku";
+  freshGokuTest( input );
+
+  input = "place 1 X";
+  placeTest( input );
+
+  placeTest( input );
+  placeTest( input );
+  placeTest( input );
+
+} catch( error ) {
+  console.error( error );
+}

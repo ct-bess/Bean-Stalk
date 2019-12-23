@@ -16,13 +16,15 @@ class connect4 {
     if( !!this.rows ) this.rows = 6;
     if( !!this.cols ) this.cols = 7;
 
-    let board = [];
+    let board = [ 0x60, 0x60, 0x60, 0xA ];
 
+    /* -- This is bad, a 0 is interperated as an empty space my man
     for( let i = 0; i < this.cols; ++i ) {
       board.push( 0x30 + i );
       board.push( 0x20 );
     }
     board.push( 0xA );
+    */
 
     for( let i = 0; i < this.cols; ++i ) {
       board.push( 0x2D );
@@ -38,6 +40,10 @@ class connect4 {
       board.push( 0xA );
     }
 
+    board.push( 0x60 );
+    board.push( 0x60 );
+    board.push( 0x60 );
+
     this.board = String.fromCharCode( ...board );
 
   } // eo buildBoard
@@ -45,6 +51,7 @@ class connect4 {
   placeMarker( col, marker ) {
 
     // -- Fuck it, we're playing inverted connect 4
+    //    (this can be fixed with the sticky RegEx flag --> y)
     const regex = new RegExp( `(?<=(.+\\n)+(\\w+\\s){${col}})(0)` );
     this.board = this.board.replace( regex, marker );
 
@@ -61,6 +68,10 @@ class connect4 {
     if( horizRegex.test( this.board ) ) return( true );
 
     // -- Make this not Unga-Bunga
+
+    // -- FIX THIS
+    //    Other markers are completing diagonals that they shouldn't and triggering wins
+
     // -- forward diagonal
     let diagLUTRegex = `(${marker}.+\\n)(.{2}${marker}.+\\n)(.{4}${marker}.+\\n)(.{6}${marker})|`;
     diagLUTRegex += `(.{2}${marker}.+\\n)(.{4}${marker}.+\\n)(.{6}${marker}.+\\n)(.{8}${marker})|`;

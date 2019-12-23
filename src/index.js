@@ -1,8 +1,8 @@
 import Discord from "discord.js";
 import auth from "../auth.json";
+import botHelp from "../botHelp.json";
 import * as commands from "./commands/commands.js";
 
-// -- Bot init
 const bot = new Discord.Client({});
 
 bot.on( "ready", () => {
@@ -11,7 +11,15 @@ bot.on( "ready", () => {
 
 bot.on( "message", (message) => {
 
-  const msg = message.content;
+  // BIG TODO:
+  // [ ] only 1 game can be active at a time
+  // [x] add a bean stalk command prefix like "bs" or "--"
+
+  let msg = message.content;
+
+  if ( !/^(bs|-)/i.test( msg ) ) return;
+
+  else msg = msg.replace( /^(bs|-)\s?/, "" );
   
   if( /fresh goku/i.test( msg ) ) {
     const response = commands.freshGoku( msg );
@@ -22,21 +30,42 @@ bot.on( "message", (message) => {
     const response = commands.place( msg );
     message.channel.send( response.board );
     if( !!response.winner ) {
-      message.channel.send( "VERY CLEAN WIN: " + response.winner );
+      message.channel.send( "```fix\nA VERY CLEAN WIN BY: " + response.winner + "\n```" );
     }
   }
 
-  else if( /HELP ME/.test( msg ) ) {
-    message.channel.send(
-      "```" +
-      "Connect 4:\n" +
-      "Command: fresh goku [int: rows] [int: cols]\n" +
-      "Creates a new board; rows & columns default to 6 & 7 if not specified.\n" +
-      "Command: place [int: col] [string: marker]\n" +
-      "Places your mark on the given column.\n" +
-      "```"
-    );
+  // TODO: code split --> misc commands
+  else if( /HELP ME/i.test( msg ) ) {
+
+    const input = msg.split( /help\sme\s/i );
+    let response = "```c\n";
+
+    if( input.length > 1 ) {
+      for( let prop in botHelp.commands[input[1]] ) {
+        response += `${prop}: ${botHelp.commands[input[1]][prop]}\n`;
+      }
+    }
+    else {
+      for( let cmd in botHelp.commands ) {
+        response += `${cmd}:\n`
+        for( let prop in botHelp.commands[cmd] ) {
+          response += `\t${prop}: ${botHelp.commands[cmd][prop]}\n`;
+        }
+      }
+    }
+    response += "\n```";
+    message.channel.send( response );
   } 
+
+  else if( /bean stalk\?/i.test( msg ) ) {
+    let response = "```c\n";
+    for( let prop in botHelp.BeanStalk ) {
+      response += `${prop}: ${botHelp.BeanStalk[prop]}\n`;
+    }
+    response += "\n```";
+    message.channel.send( response );
+    message.channel.send( ":sweat_drops:" );
+  }
   
 });
 

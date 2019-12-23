@@ -1,0 +1,18 @@
+{
+  "BeanStalk": {
+    "version": "1",
+    "alias": "Alpha Pod",
+    "author": "connor",
+    "prefix": "\"bs\" or \"-\""
+  },
+  "commands": {
+    "connect 4": {
+      "fresh goku (\\d+ \\d+)?": "create a fresh connect 4 board on given rows & cols respectfully. Defaults to 6x7",
+      "place \\d \\w+": "place your marker/word in the specified column"
+    },
+    "miscellaneous": {
+      "help me \\w+?": "display this very help text; Optional command to help",
+      "bean stalk\\?": "display high fidelity Bean-Stalk specs"
+    }
+  }
+}

@@ -6,36 +6,34 @@ import connect4 from "../functions/connect4.js";
 const c4 = new connect4();
 
 function freshGoku( message ) {
+
   let response = null
   if( !message ) return( "```diff\nVERY NULL fresh goku INPUT\n```" );
-  const input = message.split( /(\d+)/ );
+
+  // -- No custom boards, just custom emoji
+  const input = message; //.split( /(\d+)/ );
   console.log( freshGoku, input );
 
-  // -- FIX THIS:
-  //    Custom board sizes don't work
-
-  const rows = input[1], cols = input[3];
-  if( input.length >= 3 )
-    c4.setBoard( rows, cols );
-  else
-    c4.setBoard( 6, 7 );
   c4.buildBoard();
   response = !!c4.board ? c4.board : "```diff\nABSOLUTE freshGoku ERROR\n```";
   return( response );
+
 }
 
 function place( message ) {
+
   let response = null;
   if( !message ) return( "```diff\nVERY NULL place INPUT\n```" );
-  // -- FIX THIS: 
-  //    You can't use a regex reserved char as part of your marker
-  const input = message.split( /(?:place\s)?(\S+)/ );
+  //const input = message.split( /(?:place\s)?(\S+)/ );
+  const input = message.split( /\s/ );
   console.log( place, input );
 
   if( !input )
     return( "```diff\nA VERY INVALID place INPUT marker\n```" );
 
-  const col = input[1], marker = input[3];
+  // -- TODO un *marker* the below
+
+  const col = input[1], marker = "delet this";
   c4.placeMarker( col, marker );
 
   response = {

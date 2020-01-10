@@ -4,6 +4,7 @@ import botHelp from "../botHelp.json";
 import * as commands from "./commands/commands.js";
 
 const bot = new Discord.Client({});
+let game = null;
 
 bot.on( "ready", () => {
   console.log( `Bean-Stalk is in: ${bot.user.tag}` );
@@ -13,7 +14,10 @@ bot.on( "message", (message) => {
 
   // BIG TODO:
   // [ ] only 1 game can be active at a time
-  // [x] add a bean stalk command prefix like "bs" or "--"
+  // [ ] option to print out the board 1 \n at a time for uge emoji action
+  // [ ] actually make a logout command so we stop ^c'ing
+  // [ ] actually clean up connect 4
+  // [ ] actually implement wumpus for once in your life
 
   let msg = message.content;
 
@@ -23,14 +27,16 @@ bot.on( "message", (message) => {
   
   if( /fresh goku/i.test( msg ) ) {
     const response = commands.freshGoku( msg );
+    game = "connect 4";
     message.channel.send( response );
   }
 
-  else if( /place \d \w/i.test( msg ) ) {
+  else if( /p(lace)? \d/i.test( msg ) ) {
     const response = commands.place( msg );
     message.channel.send( response.board );
     if( !!response.winner ) {
-      message.channel.send( "```fix\nA VERY CLEAN WIN BY: " + response.winner + "\n```" );
+      message.channel.send( `A VERY CLEAN WIN BY: ${response.winner} :sweat_drops:` );
+      game = null;
     }
   }
 

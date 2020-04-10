@@ -1,18 +1,25 @@
 {
   "BeanStalk": {
-    "version": "1",
+    "version": "2.1",
     "alias": "Alpha Pod",
     "author": "connor",
     "prefix": "\"bs\" or \"-\""
   },
   "commands": {
     "connect 4": {
-      "fresh goku (\\d+ \\d+)?": "create a fresh connect 4 board on given rows & cols respectfully. Defaults to 6x7",
-      "place \\d \\w+": "place your marker/word in the specified column"
+      "fresh goku": "create a fresh connect 4 board, size 6x7",
+      "place {n}": "place your marker at column n. Bean will handle it, trust him.",
+      "Shortcuts": {
+        "p {n}": "place {n}"
+      }
+    },
+    "DnD Utilities": {
+      "d{n1} {n2}": "Roll a n1 faced die. Optionally roll n2 n1 faced dice to roll with advantage; The highest of the n2 rolls is the result.",
+      "history": "Bean will display the last 16 dice rolls and who did them."
     },
     "miscellaneous": {
-      "help me \\w+?": "display this very help text; Optional command to help",
-      "bean stalk\\?": "display high fidelity Bean-Stalk specs"
+      "help me": "display this very help text; Optional command to help",
+      "bean stalk || who": "display high fidelity Bean-Stalk specs"
     }
   }
 }

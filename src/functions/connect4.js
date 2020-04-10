@@ -3,10 +3,17 @@ class connect4 {
   constructor( board ) {
     this.board = board;
     this.blankSpace = ":white_circle:";
-    this.players = { 
-      p1: [ ":red_circle:", "WHO?" ],
-      p2: [ ":blue_circle:", "WHO?" ],
-      turn: 1,
+    this.players = { // Could just make this an array of player objects 
+      p1: { 
+        marker: ":red_circle:", 
+        playerID: "WHO?",
+        hasTurn: true
+      },
+      p2: { 
+        marker: ":blue_circle:", 
+        playerID: "WHO?",
+        hasTurn: false
+      },
     };
     this.emoji = [
       ":red_circle:",
@@ -24,7 +31,44 @@ class connect4 {
     ];
   }
 
-  buildBoard() {
+  exec( command, message ) {
+    console.debug( `connect4 --> exec()` );
+
+    let response = null;
+    let input = null;
+
+    if( !message ) return( "```diff\nVERY NULL connect4 MESSAGE\n```" );
+
+    // Is this a good idea?
+    switch( command ) {
+
+      case "buildBoard":
+        input = message; //.split( /(\d+)/ );
+        this.buildBoard( message );
+        response = !!this.board ? this.board : "```diff\nABSOLUTE freshGoku ERROR\n```";
+      break;
+
+      case "placeMarker":
+        input = message.content.split( /\s/ );
+        const col = input[1];
+        const marker = this.players.p1.hasTurn ? this.players.p1.marker : this.players.p2.marker;
+        this.placeMarker( col, marker );
+        response = {
+          winner:  this.winCheck( marker ) ? marker : null,
+          board: !!this.board ? this.board : "```diff\nVERY COOL place ERROR\n```"
+        };
+      break;
+
+      default:
+        response = "```diff\nABSOLUTELY NO SUCH COMMAND\n```";
+
+    }
+
+    return( response );
+
+  }
+
+  buildBoard( message ) {
 
     let board = ":one: :two: :three: :four: :five: :six: :seven: \n";
 
@@ -39,26 +83,25 @@ class connect4 {
     board += "\n";
 
     this.board = board;
-    this.players.turn = 1;
+
+    this.players.p1.playerID = message.author;
+    this.players.p2.playerID = message.author; // Good
+
+    this.players.p1.hasTurn = true;
+    this.players.p2.hasTurn = false;
 
     // -- PLACEHOLDER for random marker picker
     const randP1 = Math.floor( Math.random() * ( this.emoji.length - 0 ) ) + 0;
     const randP2 = Math.floor( Math.random() * ( this.emoji.length - 0 ) ) + 0;
-    this.players.p1[0] = this.emoji[randP1];
-    this.players.p2[0] = this.emoji[randP2];
+    this.players.p1.marker = this.emoji[randP1];
+    this.players.p2.marker = this.emoji[randP2];
 
   } // eo buildBoard
 
   placeMarker( col, marker ) {
 
-    if( this.players.turn === 1 ) {
-      marker = this.players.p1[0];
-      this.players.turn = 2;
-    }
-    else {
-      marker = this.players.p2[0];
-      this.players.turn = 1;
-    }
+    this.players.p1.hasTurn = !this.players.p1.hasTurn;
+    this.players.p2.hasTurn = !this.players.p2.hasTurn;
 
     console.log( "Marker --> " + marker );
     console.log( "Space --> " + this.blankSpace );
@@ -72,8 +115,6 @@ class connect4 {
 
   winCheck( marker ) {
 
-    marker = this.players.turn === 1 ? this.players.p1[0] : this.players.p2[0];
-
     // -- Vertical
     const vertRegex = new RegExp( `(.*(${marker}\\s)((:\\w+:\\s)+\\n|\\n)){4}` );
     if( vertRegex.test( this.board ) ) return( true );
@@ -82,27 +123,7 @@ class connect4 {
     const horizRegex = new RegExp( `(${marker}\s){4}` );
     if( horizRegex.test( this.board ) ) return( true );
 
-    // -- Make this not Unga-Bunga
-
-    // -- FIX THIS
-    //    Other markers are completing diagonals that they shouldn't and triggering wins
-
-    /*
-    // -- forward diagonal
-    let diagLUTRegex = `(${marker}.+\\n)(.{2}${marker}.+\\n)(.{4}${marker}.+\\n)(.{6}${marker})|`;
-    diagLUTRegex += `(.{2}${marker}.+\\n)(.{4}${marker}.+\\n)(.{6}${marker}.+\\n)(.{8}${marker})|`;
-    diagLUTRegex += `(.{4}${marker}.+\\n)(.{6}${marker}.+\\n)(.{8}${marker}.+\\n)(.{10}${marker})|`;
-    diagLUTRegex += `(.{6}${marker}.+\\n)(.{8}${marker}.+\\n)(.{10}${marker}.+\\n)(.{12}${marker})|`;
-    // -- backward diagional
-    diagLUTRegex += `(.{12}${marker}.+\\n)(.{10}${marker}.+\\n)(.{8}${marker}.+\\n)(.{6}${marker})|`;
-    diagLUTRegex += `(.{10}${marker}.+\\n)(.{8}${marker}.+\\n)(.{6}${marker}.+\\n)(.{4}${marker})|`;
-    diagLUTRegex += `(.{8}${marker}.+\\n)(.{6}${marker}.+\\n)(.{4}${marker}.+\\n)(.{2}${marker})|`;
-    diagLUTRegex += `(.{6}${marker}.+\\n)(.{4}${marker}.+\\n)(.{2}${marker}.+\\n)(.{0}${marker})`;
-
-    const diagonalRegex = new RegExp( diagLUTRegex, "g" );
-
-    if( diagonalRegex.test( this.board ) ) return( true );
-    */
+    // Diagonal win is tough with only regex
 
     return( false );
 

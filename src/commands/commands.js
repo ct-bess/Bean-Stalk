@@ -1,7 +1,6 @@
-import connect4 from "../functions/connect4.js";
+// depreciated file, moved into connect4.js
 
-// -- TODO: connect 4 game modes: FFA, 1v1
-// -- TODO: make this file specifically for connect 4, or move to connect 4 class
+import connect4 from "../functions/connect4.js";
 
 const c4 = new connect4();
 

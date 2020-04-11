@@ -3,12 +3,14 @@ import auth from "../auth.json";
 import botHelp from "../botHelp.json";
 import connect4 from "./functions/connect4.js";
 import dndUtilities from "./functions/dndUtilities.js";
+import wumpusWorld from "./functions/wumpusWorld.js";
 
 const bot = new Discord.Client({});
 
 // Dont do this
 const c4 = new connect4();
 const dnd = new dndUtilities();
+const wumpus = new wumpusWorld();
 
 bot.on( "ready", () => {
   console.log( `Bean-Stalk is in: ${bot.user.tag}` );
@@ -55,6 +57,16 @@ bot.on( "message", ( message ) => {
     message.channel.send( response );
   }
 
+  else if( /wumpus/i.test( msg.content ) ) {
+    const response = wumpus.exec( "start", msg );
+    message.channel.send( response );
+  }
+
+  else if( /w[udlr]/i.test( msg.content ) ) {
+    const response = wumpus.exec( "move", msg );
+    message.channel.send( response );
+  }
+
   // TODO: code split --> misc commands
   else if( /HELP ME/i.test( msg.content ) ) {
 
@@ -78,7 +90,7 @@ bot.on( "message", ( message ) => {
     message.channel.send( response );
   } 
 
-  else if( /bean stalk\?|who\?/i.test( msg ) ) {
+  else if( /^bean stalk\??/i.test( msg ) ) {
     let response = "```c\n";
     for( let prop in botHelp.BeanStalk ) {
       response += `${prop}: ${botHelp.BeanStalk[prop]}\n`;

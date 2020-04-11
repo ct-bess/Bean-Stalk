@@ -2,9 +2,10 @@
 //import botHelp from "../botHelp.json";
 import { default as botHelp } from "../botHelp.json";
 import dndUtilities from "./functions/dndUtilities.js";
-//import wumpusWorld from "./functions/wumpusWorld.js";
+import wumpusWorld from "./functions/wumpusWorld.js";
 
 const dnd = new dndUtilities();
+const wump = new wumpusWorld();
 
 console.log( "THIS IS A NO DESCRIBE ZONE" );
 
@@ -20,18 +21,19 @@ function placeTest( input ) {
 
 try {
 
-  //console.log( botHelp.commands );
-  //console.log( "HELP connect4".split( /HELP\s/ ) );
-
-  // while tests do:
-  // - board state is in commands
-
-  //const ww = new wumpusWorld();
-  //console.log( ww.start() );
-
   let input = null;
   let response = null;
 
+  wump.start();
+  console.log( board );
+
+  wump.board = board;
+  wump.move( "down" );
+  wump.move( "up" );
+  wump.move( "right" );
+  wump.move( "left" );
+
+  /*
   input = {
     content: "d20",
     user: "test"
@@ -67,7 +69,6 @@ try {
   response = dnd.exec( "rollHistory", input );
   console.log( "test case 5:\n", response );
 
-  /*
   input = "bs place 2 X";
   console.log( input );
   input = input.replace( /^(bs|-)/, "" );

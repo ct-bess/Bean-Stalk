@@ -12,12 +12,14 @@ class dndUtilities {
 
   exec( command, message ) {
 
+    console.debug( "--> Entering", this.exec( command, message ) );
+
     let response = "";
     let input = null;
 
     switch( command ) {
 
-      case "roll":
+      case /d\d+(\s\d+)?/:
         //const input = message.content.split( /(?<=d)?\s/ );
         input = message.content.replace( /d/, "" );
         input = input.split( /\s/ );
@@ -32,7 +34,8 @@ class dndUtilities {
         if( this.rollHistory.length > 16 ) this.rollHistory.shift();
       break;
 
-      case "rollHistory":
+      case "hist":
+      case "history":
         for( let i = 0; i < this.rollHistory.length; ++i ) {
           response += `${this.rollHistory[i].playerID}: ${this.rollHistory[i].type}, result: **${this.rollHistory[i].value}**\n`;
         }

@@ -1,103 +1,75 @@
 import Discord from "discord.js";
 import auth from "../auth.json";
-import botHelp from "../botHelp.json";
-import connect4 from "./functions/connect4.js";
-import dndUtilities from "./functions/dndUtilities.js";
-import wumpusWorld from "./functions/wumpusWorld.js";
+import { execSync } from "child_process";
 
-const bot = new Discord.Client({});
+const bot = new Discord.Client();
+//bot.commands = new Discord.Collection();
 
-// Dont do this
-const c4 = new connect4();
-const dnd = new dndUtilities();
-const wumpus = new wumpusWorld();
+let debug = true;
+
+function loadCommands( cache ) {
+  bot.commands = new Discord.Collection();
+  const commandFiles = execSync( "ls lib/commands/ | grep \.js" ).toString().split( /\s/ );
+  for( const file of commandFiles ) {
+    console.info( "=> ", file );
+    if( !!file ) {
+      if( !!cache ) delete require.cache[ require.resolve( `./commands/${file}` ) ];
+      const command = require( `./commands/${file}` );
+      bot.commands.set( command.default.name, command.default );
+    }
+  }
+}
 
 bot.on( "ready", () => {
+  loadCommands( 0 );
+  console.log( "Commands:", bot.commands );
   console.log( `Bean-Stalk is in: ${bot.user.tag}` );
 });
 
 bot.on( "message", ( message ) => {
 
-  // BIG TODO:
-  // [ ] only 1 game can be active at a time
-  // [ ] option to print out the board 1 \n at a time for uge emoji action
-  // [ ] actually make a logout command so we stop ^c'ing
-  // [x] actually clean up connect 4
-  // [ ] actually implement wumpus for once in your life
+  if( !message.content.startsWith( "-" ) || message.author.bot ) return;
 
-  let msg = {
-    content: message.content,
-    user: message.author
-  };
+  // -- Code split these
+  if( message.content === "-die" ) { 
+    message.reply( ":sob:" );
+    bot.destroy();
+  }
 
-  if ( !/^(bs|-)/i.test( msg.content ) ) return;
+  if( message.content === "-reload" ) {
+    console.info( "***\nSIX HOT RELOADS\n***" );
+    const status = execSync( "babel src/commands -d lib/commands" ).toString();
+    message.channel.send( `\`${status}\`` );
+    loadCommands( 1 );
+    console.log( "Loaded Commands:", bot.commands );
+    message.channel.send( ":sweat_drops: SIX :sweat_drops: HOT :sweat_drops: RELOADS :sweat_drops:" );
+    return;
+  }
+  // -- EO Code split these
 
-  else msg.content = msg.content.replace( /^(bs|-)\s?/, "" );
+  const args = message.content.slice( 1 ).split( /\s+/ );
+  const commandName = args.shift();
+  const command = bot.commands.get( commandName ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandName ) );
   
-  if( /fresh goku/i.test( msg.content ) ) {
-    const response = c4.exec( "buildBoard", msg );
-    message.channel.send( response );
+  if( debug ) {
+    console.debug( "Content:", message.content );
+    console.debug( "Author:", message.author.username );
+    console.debug( "args:", args );
   }
 
-  else if( /p(lace)? \d/i.test( msg.content ) ) {
-    const response = c4.exec( "placeMarker", msg );
-    message.channel.send( response.board );
-    if( !!response.winner ) {
-      message.channel.send( `A VERY CLEAN WIN BY: ${response.winner} :sweat_drops:` );
-    }
-  }
+  if( !command ) return;
 
-  else if( /^d\d+(\s\d+)?/i.test( msg.content ) ) {
-    const response = dnd.exec( "roll", msg );
-    message.channel.send( response );
-  }
-
-  else if( /hist(ory)?/i.test( msg.content ) ) {
-    const response = dnd.exec( "rollHistory", msg );
-    message.channel.send( response );
-  }
-
-  else if( /wumpus/i.test( msg.content ) ) {
-    const response = wumpus.exec( "start", msg );
-    message.channel.send( response );
-  }
-
-  else if( /w[udlr]/i.test( msg.content ) ) {
-    const response = wumpus.exec( "move", msg );
-    message.channel.send( response );
-  }
-
-  // TODO: code split --> misc commands
-  else if( /HELP ME/i.test( msg.content ) ) {
-
-    const input = msg.content.split( /help\sme\s/i );
-    let response = "```c\n";
-
-    if( input.length > 1 ) {
-      for( let prop in botHelp.commands[input[1]] ) {
-        response += `${prop}: ${botHelp.commands[input[1]][prop]}\n`;
-      }
+  try {
+    if( /help/i.test( args[0] ) ) {
+      message.channel.send( command.description );
     }
     else {
-      for( let cmd in botHelp.commands ) {
-        response += `${cmd}:\n`
-        for( let prop in botHelp.commands[cmd] ) {
-          response += `\t${prop}: ${botHelp.commands[cmd][prop]}\n`;
-        }
-      }
+      command.exec( message, args );
     }
-    response += "\n```";
-    message.channel.send( response );
-  } 
-
-  else if( /^bean stalk\??/i.test( msg ) ) {
-    let response = "```c\n";
-    for( let prop in botHelp.BeanStalk ) {
-      response += `${prop}: ${botHelp.BeanStalk[prop]}\n`;
-    }
-    response += "\n```";
-    message.channel.send( response );
-    message.channel.send( ":sweat_drops:" );
+  }
+  catch( error ) {
+    console.error( error );
+    message.reply( "**WHO DID THIS?!?!** :joy:\n" + "```diff\n" + error + "\n```" );
   }
   
 });

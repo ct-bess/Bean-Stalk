@@ -20,6 +20,16 @@ class wumpusWorld {
     let input = null;
 
     switch( command ) {
+      case "settings":
+        input = message.content.split( /\s/ );
+        // more settings? --> for ...input
+        // For now, just the player
+        if( !!input[1] ) { 
+          this.player = input[1];
+          response += `Player set to: ${this.player}`;
+        }
+        else response += "```diff\nInvalid player identifier\n```"
+      break;
       case "start":
         this.start();
         let startConds = this.checkRoom();
@@ -46,12 +56,12 @@ class wumpusWorld {
     let roomInfo = "";
     const x1Regex = new RegExp( `(?<=(.+\\n){${this.pos.y}}(\\w\\s){${this.pos.x + 1}})(\\w)` );
     const x2Regex = new RegExp( `(?<=(.+\\n){${this.pos.y}}(\\w\\s){${this.pos.x - 1}})(\\w)` );
-    roomInfo += ( this.board.secret.match( x1Regex ) || " " )[0] + " ";
-    roomInfo += ( this.board.secret.match( x2Regex ) || " " )[0] + " ";
+    roomInfo += ( this.board.secret.match( x1Regex ) || "" )[0] || "";
+    roomInfo += ( this.board.secret.match( x2Regex ) || "" )[0] || "";
     const y1Regex = new RegExp( `(?<=(.+\\n){${this.pos.y + 1}}(\\w\\s){${this.pos.x}})(\\w)` );
     const y2Regex = new RegExp( `(?<=(.+\\n){${this.pos.y - 1}}(\\w\\s){${this.pos.x}})(\\w)` );
-    roomInfo += ( this.board.secret.match( y1Regex ) || " " )[0] + " ";
-    roomInfo += ( this.board.secret.match( y2Regex ) || " " )[0] + " ";
+    roomInfo += ( this.board.secret.match( y1Regex ) || "" )[0] || "";
+    roomInfo += ( this.board.secret.match( y2Regex ) || "" )[0] || "";
     return( roomInfo );
 
   }

@@ -1,6 +1,6 @@
 export default {
   name: "dice",
-  description: "ROLL a dice! `-d <number> <?times>`\ne.g. `-d 20`, `-d12 2`, `-d0xc0c`, `-d0b11 0x3`",
+  description: "Roll a dice! `-d <number> <?times>`\ne.g. `-d 20`, `-d12 2`, `-d0xc0c`, `-d0b11 0x3`",
   aliases: [ "d", "roll" ],
   history: [{ 
     playerID: ":sweat_drops:",

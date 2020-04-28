@@ -45,7 +45,7 @@ bot.on( "message", ( message ) => {
     if( /help/i.test( args[0] ) ) {
       message.channel.send( `**${command.name}**:\n${command.description}\nAliases:\`${command.aliases}\`` );
     }
-    // Do the system commands better
+    // Do the system commands better, and maybe restrict access
     else if( /system/i.test( commandName ) ) {
       command.exec( message, args, bot );
     }

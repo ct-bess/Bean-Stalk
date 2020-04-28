@@ -3,7 +3,7 @@ import { loadCommands } from "../loadCommands.js";
 
 export default {
   name: "system",
-  description: "Bean Stalk system commands\n`reload` recompiles and reloads commands\n`die` logs out Bean Stalk",
+  description: "Bean Stalk system commands\n`reload`: transpile and reload commands\n`die`: logs out Bean Stalk",
   aliases: [],
   exec( message, args, bot ) {
     switch( args[0] ) { 

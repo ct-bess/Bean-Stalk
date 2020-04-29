@@ -89,8 +89,8 @@ export default {
         message.channel.send( "Players reset" );
       break;
       default:
-        console.warn( `connect4 arg ${args[0]} not found` );
-        message.channel.send( `connect4 arg ${args[0]} not found` );
+        console.warn( `connect4 arg ${args[1]} not found` );
+        message.channel.send( `connect4 arg ${args[1]} not found` );
     }
   }
 };

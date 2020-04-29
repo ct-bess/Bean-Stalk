@@ -18,12 +18,13 @@ bot.on( "ready", () => {
 
 bot.on( "message", ( message ) => {
 
-  const prefixCheck = /^[^-]/.test( message.content );
+  //const prefixCheck = /^[^-]/.test( message.content );
+  const prefixCheck = message.content.startsWith( "-" );
 
-  if( prefixCheck || message.author.bot ) return;
+  if( !prefixCheck || message.author.bot ) return;
 
   if( botConfig.deepListening ) {
-    const sanitizedMessage = message.content.replace( /"/g, `` );
+    const sanitizedMessage = message.content.replace( /"/g, "" );
     const sanitizedName = message.author.username.replace( /\s/g, "_" );
     exec( `echo "${sanitizedMessage}" >> kb/${sanitizedName}.kb` );
   }
@@ -46,7 +47,7 @@ bot.on( "message", ( message ) => {
       message.channel.send( `**${command.name}**:\n${command.description}\nAliases:\`${command.aliases}\`` );
     }
     // Do the system commands better, and maybe restrict access
-    else if( /system/i.test( commandName ) ) {
+    else if( command.name === "system" ) {
       command.exec( message, args, bot );
     }
     else {

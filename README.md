@@ -12,9 +12,9 @@ To add a new command, or edit an existing one, follow this format:
 
 ```js
 export default {
-  name: "command's name",
+  name: "a_name_without_spaces",
   description: "command's help text",
-  aliases: [ "other names", "..." ],
+  aliases: [ "other_names", "..." ],
   // You can also include state variables here
   state: { /* 100% optional */ },
   exec( message, args ) {

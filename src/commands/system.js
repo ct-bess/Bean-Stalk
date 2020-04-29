@@ -4,7 +4,7 @@ import { loadCommands } from "../loadCommands.js";
 export default {
   name: "system",
   description: "Bean Stalk system commands\n`reload`: transpile and reload commands\n`die`: logs out Bean Stalk",
-  aliases: [],
+  aliases: [ "sys", "bean" ],
   exec( message, args, bot ) {
     switch( args[0] ) { 
       case "reload":
@@ -19,7 +19,8 @@ export default {
         bot.destroy();
       break;
       default:
-        console.warn( `system command ${args[0]} not found` );
+        console.warn( `system command ${args[1]} not found` );
+        message.channel.send( `subcommand ${args[1]} not found` );
     }
   }
 }

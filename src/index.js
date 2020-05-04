@@ -30,7 +30,7 @@ bot.on( "message", ( message ) => {
   }
 
   const args = message.content.slice( 1 ).split( /\s+/ );
-  const commandName = args.shift();
+  const commandName = args.shift().toLowerCase();
   const command = bot.commands.get( commandName ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandName ) );
   
   console.debug( "Content:", message.content );

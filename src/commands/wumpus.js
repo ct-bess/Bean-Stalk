@@ -15,7 +15,7 @@ const emojiSet = {
 
 export default {
   name: "wumpus",
-  description: "Play a hot game of Wumpus World",
+  description: "Play a hot game of Wumpus World `-wumpus <new|n|move|m> <move?up|u|down|d|left|l|right|r>`",
   aliases: [ "ww" ],
   state: {
     boards: {

@@ -7,21 +7,21 @@ const ifs = "kb/radiant/oblivion.txt";
 
 export default {
   name: "radiant",
-  description: "",
-  aliases: [],
+  description: "Prints out a spicy Radiant AI quote `-radiant <?number>`",
+  aliases: [ "rad" ],
   exec( message, args ) {
     const lineCount = execSync( `wc -l ${ifs}` ).toString().split( /\s/ )[0];
-    const sel = Math.floor( Math.random() * ( lineCount - 1 ) ) + 1;
+    const sel = parseInt( args[0] ) || Math.floor( Math.random() * ( lineCount - 0 ) ) + 1;
     let response = "";
     if( !!sel || !!lineCount ) {
       response = `Bad data: \`selector = ${sel}\` and \`line count = ${lineCount}\``;
     }
-    if( sel == 1 ) {
+    else if( sel == 1 ) {
       response = execSync( `sed 2,${lineCount}d ${ifs}` ).toString();
     }
     else {
       response = execSync( `sed 1,${sel}d ${ifs} | sed 2,${lineCount}d` ).toString();
     }
-    message.channel.send( `${response}*${sel} / ${lineCount}*` );
+    message.channel.send( `${response} \`${sel} / ${lineCount}\`` );
   }
 };

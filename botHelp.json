@@ -1,9 +1,9 @@
 {
   "BeanStalk": {
-    "version": "2.1",
+    "version": "3.0",
     "alias": "Alpha Pod",
-    "author": "connor",
-    "prefix": "\"bs\" or \"-\""
+    "author": "Hello Connor, Your hw1 is not working AT all.",
+    "prefix": "-"
   },
   "commands": {
     "connect 4": {

@@ -2,7 +2,7 @@ import { Collection } from "discord.js";
 
 export default {
   name: "connect4",
-  description: "subcommands: `join, new, place, reset`",
+  description: "Play a hot game of connect 4 `-connect4 <new|join|place|reset> ?<new?|number number> ?<join?emoji> <place?number>`",
   aliases: [ "c4" ],
   state: {
     timer: null,
@@ -35,19 +35,36 @@ export default {
       break;
       case "n":
       case "new":
-        let board = ":one: :two: :three: :four: :five: :six: :seven: \n";
+        const boardWidth = parseInt( args[1] ) || 7;
+        const boardHeight = parseInt( args[2] ) || 6;
+        let board = "";
+        if( boardWidth === 7 ) {
+          board = ":one: :two: :three: :four: :five: :six: :seven: \n";
+        }
+        else {
+          board += "`"
+          for( let i = 1; i < boardWidth + 1; ++i ) board +=  " " + i.toString() + "  ";
+          board += "`\n";
+          message.reply( "GOOD" );
+        }
 
-        for( let i = 0; i < 7; ++i ) board += ":small_red_triangle_down: ";
+        for( let i = 0; i < boardWidth; ++i ) board += ":small_red_triangle_down: ";
         board += "\n";
 
-        for( let j = 0; j < 6; ++j ) {
-          for( let i = 0; i < 7; ++i ) board += ":white_circle: ";
+        for( let j = 0; j < boardHeight; ++j ) {
+          for( let i = 0; i < boardWidth; ++i ) board += ":white_circle: ";
           board += "\n";
         }
 
         board += "\n";
-        this.state.board = board;
-        message.channel.send( this.state.board );
+
+        if( board.length > 2000 ) {
+          message.channel.send( `Board's too thicc: **${board.length}** must be less than 2000` );
+        }
+        else {
+          this.state.board = board;
+          message.channel.send( this.state.board );
+        }
       break;
       case "p":
       case "place":
@@ -86,7 +103,8 @@ export default {
       break;
       case "reset":
         this.state.players = new Collection();
-        message.channel.send( "Players reset" );
+        this.state.board = null;
+        message.channel.send( "Players & board reset" );
       break;
       default:
         console.warn( `connect4 arg ${args[1]} not found` );

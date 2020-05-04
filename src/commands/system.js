@@ -9,7 +9,7 @@ export default {
     switch( args[0] ) { 
       case "reload":
         const status = execSync( "babel src/commands -d lib/commands" ).toString();
-        message.channel.send( `\`${status}\`` );
+        message.channel.send( "```fix\n" + status + "\n```" );
         loadCommands( bot, true );
         console.info( "Loaded Commands:", bot.commands );
         message.channel.send( ":sweat_drops: SIX :sweat_drops: HOT :sweat_drops: RELOADS :sweat_drops:" );

@@ -90,7 +90,7 @@ export default {
         else response = this.move( args[1] || "error" );
       break;
       default:
-        response = `subcommand ${args[1]} doesn't exist`;
+        response = `subcommand ${args[0]} doesn't exist`;
     }
 
     message.channel.send( response );

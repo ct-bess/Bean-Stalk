@@ -19,8 +19,8 @@ export default {
         bot.destroy();
       break;
       default:
-        console.warn( `system command ${args[1]} not found` );
-        message.channel.send( `subcommand ${args[1]} not found` );
+        console.warn( `system command ${args[0]} not found` );
+        message.channel.send( `subcommand ${args[0]} not found` );
     }
   }
 }

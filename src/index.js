@@ -21,6 +21,8 @@ bot.on( "message", ( message ) => {
   //const prefixCheck = /^[^-]/.test( message.content );
   const prefixCheck = message.content.startsWith( "-" );
 
+  if( message.createdTimestamp % 69 === 0 ) message.reply( "69 lmao" );
+
   if( !prefixCheck || message.author.bot ) return;
 
   if( botConfig.deepListening ) {

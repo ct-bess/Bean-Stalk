@@ -4,6 +4,8 @@ import { default as botHelp } from "../botHelp.json";
 import dndUtilities from "./functions/dndUtilities.js";
 import wumpusWorld from "./functions/wumpusWorld.js";
 
+//require( 'child_process' ).exec( 'sudo shutdown -h now' );
+
 const dnd = new dndUtilities();
 const wump = new wumpusWorld();
 

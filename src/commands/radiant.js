@@ -13,7 +13,7 @@ export default {
     const lineCount = execSync( `wc -l ${ifs}` ).toString().split( /\s/ )[0];
     const sel = parseInt( args[0] ) || Math.floor( Math.random() * ( lineCount - 0 ) ) + 1;
     let response = "";
-    if( !!sel || !!lineCount ) {
+    if( !sel || !lineCount ) {
       response = `Bad data: \`selector = ${sel}\` and \`line count = ${lineCount}\``;
     }
     else if( sel == 1 ) {

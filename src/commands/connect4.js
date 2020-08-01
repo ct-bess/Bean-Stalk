@@ -2,8 +2,19 @@ import { Collection } from "discord.js";
 
 export default {
   name: "connect4",
-  description: "Play a hot game of connect 4 `-connect4 <new|join|place|reset> ?<new?|number number> ?<join?emoji> <place?number>`",
+  description: "Play a hot game of connect 4",
   aliases: [ "c4" ],
+  options: [
+    "`n` `new <?width> <?height>`\tStart a new game. Optinal width and height; Defaults to 7x6",
+    "`j` `join <?marker>`\tAdds you to the current game. Optinal marker emoji; Defaults to a random colored circle",
+    "`p` `place <x-position>`\tPlaces your mark on the board at the designated x-position",
+    "`r` `reset`\tResets the current game. Clears the board and players"
+  ],
+  examples: [
+    "`n 9 9` New game, 9x9 board size",
+    "`j :joy:` Join the current game with the joy emoji",
+    "`p 3` Place your mark at x-position 3"
+  ],
   state: {
     timer: null,
     players: new Collection(),
@@ -16,7 +27,9 @@ export default {
     ":orange_circle:"
   ],
   blankSpace: ":white_circle:",
-  exec( message, args ) {
+  exec( message, bot ) {
+    const args = message.content.slice( 1 ).split( /\s+/ );
+    args.shift();
     switch( args[0] ) {
       case "j":
       case "join":

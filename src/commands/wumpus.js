@@ -15,8 +15,16 @@ const emojiSet = {
 
 export default {
   name: "wumpus",
-  description: "Play a hot game of Wumpus World `-wumpus <new|n|move|m> <move?up|u|down|d|left|l|right|r>`",
+  description: "Play a hot game of Wumpus World",
   aliases: [ "ww" ],
+  options: [
+    "`n` `new`\tStart a new game",
+    "`m` `move <direction>`\tMove the player in 1 of four directions = `left right up down` or `l r u d`"
+  ],
+  examples: [
+    "`m u`\tMove the player up",
+    "`m r`\tMove the player right"
+  ],
   state: {
     boards: {
       active: "",
@@ -28,7 +36,9 @@ export default {
     },
     gameOver: true
   },
-  exec( message, args ) {
+  exec( message, bot ) {
+    const args = message.content.slice( 1 ).split( /\s+/ );
+    args.shift();
 
     let response = "";
 

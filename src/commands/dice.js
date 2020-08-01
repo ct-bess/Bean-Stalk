@@ -1,13 +1,28 @@
+//import { execSync } from "child_process"
+
 export default {
   name: "dice",
-  description: "Roll a dice! `-d <[number]|hist|proof> <?[times]>`\ne.g. `-d 20`, `-d 12 2`, `-d hist`, `-d 0xc0c`, `-d 0b11 0x3`",
   aliases: [ "d", "roll" ],
+  description: "Roll a dice",
+  options: [
+    "<dice size> <?rolls>\tRoll a X sided dice. Optional roll count that picks the highest of the rolls; Defaults to 1 roll",
+    "`hist`\tPrints a history of the last 16 rolls",
+    "`proof`\tAttach a copy of the dice rolling algorithm to the channel"
+  ],
+  examples: [ 
+    "`dice 2`\tRoll a 2 sided dice", 
+    "`d 20 2`\tRoll a 20 sided dice twice", 
+    "`roll 0xf 0b11`\tRoll a 15 sided dice 3 times", 
+    "`d hist`" 
+  ],
   history: [{ 
     playerID: "LITERALLY WHO :sweat_drops:",
     type: "ROLLED WHAT :sweat_drops:",
     value: "ROLL VALUE :sweat_drops:"
   }],
-  exec( message, args ) {
+  exec( message, bot ) {
+    const args = message.content.slice( 1 ).split( /\s+/ );
+    args.shift();
 
     if( /hist/i.test( args[0] ) ) {
       let response = "";

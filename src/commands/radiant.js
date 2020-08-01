@@ -7,9 +7,18 @@ const ifs = "kb/radiant/oblivion.txt";
 
 export default {
   name: "radiant",
-  description: "Prints out a spicy Radiant AI quote `-radiant <?number>`",
+  description: "Prints out a spicy Radiant AI quote",
   aliases: [ "rad" ],
-  exec( message, args ) {
+  options: [
+    "`<?line number>`\tSelects a specific line number for the Radiant quote; Defaults to random"
+  ],
+  examples: [
+    "`radiant 99`\tGet quote number 99",
+    "`rad`\tGet random quote"
+  ],
+  exec( message, bot ) {
+    const args = message.content.slice( 1 ).split( /\s+/ );
+    args.shift();
     const lineCount = execSync( `wc -l ${ifs}` ).toString().split( /\s/ )[0];
     const sel = parseInt( args[0] ) || Math.floor( Math.random() * ( lineCount - 0 ) ) + 1;
     let response = "";

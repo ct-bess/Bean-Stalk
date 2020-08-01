@@ -6,38 +6,33 @@ import { loadCommands } from "./loadCommands.js";
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 
-let botConfig = {
-  deepListening: true
-};
-
 bot.on( "ready", () => {
-  loadCommands( bot, false );
+  loadCommands( bot, null );
   console.info( "Commands:", bot.commands );
   console.info( `Bean Stalk is in: ${bot.user.tag}` );
 });
 
 bot.on( "message", ( message ) => {
 
-  //const prefixCheck = /^[^-]/.test( message.content );
   const prefixCheck = message.content.startsWith( "-" );
 
   if( message.createdTimestamp % 69 === 0 ) message.reply( "69 lmao" );
+  else if( message.createdTimestamp % 0x5f3759df === 0 ) message.reply( "**// what the fuck?** https://github.com/id-Software/Quake-III-Arena/blob/master/code/game/q_math.c#L552" );
+
+  //const sanitizedMessage = message.content.replace( "'", '"' );
+  //const sanitizedName = message.author.username.replace( " ", "_" );
+  //exec( `echo '${sanitizedMessage}' >> kb/${sanitizedName}.kb` );
 
   if( !prefixCheck || message.author.bot ) return;
 
-  if( botConfig.deepListening ) {
-    const sanitizedMessage = message.content.replace( /"/g, "" );
-    const sanitizedName = message.author.username.replace( /\s/g, "_" );
-    exec( `echo "${sanitizedMessage}" >> kb/${sanitizedName}.kb` );
-  }
+  //console.group( `cmd-${message.author}` );
+  //console.time( `cmd-${message.author}` );
+  //message.channel.startTyping();
 
-  const args = message.content.slice( 1 ).split( /\s+/ );
-  const commandName = args.shift().toLowerCase();
-  const command = bot.commands.get( commandName ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandName ) );
+  const commandArgs = message.content.slice( 1 ).toLowerCase().split( /\s+/, 2 );
+  const command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
   
-  console.debug( "Content:", message.content );
-  console.debug( "Author:", message.author.username );
-  console.debug( "args:", args );
+  console.debug( "[DEBUG] -", "User:", message.author.username, "Content:", message.content );
 
   if( !command ) {
     message.reply( "bruHh" );
@@ -45,21 +40,24 @@ bot.on( "message", ( message ) => {
   }
 
   try {
-    if( /help/i.test( args[0] ) ) {
+    // Include: usage, and examples here next
+    if( /^-?-?h(?:elp)?$/i.test( commandArgs[1] ) ) {
       message.channel.send( `**${command.name}**:\n${command.description}\nAliases:\`${command.aliases}\`` );
-    }
-    // Do the system commands better, and maybe restrict access
-    else if( command.name === "system" ) {
-      command.exec( message, args, bot );
+      message.channel.send( "**Options:**\n" + command.options.join( '\n' ) );
+      message.channel.send( "**Examples:**\n" + command.examples.join( '\n' ) );
     }
     else {
-      command.exec( message, args );
+      command.exec( message, bot );
     }
   }
   catch( error ) {
     console.error( error );
     message.reply( "**WHO DID THIS?!?!** :joy:\n" + "```diff\n" + error + "\n```" );
   }
+
+  //message.channel.stopTyping();
+  //console.timeEnd( `cmd-${message.author}` );
+  //console.groupEnd( `cmd-${message.author}` );
   
 });
 

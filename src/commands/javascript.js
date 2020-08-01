@@ -2,21 +2,22 @@ import { exec } from "child_process";
 
 export default {
   name: "javascript",
-  description: "Execute some spicy JavaScript\n-javascript <code>",
+  description: "Execute some spicy, arbitrary, uncontainiarized JavaScript",
   aliases: [ "js" ],
-  exec( message, args ) {
+  options: [],
+  examples: [],
+  exec( message, bot ) {
     let response = "BruHHhhH";
     let process;
-    const code = message.content.replace( /-js/, "" );
+    let code = message.content.replace( /-js|-javascript/, "" );
+    code = message.content.replace( "'", '"' );
 
     if( /require|import/i.test( code ) ) {
       message.reply( "BruH :fire: no" );  
     }
     else {
 
-      //execSync( `echo \"${code}\" > test.js` );
-      // could write to a file if we want to use "
-      process = exec( `node --harmony -e "${code}"`, {}, ( error, stdout, stderr ) => {
+      process = exec( `node --harmony -e '${code}'`, {}, ( error, stdout, stderr ) => {
         response = error || stderr || stdout;
       });
 
@@ -27,8 +28,16 @@ export default {
         if( !process.killed ) {
           process.kill();
         }
+
         exec( `kill ${process.pid + 1}` );
-        message.channel.send( response || "empty :triumph:" );
+
+        if( response.length > 0 ) {
+          message.channel.send( response );
+        }
+        else {
+          message.channel.send( "empty stdout :triumph:" );
+        }
+
       }, 3000 );
 
       // This locks up the entire bot if someone writes bad code

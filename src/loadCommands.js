@@ -9,7 +9,7 @@ export const loadCommands = ( bot, singularCommand ) => {
     bot.commands.set( command.default.name, command.default );
   }
   else {
-    const commandFiles = execSync( "ls lib/commands/ | grep \.js" ).toString().split( /\s/ );
+    const commandFiles = execSync( "ls lib/commands/ lib/commands/.ccs/ | grep \.js" ).toString().split( /\s/ );
     for( const file of commandFiles ) {
       console.info( "=> ", file );
       if( !!file ) {

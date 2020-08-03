@@ -19,10 +19,6 @@ bot.on( "message", ( message ) => {
   if( message.createdTimestamp % 69 === 0 ) message.reply( "69 lmao" );
   else if( message.createdTimestamp % 0x5f3759df === 0 ) message.reply( "**// what the fuck?** https://github.com/id-Software/Quake-III-Arena/blob/master/code/game/q_math.c#L552" );
 
-  //const sanitizedMessage = message.content.replace( "'", '"' );
-  //const sanitizedName = message.author.username.replace( " ", "_" );
-  //exec( `echo '${sanitizedMessage}' >> kb/${sanitizedName}.kb` );
-
   if( !prefixCheck || message.author.bot ) return;
 
   //console.group( `cmd-${message.author}` );
@@ -40,7 +36,6 @@ bot.on( "message", ( message ) => {
   }
 
   try {
-    // Include: usage, and examples here next
     if( /^-?-?h(?:elp)?$/i.test( commandArgs[1] ) ) {
       message.channel.send( `**${command.name}**:\n${command.description}\nAliases:\`${command.aliases}\`` );
       message.channel.send( "**Options:**\n" + command.options.join( '\n' ) );

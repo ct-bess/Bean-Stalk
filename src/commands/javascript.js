@@ -7,42 +7,46 @@ export default {
   options: [],
   examples: [],
   exec( message, bot ) {
-    let response = "BruHHhhH";
-    let process;
-    let code = message.content.replace( /-js|-javascript/, "" );
-    code = message.content.replace( "'", '"' );
+    let response = "";
+    let code = message.content.replace( /-js\s|-javascript\s/, "" );
+    console.debug( "JavaScript:\n", code );
 
     if( /require|import/i.test( code ) ) {
       message.reply( "BruH :fire: no" );  
     }
     else {
 
-      process = exec( `node --harmony -e '${code}'`, {}, ( error, stdout, stderr ) => {
-        response = error || stderr || stdout;
+      message.channel.startTyping();
+
+      code = code.replace( /^(?:\s+)?"/, "console.log('Yall Mind If I Alter Your Injection Attempt')" );
+      code = code.replace( /(?:\s+)?#(?:\s+)?$/, "console.log('Yall Mind If I Alter Your Injection Attempt')" );
+      code = code.replace( /"/g, "'" );
+
+      // This is extremely vulnerable to injection --> code = " && ifconfig && echo "Got'em" #
+      let process = exec( `node --harmony -e "${code}"`, ( error, stderr, stdout ) => {
+        if( !!error ) {
+          response = `${error.name} <:lma0:705790110318329928>\n` + "```diff\n" + error.message + "\n```";
+        }
+        else response = stderr || stdout;
       });
 
-      console.debug( "exec spawned with PID:", process.pid );
+      console.debug( "exec spawned with PID:", process.pid, "&&", process.pid + 1 );
+      console.debug( "args:", ...process.spawnargs );
 
+      // To kill infinite loops and code that takes too long
       setTimeout( () => {
+
         // There's 2 processes to kill, or i'm just ungabunga
         if( !process.killed ) {
           process.kill();
         }
-
         exec( `kill ${process.pid + 1}` );
+        console.debug( "js subprocesses killed" );
 
-        if( response.length > 0 ) {
-          message.channel.send( response );
-        }
-        else {
-          message.channel.send( "empty stdout :triumph:" );
-        }
+        message.channel.send( !!response.length ? response : "empty stdout :triumph:" );
 
       }, 3000 );
 
-      // This locks up the entire bot if someone writes bad code
-      //const response = execSync( `node --harmony -e "${code}"` ).toString();
-      //message.channel.send( response );
     }
 
   }

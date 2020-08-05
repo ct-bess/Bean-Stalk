@@ -20,33 +20,9 @@ export default {
     type: "ROLLED WHAT :sweat_drops:",
     value: "ROLL VALUE :sweat_drops:"
   }],
-  exec( message, bot ) {
-    const args = message.content.slice( 1 ).split( /\s+/ );
-    args.shift();
+  roll( max, min, count, author ) {
 
-    if( /hist/i.test( args[0] ) ) {
-      let response = "";
-      for( let i = 0; i < this.history.length; ++i ) {
-        response += `${this.history[i].playerID}: ${this.history[i].type}, result: **${this.history[i].value}**\n`;
-      }
-      message.channel.send( response );
-      return;
-    }
-    else if( /proof/i.test( args[0] ) ) {
-      message.channel.send({
-        files: [{
-          attachment: "./lib/commands/dice.js",
-          name: "dice.js"
-        }]
-      });
-      return;
-    }
-
-    const max = args[0];
-    const count = args[1];
-    const min = 1;
     let diceValue = 0;
-
     if( max == 0 ) {
       diceValue = "bruH";
     }
@@ -64,14 +40,44 @@ export default {
     }
 
     this.history.push({
-      playerID: message.author, //.username for no @
+      playerID: author.username, //.username for no @
       type: `d${max} x${count || 1}`,
       value: diceValue
     });
     if( this.history.length > 16 ) this.history.shift();
 
-    message.channel.send( `**${diceValue}** :hotsprings: ${message.author}` );
-    return;
+    return( diceValue );
+
+  },
+  exec( message, bot ) {
+    const args = message.content.slice( 1 ).split( /\s+/ );
+    args.shift();
+    const subCommand = args[0].toLowerCase() || "lma0";
+    let response = "";
+    switch( subCommand ) {
+      case "hist":
+      case "history":
+        for( let i = 0; i < this.history.length; ++i ) {
+          response += `**${this.history[i].playerID}**: ${this.history[i].type}, result: **${this.history[i].value}**\n`;
+        }
+        message.channel.send( response );
+        break;
+      case "proof":
+      case "bread":
+        message.channel.send({
+          files: [{
+            attachment: "./lib/commands/dice.js",
+            name: "dice.js"
+          }]
+        });
+        break;
+      default:
+        const max = parseInt( args[0] );
+        const count = parseInt( args[1] );
+        const min = 1;
+        response = this.roll( max, min, count, message.author );
+        message.channel.send( `**${response}** :hotsprings: ${message.author}` );
+    }
 
   }
 

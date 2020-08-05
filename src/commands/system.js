@@ -19,7 +19,7 @@ export default {
       case "reload":
         let status = null;
         if( !!args[1] ) {
-          status = execSync( `babel src/commands/${args[1]} -o lib/commands/${args[1]}` ).toString();
+          status = execSync( `babel src/commands/${args[1]} -o lib/commands/${args[1]}` ).toString() || args[1];
           loadCommands( bot, args[1] );
           console.info( `Re-loaded ${args[1]} command` );
         }

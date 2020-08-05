@@ -28,6 +28,7 @@ export default {
           response = `${error.name} <:lma0:705790110318329928>\n` + "```diff\n" + error.message + "\n```";
         }
         else response = stderr || stdout;
+        message.channel.stopTyping();
       });
 
       console.debug( "exec spawned with PID:", process.pid, "&&", process.pid + 1 );
@@ -44,6 +45,7 @@ export default {
         console.debug( "js subprocesses killed" );
 
         message.channel.send( !!response.length ? response : "empty stdout :triumph:" );
+        message.channel.stopTyping();
 
       }, 3000 );
 

@@ -7,7 +7,7 @@ export default {
   ],
   examples: [ "`grantspeak Howdy!`", "`grant`" ],
   exec( message, bot ) {
-    const args = message.content.slice( 1 ).split( /\s+/, 1 );
+    const args = message.content.slice( 1 ).split( /\s+/, 2 );
     args.shift();
 
     let response = "";
@@ -28,7 +28,7 @@ export default {
 
     // WE ALSO INCLUDED AN ADVANCED AI SYSTEM
     // SO WE HAVE FISH THAT MOVE AWAY WHEN YOU SWIM CLOSE TO THEM
-    if( /thank|love|awesome|great|thnx|shucks|damn|TY|XXX|dang/i.test( message.content ) ) { 
+    if( /thank|love|awesome|great|thnx|shucks|damn|TY|XXX|dang|nice/i.test( message.content ) ) { 
 
       if( message.createdTimestamp % 2 === 0 ) {
         response += " HONORED";

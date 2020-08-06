@@ -5,7 +5,7 @@ export default {
   aliases: [ "d", "roll" ],
   description: "Roll a dice",
   options: [
-    "<dice size> <?rolls>\tRoll a X sided dice. Optional roll count that picks the highest of the rolls; Defaults to 1 roll",
+    "<dice size> <?rolls>\tRoll a X sided dice. Optional roll count picks the highest of the rolls when positive, lowest when negative; Defaults to 1 roll",
     "`hist`\tPrints a history of the last 16 rolls",
     "`proof`\tAttach a copy of the dice rolling algorithm to the channel"
   ],
@@ -21,22 +21,36 @@ export default {
     value: "ROLL VALUE :sweat_drops:"
   }],
   roll( max, min, count, author ) {
+    
+    console.debug( "[ entering roll() ]" );
 
     let diceValue = 0;
-    if( max == 0 ) {
+    if( max == 0 || min == 0 ) {
+      console.info( "Invalid max for roll:", max, "Or min:", min );
       diceValue = "bruH";
     }
 
-    else if( !count || count === 1 || /\D/.test( count ) ) {
+    else if( !count || Math.abs( count ) === 1 || !parseInt( count ) ) {
+      console.info( "Invalid count or no count:", count );
       diceValue = Math.floor( Math.random() * ( max - 0 ) ) + min;
     }
 
-    // -- Rolling with advantage? pick the highest of the times rolled
+    else if( count > 0xfffff ) {
+      diceValue = `Chill with that ${count} rolls`;
+    }
+
     else {
-      for( let i = 0; i < count; ++i ) {
+      console.info( "valid count:", count );
+      let rolls = [];
+      for( let i = 0; i < Math.abs( count ); ++i ) {
         const roll = Math.floor( Math.random() * ( max - 0 ) ) + min;
-        diceValue = diceValue > roll ? diceValue : roll;
+        rolls.push( roll );
+        diceValue = 
+          ((count > 0) + 0)*(((( roll > diceValue ) + 0 ) * roll ) +  ((( roll <= diceValue ) + 0 ) * diceValue ))+
+          ((count < 0) + 0)*(((( roll < diceValue ) + 0 ) * roll ) +  ((( roll >= diceValue ) + 0 ) * diceValue ))+
+          ((count < 0) + 0)*(( i === 0 ) + 0)*roll; // diceValue is initialized as 0; So initialize it to roll in disadv
       }
+      console.debug( "rolls:", rolls );
     }
 
     this.history.push({
@@ -45,6 +59,9 @@ export default {
       value: diceValue
     });
     if( this.history.length > 16 ) this.history.shift();
+
+    console.debug( "Roll Value:", diceValue );
+    console.debug( "[ exiting roll() ]" );
 
     return( diceValue );
 

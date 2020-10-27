@@ -1,93 +1,73 @@
-//import * as commands from "./commands/commands.js";
-//import botHelp from "../botHelp.json";
-import { default as botHelp } from "../botHelp.json";
-import dndUtilities from "./functions/dndUtilities.js";
-import wumpusWorld from "./functions/wumpusWorld.js";
+function winCheck( board ) {
+  const firstSplit = board.split('\n');
+  //console.info( firstSplit );
 
-//require( 'child_process' ).exec( 'sudo shutdown -h now' );
+  const playerMarker = ":blue:";
+  let playerMap = [];
 
-const dnd = new dndUtilities();
-const wump = new wumpusWorld();
+  for( i in firstSplit ) {
+    const secondSplit = firstSplit[i].split(' '); 
+    if( secondSplit[secondSplit.length-1] === '' ) secondSplit.pop();
+    //console.info( secondSplit );
+    let chunk = [];
+    for( j in secondSplit ) {
+      if( secondSplit[j] === playerMarker ) chunk.push( parseInt( j ) + 1 );
+      else chunk.push( 0 )
+    }
+    playerMap.push( chunk );
+  }
 
-console.log( "THIS IS A NO DESCRIBE ZONE" );
+  // Vert win = 4 of the same index evenly spaced out or maybe anywhere
+  // Horiz win = 4 consecutive increasing indicies by 1
+  // Forward Diag win / = 4 decreasing indicies
 
-function freshGokuTest( input ) {
-  const response = "";
-  return( response );
-}
+  let win = false;
 
-function placeTest( input ) {
-  const response = "";
-  return( response );
+  rowLoop: for( let i = 0; i < playerMap.length; ++i ) {
+    console.info( "row:", i, typeof(i) );
+    markerLoop: for( let j = 0; j < playerMap[i].length; ++j ) {
+      if( typeof(i) !== "number" || typeof(j) !== "number" ) { 
+        console.error( "typeof i j bad",typeof(i),typeof(j) );
+      }
+      const marker = playerMap[i][j];
+      console.info( "For marker:", marker, "at:", j );
+      if( marker !== 0 ) {
+        const vertCheck = (playerMap[i+1][j]===marker)&&(playerMap[i+2][j]===marker)&&(playerMap[i+3][j]===marker);
+        const horizCheck = (playerMap[i][j+1]>0)&&(playerMap[i][j+2]>0)&&(playerMap[i][j+3]>0);
+        const fDiagCheck = (playerMap[i+1][j+1]>0)&&(playerMap[i+2][j+2]>0)&&(playerMap[i+3][j+3]>0);
+        const bDiagCheck = (playerMap[i+1][j-1]>0)&&(playerMap[i+2][j-2]>0)&&(playerMap[i+3][j-3]>0);
+        console.info({ vert: vertCheck, horiz: horizCheck, fDiag: fDiagCheck, bDiag: bDiagCheck });
+        if( vertCheck || horizCheck || fDiagCheck || bDiagCheck === true ) {
+          win = true;
+          break rowLoop;
+        }
+      }
+    }
+  }
+
+  console.info( "playerMap:", playerMap );
+  console.info( "win?:", win );
+
 }
 
 try {
 
-  let input = null;
-  let response = null;
+  const vertBoard =":empty: :empty: :empty: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: "
+  const horizBoard =":blue: :blue: :blue: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: "
+  const forwardDiagBoard =":blue: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :blue: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :blue: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: "
+  const backwardDiagBoard =":empty: :empty: :empty: :empty: :empty: :empty: :blue: \n:empty: :empty: :empty: :empty: :empty: :blue: :empty: \n:empty: :empty: :empty: :empty: :blue: :empty: :empty: \n:empty: :empty: :empty: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: "
 
-  wump.start();
-  console.log( board );
+  console.info( "VERTICAL" );
+  winCheck( vertBoard );
 
-  wump.board = board;
-  wump.move( "down" );
-  wump.move( "up" );
-  wump.move( "right" );
-  wump.move( "left" );
+  console.info( "HORIZONTAL" );
+  winCheck( horizBoard );
 
-  /*
-  input = {
-    content: "d20",
-    user: "test"
-  }
-  response = dnd.exec( "roll", input );
-  console.log( "test case 1:\n", response );
+  console.info( "FORWARD DIAGONAL" );
+  winCheck( forwardDiagBoard );
+  console.info( "BACKWARD DIAGONAL" );
+  winCheck( backwardDiagBoard );
 
-  input = {
-    content: "d4 2",
-    user: "test"
-  }
-  response = dnd.exec( "roll", input );
-  console.log( "test case 2:\n", response );
-
-  input = {
-    content: "d99 3",
-    user: "test"
-  }
-  response = dnd.exec( "roll", input );
-  console.log( "test case 3:\n", response );
-
-  input = {
-    content: "d420 x",
-    user: "test"
-  }
-  response = dnd.exec( "roll", input );
-  console.log( "test case 4:\n", response );
-
-  input = {
-    content: "rollHistory",
-    user: "test"
-  }
-  response = dnd.exec( "rollHistory", input );
-  console.log( "test case 5:\n", response );
-
-  input = "bs place 2 X";
-  console.log( input );
-  input = input.replace( /^(bs|-)/, "" );
-  console.log( input );
-
-  {
-    input = "fresh goku";
-    response = freshGokuTest( input );
-    console.log( `RESPONSE:\n${response}` );
-  }
-
-  {
-    input = "p 1";
-    response = placeTest( input );
-    console.log( `RESPONSE:\n${response.board}\n${response.winner}` );
-  }
-  */
 
 } catch( error ) {
   console.log( "LMAO!" );

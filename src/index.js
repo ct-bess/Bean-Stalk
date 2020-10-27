@@ -1,6 +1,6 @@
 import Discord from "discord.js";
 import auth from "../auth.json";
-import { exec } from "child_process";
+import help from "../help.json";
 import { loadCommands } from "./loadCommands.js";
 
 const bot = new Discord.Client();
@@ -14,9 +14,20 @@ bot.on( "ready", () => {
 
 bot.on( "message", ( message ) => {
 
+  // FYI: apparently the proper way to get a custom emoji is this:
+  // message.guild.emojis.cache.get("12345678...")
+
+  if( /420|weed/i.test( message.content ) ) {
+    message.react( ":blunt:766311145341845504" );
+  }
+
   const prefixCheck = message.content.startsWith( "-" );
 
-  if( message.createdTimestamp % 69 === 0 ) message.reply( "69 lmao" );
+  if( message.createdTimestamp % 69 === 0 ) {
+    message.react( "\u0036\u20E3" );
+    message.react( "\u0039\u20E3" );
+  }
+  // 0x5f3759df = 99841437 in base ten
   else if( message.createdTimestamp % 0x5f3759df === 0 ) message.reply( "**// what the fuck?** https://github.com/id-Software/Quake-III-Arena/blob/master/code/game/q_math.c#L552" );
 
   if( !prefixCheck || message.author.bot ) return;
@@ -37,9 +48,7 @@ bot.on( "message", ( message ) => {
 
   try {
     if( /^-?-?h(?:elp)?$/i.test( commandArgs[1] ) ) {
-      message.channel.send( `**${command.name}**:\n${command.description}\nAliases:\`${command.aliases}\`` );
-      message.channel.send( "**Options:**\n" + command.options.join( '\n' ) );
-      message.channel.send( "**Examples:**\n" + command.examples.join( '\n' ) );
+      message.channel.send({ embed: help[`${command.name}`] } || `No help object for ${command.name}`);
     }
     else {
       command.exec( message, bot );

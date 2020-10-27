@@ -1,4 +1,5 @@
 import { Collection } from "discord.js";
+import { sendBulk } from "../sendBulk.js";
 
 export default {
   name: "connect4",
@@ -55,9 +56,8 @@ export default {
           board = ":one: :two: :three: :four: :five: :six: :seven: \n";
         }
         else {
-          board += "`"
-          for( let i = 1; i < boardWidth + 1; ++i ) board +=  " " + i.toString() + "  ";
-          board += "`\n";
+          for( let i = 1; i < boardWidth + 1; ++i ) board += i.toString() + ", ";
+          board += "\n";
           message.reply( "GOOD" );
         }
 
@@ -72,12 +72,14 @@ export default {
         board += "\n";
 
         if( board.length > 2000 ) {
-          message.channel.send( `Board's too thicc: **${board.length}** must be less than 2000` );
+          message.channel.send( `Board's too thicc: **${board.length}**, we're playin connect4 nothing` );
+          //sendBulk( board, message, null );
         }
         else {
-          this.state.board = board;
-          message.channel.send( this.state.board );
+          message.channel.send( board );
         }
+
+        this.state.board = board;
       break;
       case "p":
       case "place":
@@ -94,13 +96,19 @@ export default {
           const col = parseInt( args[1] ) - 1;
           const placeRegex = new RegExp( `(?<=(.+\\n)+(\\S+\\s){${col}})(${this.blankSpace})` );
           this.state.board = this.state.board.replace( placeRegex, player.marker );
-          message.channel.send( this.state.board );
 
-          // No diagonals, too spaghetti
-          // Also sometimes this doesnt work??????
-          const vertRegex = new RegExp( `(.*(${player.marker}\\s)((\\S+\\s)+\\n|\\n)){4}` );
-          const horizRegex = new RegExp( `(${player.marker}\\s){4}` );
-          if( horizRegex.test( this.state.board ) || vertRegex.test( this.state.board ) ) {
+          if( this.state.board.length > 2000 ) {
+            //sendBulk( this.state.board, message, null );
+            const partition = Math.floor( Math.random() * this.state.board.length );
+            message.channel.send( this.state.board.substring( partition, partition + 2000 ) );
+          }
+          else {
+            message.channel.send( this.state.board );
+          }
+
+          const hasWon = this.winCheck( player.marker, this.state.board );
+
+          if( hasWon === true ) {
             message.reply( "A VERY CLEAN WIN :sweat_drops:" );
             message.channel.send( `**SHUCKS** this Connect4 game is over THNX ${player.marker}` );
           }
@@ -123,5 +131,51 @@ export default {
         console.warn( `connect4 arg ${args[1]} not found` );
         message.channel.send( `connect4 arg ${args[1]} not found` );
     }
+  },
+  // No RegEx sorry
+  winCheck( playerMarker, board ) {
+    const firstSplit = board.split('\n');
+    firstSplit.shift();
+    firstSplit.shift();
+    //console.info( firstSplit );
+
+    let playerMap = [];
+
+    for( const i in firstSplit ) {
+      const secondSplit = firstSplit[i].split(' '); 
+      if( secondSplit[secondSplit.length-1] === '' ) secondSplit.pop();
+      //console.info( secondSplit );
+      let chunk = [];
+      for( const j in secondSplit ) {
+        if( secondSplit[j] === playerMarker ) chunk.push( parseInt( j ) + 1 );
+        else chunk.push( 0 )
+      }
+      playerMap.push( chunk );
+    }
+
+    let win = false;
+
+    rowLoop: for( let i = 0; i < playerMap.length; ++i ) {
+      //console.info( "row:", i, typeof(i) );
+      markerLoop: for( let j = 0; j < playerMap[i].length; ++j ) {
+        const marker = playerMap[i][j];
+        //console.info( "For marker:", marker, "at:", j );
+        if( marker !== 0 ) {
+          const vertCheck = (playerMap[i+1][j]>0)&&(playerMap[i+2][j]>0)&&(playerMap[i+3][j]>0);
+          const horizCheck = (playerMap[i][j+1]>0)&&(playerMap[i][j+2]>0)&&(playerMap[i][j+3]>0);
+          const fDiagCheck = (playerMap[i+1][j+1]>0)&&(playerMap[i+2][j+2]>0)&&(playerMap[i+3][j+3]>0);
+          const bDiagCheck = (playerMap[i+1][j-1]>0)&&(playerMap[i+2][j-2]>0)&&(playerMap[i+3][j-3]>0);
+          //console.info({ vert: vertCheck, horiz: horizCheck, fDiag: fDiagCheck, bDiag: bDiagCheck });
+          if( vertCheck || horizCheck || fDiagCheck || bDiagCheck === true ) {
+            win = true;
+            break rowLoop;
+          }
+        }
+      }
+    }
+
+    //console.info( "playerMap:", playerMap );
+    //console.info( "win?:", win );
+    return( win );
   }
 };

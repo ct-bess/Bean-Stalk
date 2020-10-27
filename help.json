@@ -1,0 +1,32 @@
+{
+  "system": {
+    "color": 256,
+    "title": "system",
+    "description": "Bean Stalk system commands",
+    "fields": [
+      {
+        "name": "reload <?command name>",
+        "value": "Transpile and reload the specified <?command name> or all commands if none specified"
+      },
+      {
+        "name": "die",
+        "value": "Log out and kill Bean-Stalk's process"
+      },
+      {
+        "name": "commands",
+        "value": "List all available commands; Use <command name> -help for more info on a specific command"
+      },
+      {
+        "name": "vrms",
+        "value": "List all non-free packages installed on Bean-Stalk's OS"
+      },
+      {
+        "name": "screenfetch",
+        "value": "Display Bean-Stalk meta data"
+      }
+    ],
+    "footer": {
+      "text": "command aliases: sys, bean"
+    }
+  }
+}

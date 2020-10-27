@@ -1,16 +1,11 @@
 import { execSync } from "child_process";
 import { exit } from "process";
 import { loadCommands } from "../loadCommands.js";
+import { sendBulk } from "../sendBulk.js";
 
 export default {
   name: "system",
   description: "Bean Stalk system commands",
-  options: [
-    "`reload <?command name>`\ttranspile and reload commands; Defaults to all commands",
-    "`die`\tLog out Bean Stalk",
-    "`commands`\tList all commands"
-  ],
-  examples: [ "`system reload`", "`bean die`" ],
   aliases: [ "sys", "bean" ],
   exec( message, bot ) {
     const args = message.content.slice( 1 ).split( /\s+/ );
@@ -18,8 +13,10 @@ export default {
     switch( args[0] ) { 
       case "reload":
         let status = null;
+        let response = "";
         if( !!args[1] ) {
-          status = execSync( `babel src/commands/${args[1]} -o lib/commands/${args[1]}` ).toString() || args[1];
+          // -- Potential bash injection here
+          status = execSync( `babel src/commands/${args[1]}.js -o lib/commands/${args[1]}.js` ).toString() || args[1];
           loadCommands( bot, args[1] );
           console.info( `Re-loaded ${args[1]} command` );
         }
@@ -32,13 +29,23 @@ export default {
         message.channel.send( ":sweat_drops: **SIX** :sweat_drops: **HOT** :sweat_drops: **RELOADS** :sweat_drops:" );
       break;
       case "die":
-        message.reply( ":sob:" );
+        message.channel.send( "cya" );
         bot.destroy();
         exit( 0 );
       case "commands":
-        let response = "";
-        bot.commands.every( elem => response += `**${elem.name}**\n${elem.description}\n---\n` );
-        message.channel.send( response );
+        response = "";
+        bot.commands.every( elem => response += `Name: **${elem.name}**\tDescription: ${elem.description}\n` );
+        if( response.length > 2000 ) sendBulk( response, message, null );
+        else message.channel.send( response );
+      break;
+      case "vrms":
+        response = execSync( "vrms" ).toString() || "exec vrms error";
+        sendBulk( response, message, "code block" );
+      break;
+      case "screenfetch":
+        response = execSync( "screenfetch -N" ).toString() || "exec screenfetch error";
+        response = response.replace( /`/g, "'" );
+        message.channel.send( "```\n" + response + "\n```" );
       break;
       default:
         console.warn( `system command ${args[0]} not found` );

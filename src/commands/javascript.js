@@ -4,8 +4,6 @@ export default {
   name: "javascript",
   description: "Execute some spicy, arbitrary, uncontainiarized JavaScript",
   aliases: [ "js" ],
-  options: [],
-  examples: [],
   exec( message, bot ) {
     let response = "";
     let code = message.content.replace( /-js\s|-javascript\s/, "" );

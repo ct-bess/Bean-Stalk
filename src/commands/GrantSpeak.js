@@ -1,11 +1,7 @@
 export default {
   name: "grantspeak",
   aliases: [ "grant" ],
-  description: "Styles a message into a XXX rated Grant MacDonald message",
-  options: [
-    "`<?message>`\tText to be converted into Grant Speak; Defaults to the most recent message in the channel"
-  ],
-  examples: [ "`grantspeak Howdy!`", "`grant`" ],
+  description: "Styles a message into a dot XXX rated Grant MacDonald message",
   exec( message, bot ) {
     const args = message.content.slice( 1 ).split( /\s+/, 2 );
     args.shift();
@@ -39,6 +35,8 @@ export default {
         if( message.createdTimestamp % 3 === 0 ) response += " THNX";
         if( message.createdTimestamp % 7 === 0 ) response += " DAMN";
       }
+
+      if( message.createdTimestamp % 5 === 0 ) response += " LOVE MY SUPER COOL FANS";
 
     }
 

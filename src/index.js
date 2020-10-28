@@ -17,7 +17,7 @@ bot.on( "message", ( message ) => {
   // FYI: apparently the proper way to get a custom emoji is this:
   // message.guild.emojis.cache.get("12345678...")
 
-  if( /420|weed/i.test( message.content ) ) {
+  if( /16:20|0?4:?20|w[e3]{2,}d/i.test( message.content ) ) {
     message.react( ":blunt:766311145341845504" );
   }
 
@@ -32,10 +32,6 @@ bot.on( "message", ( message ) => {
 
   if( !prefixCheck || message.author.bot ) return;
 
-  //console.group( `cmd-${message.author}` );
-  //console.time( `cmd-${message.author}` );
-  //message.channel.startTyping();
-
   const commandArgs = message.content.slice( 1 ).toLowerCase().split( /\s+/, 2 );
   const command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
   
@@ -48,7 +44,13 @@ bot.on( "message", ( message ) => {
 
   try {
     if( /^-?-?h(?:elp)?$/i.test( commandArgs[1] ) ) {
-      message.channel.send({ embed: help[`${command.name}`] } || `No help object for ${command.name}`);
+      const helpEmbed = help[command.name] || {};
+      helpEmbed.color = 0xffea00;
+      helpEmbed.title = command.name + "";
+      helpEmbed.description = command.description + "";
+      helpEmbed.footer = {};
+      helpEmbed.footer.text = "aliases: " + command.aliases.join(', ');
+      message.channel.send({ embed: helpEmbed });
     }
     else {
       command.exec( message, bot );
@@ -58,10 +60,6 @@ bot.on( "message", ( message ) => {
     console.error( error );
     message.reply( "**WHO DID THIS?!?!** :joy:\n" + "```diff\n" + error + "\n```" );
   }
-
-  //message.channel.stopTyping();
-  //console.timeEnd( `cmd-${message.author}` );
-  //console.groupEnd( `cmd-${message.author}` );
   
 });
 

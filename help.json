@@ -1,12 +1,137 @@
 {
+  "checkem": {
+    "fields": [
+      {
+        "name": "rand",
+        "value": "Generates 9 random digits rather than fetching your timestamp"
+      }
+    ]
+  },
+  "connect4": {
+    "fields": [
+      {
+        "name": "new <?width> <?height>",
+        "value": "Create a new board\nshorthand = n\n<?width> = number\n<?height> = number\nDefaults: <?width> = 7, <?height> = 6"
+      },
+      {
+        "name": "join <?emoji>",
+        "value": "Join the active game\nshorthand = j\n<?emoji> = text\nDefaults: <?emoji> = random circle emoji"
+      },
+      {
+        "name": "place <x-pos/row>",
+        "value": "During your turn, drops your peice on the board at the specified spot\nshorthand = p\n<x-pos/row> = number"
+      },
+      {
+        "name": "reset",
+        "value": "Resets the game and players\nshorthand subcommand = r"
+      }
+    ]
+  },
+  "custom": {
+    "fields": [
+      {
+        "name": "list",
+        "value": "Display all custom commands\nCommands in `lib/` have been committed"
+      },
+      {
+        "name": "show <command name>",
+        "value": "Display the source code of the specified command\n<command name> = text"
+      },
+      {
+        "name": "new <command name>",
+        "value": "Creates a new command named after the given name. New commands are initialized with a template\n<command name> = text"
+      },
+      {
+        "name": "commit <command name>",
+        "value": "Loads the given command into Bean-Stalk\n<command name> = text"
+      },
+      {
+        "name": "edit <command name> <sed expression>",
+        "value": "Run a [GNU sed](https://www.gnu.org/software/sed) script on the specified command\n<command name> = text\n<sed expression> = text\nExample <sed expression> = s/\"foo\"/\"bar\"/g"
+      },
+      {
+        "name": "append <command name> <?line number> <code>",
+        "value": "Appends <code> to the end of the specified command; Optionally at <?line number>\n<command name> = text\n<?line number> = number\n<code> = javascript code\nDefaults: <?line number> = EOF-1"
+      },
+      {
+        "name": "upload <command name>",
+        "value": "not implemented"
+      },
+      {
+        "name": "disable <command name>",
+        "value": "not implemented"
+      },
+      {
+        "name": "enable <command name>",
+        "value": "not implemented"
+      }
+    ]
+  },
+  "dice": {
+    "fields": [
+      {
+        "name": "<size> <?rolls>",
+        "value": "Roll a dice of the specified size. Optionally roll <?rolls> ammount of dies, picking the highest if <?rolls> is positive and picks the lowest if <?rolls> is negative\n<size> = number\n<?rolls> = number\nDefaults: <?rolls> = 1"
+      },
+      {
+        "name": "history",
+        "value": "Prints the last 16 rolls\nshorthand = hist"
+      },
+      {
+        "name": "proof",
+        "value": "Attaches the dice rolling algorithm to silence those who oppose Bean-Stalk"
+      }
+    ]
+  },
+  "dndutil": {
+    "fields": [
+      {
+        "name": "load",
+        "value": "Loads your character's object to use the next subcommands"
+      },
+      {
+        "name": "check <stat>",
+        "value": "Rolls a d20 check against the given stat\n<stat> = text\nOptions: <stat> = con, str, dex, wis, int"
+      },
+      {
+        "name": "save <stat>",
+        "value": "Rolls a d20 saving throw against the given stat\n<stat> = text\nOptions: <stat> = con, str, dex, wis, int"
+      },
+      {
+        "name": "show <?what>",
+        "value": "Prints your character's meta data\n<?what> = text\nOptions: <?what> = stats, proficiencies, inventory\nDefaults <?what> = null"
+      }
+    ]
+  },
+  "grantspeak": {
+    "fields": [
+      {
+        "name": "<?message>",
+        "value": "convert the given message to Grant Speak\n<?message> = text\nDefaults: <?message> = previous message in channel"
+      }
+    ]
+  },
+  "javascript": {
+    "fields": [
+      {
+        "name": "<script>",
+        "value": "Execute the given script in JavaScript and return stdout. Your script is only given 3 seconds to complete\n<script> = text\nExample <script> = for(let i=0;i<5;++i){console.log(':sweat_drops:'*3)}"
+      }
+    ]
+  },
+  "radiant": {
+    "fields": [
+      {
+        "name": "<?line number>",
+        "value": "Fetch the specified line number\n<?line number> = number\nDefaults: <?line number> = random line number in file"
+      }
+    ]
+  },
   "system": {
-    "color": 256,
-    "title": "system",
-    "description": "Bean Stalk system commands",
     "fields": [
       {
         "name": "reload <?command name>",
-        "value": "Transpile and reload the specified <?command name> or all commands if none specified"
+        "value": "Transpile and reload the specified <?command name> or all commands if none specified\nDefaults: <?command name> = null"
       },
       {
         "name": "die",
@@ -24,9 +149,22 @@
         "name": "screenfetch",
         "value": "Display Bean-Stalk meta data"
       }
-    ],
-    "footer": {
-      "text": "command aliases: sys, bean"
-    }
+    ]
+  },
+  "wumpus": {
+    "fields": [
+      {
+        "name": "new <?emoji>",
+        "value": "Create a new board\nshorthand subcommand = n\nDefaults: <?emoji> = :joy:"
+      },
+      {
+        "name": "move <direction>",
+        "value": "Move your player in the specified direction\nshorthand subcommand = m\n<direction> = text\nOptions: <direction> = up, down, left, right, u, d, l, r"
+      },
+      {
+        "name": "shoot <direction>",
+        "value": "Shoot an arrow in the specified direction\nshorthand subcommand = s\n<direction> = text\nOptions: <direction> = up, down, left, right, u, d, l, r"
+      }
+    ]
   }
 }

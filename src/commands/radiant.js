@@ -9,13 +9,6 @@ export default {
   name: "radiant",
   description: "Prints out a spicy Radiant AI quote",
   aliases: [ "rad" ],
-  options: [
-    "`<?line number>`\tSelects a specific line number for the Radiant quote; Defaults to random"
-  ],
-  examples: [
-    "`radiant 99`\tGet quote number 99",
-    "`rad`\tGet random quote"
-  ],
   exec( message, bot ) {
     const args = message.content.slice( 1 ).split( /\s+/ );
     args.shift();

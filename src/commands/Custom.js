@@ -4,25 +4,6 @@ export default {
   name: "custom",
   aliases: [ "cc" ],
   description: "Write a custom command for Bean to execute. This is such a bad idea :skull:",
-  options: [
-    "`list`\tDisplays all custom commands",
-    "`show <command name>`\tDisplay the code of the specified custom command",
-    "`new <command name>`\tCreate a new custom command using the given name; Disabled by default",
-    "`commit <command name>`\tTranspile and reload the specified command",
-    "`edit <command name> <sed regex space>`\tEdit a specific command with GNU stream edit (sed)",
-    "`append <command name> <?line number> <code>`\tAppends a line of code; If no line number is given, appends to the bottom of exec",
-    "`upload <command name>`\tReplace the specified command with a file upload attached to your message",
-    "`disable <command name>`\tDisables the specified command",
-    "`enable <command name>`\tEnables the specified command"
-  ],
-  examples: [
-    "`edit my_command s/\"this\"/\"that\"/g`\tsubstitute each string of *this* to *that*",
-    "`edit my_command 8d`\tDelete line 8",
-    "`edit my_command 5,8s/channel\.send/reply/`\tsubstitute the first channel.send with reply for each lines 5-8",
-    "`edit my_command n;s/(\\d+)/num = \\1/`\tsubstitute the 1st instance of a number with an assignment of num to that number for every other line",
-    "`append my_command 5 message.channel.send(\"My Message, added below line 5\")`",
-    "`append my_command message.channel.send(\"My Message, but at the end of the exec function\")`"
-  ],
   exec( message, bot ) {
     const args = message.content.slice( 1 ).split( /\s+/, 3 );
     args.shift();

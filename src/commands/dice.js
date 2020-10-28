@@ -4,17 +4,6 @@ export default {
   name: "dice",
   aliases: [ "d", "roll" ],
   description: "Roll a dice",
-  options: [
-    "<dice size> <?rolls>\tRoll a X sided dice. Optional roll count picks the highest of the rolls when positive, lowest when negative; Defaults to 1 roll",
-    "`hist`\tPrints a history of the last 16 rolls",
-    "`proof`\tAttach a copy of the dice rolling algorithm to the channel"
-  ],
-  examples: [ 
-    "`dice 2`\tRoll a 2 sided dice", 
-    "`d 20 2`\tRoll a 20 sided dice twice", 
-    "`roll 0xf 0b11`\tRoll a 15 sided dice 3 times", 
-    "`d hist`" 
-  ],
   history: [{ 
     playerID: "LITERALLY WHO :sweat_drops:",
     type: "ROLLED WHAT :sweat_drops:",

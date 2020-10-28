@@ -1,30 +1,22 @@
-// Possible features:
-// - Treasure chest
-// - player bow & arrow
 // - Dynamic board size
 // - Fixing board scramble
 const emojiSet = {
   wumpus: ":orangutan:",
+  deadWumpus: ":bone:",
   stench: ":biohazard:",
   hidden: ":grey_question:",
   explored: ":o:",
   empty: ":white_square_button:",
   pit: ":dash:",
-  goal: ":exclamation:"
+  goal: ":exclamation:",
+  thump: ":wood:",
+  bow: ":bow_and_arrow:"
 };
 
 export default {
   name: "wumpus",
-  description: "Play a hot game of Wumpus World",
+  description: "Play a hot game of Wumpus World. Guide your player to the treasure",
   aliases: [ "ww" ],
-  options: [
-    "`n` `new`\tStart a new game",
-    "`m` `move <direction>`\tMove the player in 1 of four directions = `left right up down` or `l r u d`"
-  ],
-  examples: [
-    "`m u`\tMove the player up",
-    "`m r`\tMove the player right"
-  ],
   state: {
     boards: {
       active: "",
@@ -32,7 +24,8 @@ export default {
     },
     player: {
       marker: "",
-      pos: { x: 0, y: 0 }
+      pos: { x: 0, y: 0 },
+      hasArrow: true
     },
     gameOver: true
   },
@@ -72,6 +65,7 @@ export default {
         this.state.player.pos.y = Math.floor( playerPos / 8 );
         this.state.player.pos.x = Math.floor( ( playerPos - ( 8 * Math.floor( playerPos / 8 ) ) ) / 2 );
         this.state.player.marker = args[1] || ":joy:";
+        this.state.player.hasArrow = true;
 
         console.debug( `x: ${this.state.player.pos.x}, y: ${this.state.player.pos.y}` );
 
@@ -97,8 +91,13 @@ export default {
       case "m":
       case "move":
         if( !!this.state.gameOver ) response = "Start a game first";
-        else response = this.move( args[1] || "error" );
+        else response = this.move( args[1] || "error", "player" );
       break;
+      case "s":
+      case "shoot":
+        if( !!this.state.gameOver ) response = "Start a game first";
+        else response = this.move( args[1] || "error", "arrow" );
+        break;
       default:
         response = `subcommand ${args[0]} doesn't exist`;
     }
@@ -120,7 +119,7 @@ export default {
     return( roomInfo );
 
   },
-  move( dir ) {
+  move( dir, what ) {
 
     let newPos = { x: this.state.player.pos.x, y: this.state.player.pos.y };
     let response = "";
@@ -144,58 +143,101 @@ export default {
         break;
       default:
         response = `Invalid movement: ${dir}`;
+        return( response );
     }
+
+    // new pos
     const movementRegex = new RegExp( `(?<=(.+\\n){${newPos.y}}(\\w\\s){${newPos.x}})(\\w)` );
     const nextRoom = this.state.boards.secret.match( movementRegex );
     console.info( "nextRoom = ", nextRoom );
     let roomInfo = "";
 
     switch( nextRoom[0] ) {
-      case "E":
-      case "X":
-        const oldPosRegex = new RegExp( `(?<=(.+\\n){${this.state.player.pos.y}}(\\w\\s){${this.state.player.pos.x}})(\\w)` );
-        this.state.boards.secret = this.state.boards.secret.replace( oldPosRegex, "X" );
-        this.state.boards.secret = this.state.boards.secret.replace( movementRegex, "J" );
-        // OK... THIS IS EPIC
-        let newBoard = this.state.boards.secret;
-        newBoard = newBoard.replace( /J/, this.state.player.marker );
-        newBoard = newBoard.replace( /X/gm, emojiSet.explored );
-        newBoard = newBoard.replace( /[WPEF]/gm, emojiSet.hidden );
-        this.state.boards.active = newBoard;
-        this.state.player.pos = newPos;
-        roomInfo = this.checkRoom();
-        roomInfo = roomInfo.replace( /W/, emojiSet.stench );
-        roomInfo = roomInfo.replace( /P/g, emojiSet.pit );
-        roomInfo = roomInfo.replace( /F/, emojiSet.goal );
-        roomInfo = roomInfo.replace( /[EX]/g, "" );
-        response = this.state.boards.active + "\n**WHAT DO WE SEE?** " + roomInfo;
+      case "A": // arrow
+        this.state.player.hasArrow = true;
+      case "D": // dead wumpus
+      case "E": // empty
+      case "X": // explored
+        if( what === "player" ) {
+          // Mark old pos as explored, move player to new pos
+          const oldPosRegex = new RegExp( `(?<=(.+\\n){${this.state.player.pos.y}}(\\w\\s){${this.state.player.pos.x}})(\\w)` );
+          this.state.boards.secret = this.state.boards.secret.replace( oldPosRegex, "X" );
+          this.state.boards.secret = this.state.boards.secret.replace( movementRegex, "J" );
+          this.state.player.pos = newPos;
+        }
+        else if( what === "arrow" ) {
+          // arrow drops to the ground, we sense nothing
+          this.state.boards.secret = this.state.boards.secret.replace( movementRegex, "A" );
+          this.state.player.hasArrow = false;
+        }
       break;
-      case "F":
-        response = `**SHUCKS** YOU SAFELY GUIDED ${this.state.player.marker} TO THE GOAL :sweat_drops:\n`;
-        this.state.gameOver = true;
+      case "F": // flag/goal
+        if( what === "player" ) {
+          response = `**SHUCKS** YOU SAFELY GUIDED ${this.state.player.marker} TO THE GOAL :sweat_drops:\n`;
+          this.state.gameOver = true;
+        }
+        else if( what === "arrow" && this.state.player.hasArrow === true ) {
+          // Arrow hits chest, we hear a *thump*, arrow is unclaimable since this is the goal
+          roomInfo += emojiSet.thump; // the thump might be OP info
+          this.state.player.hasArrow = false;
+        }
       break;
-      case "W":
-        response = `**ded** by ${emojiSet.wumpus}`;
-        this.state.gameOver = true;
+      case "W": // wumpus
+        if( what === "player" ) {
+          response = `**ded** by ${emojiSet.wumpus}`;
+          this.state.gameOver = true;
+        }
+        else if( what === "arrow" && this.state.player.hasArrow === true ) {
+          // Kill wumpus, remove arrow, mark space as empty in secret board, no new info given besides no stentch anymore
+          this.state.boards.secret = this.state.boards.secret.replace( "W", "D" );
+          this.state.player.hasArrow = false;
+        }
       break;
-      case "P":
-        response = `**ded** by ${emojiSet.pit} *DS1 falling scream*`;
-        this.state.gameOver = true;
+      case "P": // pit
+        if( what === "player" ) {
+          response = `**ded** by ${emojiSet.pit} *DS1 falling scream*`;
+          this.state.gameOver = true;
+        }
+        else if( what === "arrow" && this.state.player.hasArrow === true ) {
+          // arrow falls down pit and is no longer retreivable, no info given
+          this.state.player.hasArrow = false;
+        }
       break;
       default:
-        response = `Invalid room: ${nextRoom[0]}\n**FIX YOUR SHIT CONNOR** :rage:`;
+        response = `Invalid room: ${nextRoom[0]}, hey brO nice bug\n`;
     }
 
-    // reveal secret board
     if( !!this.state.gameOver ) {
+      // reveal secret board
       let finalBoard = this.state.boards.secret;
       finalBoard = finalBoard.replace( /J/, this.state.player.marker );
       finalBoard = finalBoard.replace( /X/gm, emojiSet.explored );
       finalBoard = finalBoard.replace( /W/, emojiSet.wumpus );
+      finalBoard = finalBoard.replace( /D/, emojiSet.deadWumpus );
+      finalBoard = finalBoard.replace( /A/, emojiSet.bow );
       finalBoard = finalBoard.replace( /P/gm, emojiSet.pit );
       finalBoard = finalBoard.replace( /E/gm, emojiSet.empty );
       finalBoard = finalBoard.replace( /F/gm, emojiSet.goal );
       response += `\n${finalBoard}`;
+    }
+    else {
+      // update board
+      // OK... THIS IS EPIC
+      let newBoard = this.state.boards.secret;
+      newBoard = newBoard.replace( /J/, this.state.player.marker );
+      newBoard = newBoard.replace( /X/gm, emojiSet.explored );
+      newBoard = newBoard.replace( /[WPEFAD]/gm, emojiSet.hidden );
+      this.state.boards.active = newBoard;
+      // get room info
+      roomInfo += this.checkRoom();
+      roomInfo = roomInfo.replace( /W/, emojiSet.stench );
+      roomInfo = roomInfo.replace( /P/g, emojiSet.pit );
+      roomInfo = roomInfo.replace( /F/, emojiSet.goal );
+      roomInfo = roomInfo.replace( /A/, emojiSet.bow ); // This peice of info might be OP
+      roomInfo = roomInfo.replace( /J/, "if we see this text, there's a bug. We shouldn't be sensing the player; We are the player" );
+      roomInfo = roomInfo.replace( /[EXD]/g, "" );
+      response += this.state.boards.active + "\n**WHAT DO WE SEE?** " + roomInfo;
+      response += `\n**Quiver**: ${!!this.state.player.hasArrow ? "full" : "empty"}`;
     }
 
     return( response );

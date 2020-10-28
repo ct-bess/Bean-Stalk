@@ -3,19 +3,8 @@ import { sendBulk } from "../sendBulk.js";
 
 export default {
   name: "connect4",
-  description: "Play a hot game of connect 4",
+  description: "Play an inverted game of connect 4",
   aliases: [ "c4" ],
-  options: [
-    "`n` `new <?width> <?height>`\tStart a new game. Optinal width and height; Defaults to 7x6",
-    "`j` `join <?marker>`\tAdds you to the current game. Optinal marker emoji; Defaults to a random colored circle",
-    "`p` `place <x-position>`\tPlaces your mark on the board at the designated x-position",
-    "`r` `reset`\tResets the current game. Clears the board and players"
-  ],
-  examples: [
-    "`n 9 9` New game, 9x9 board size",
-    "`j :joy:` Join the current game with the joy emoji",
-    "`p 3` Place your mark at x-position 3"
-  ],
   state: {
     timer: null,
     players: new Collection(),

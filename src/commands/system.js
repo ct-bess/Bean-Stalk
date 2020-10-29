@@ -38,6 +38,16 @@ export default {
         if( response.length > 2000 ) sendBulk( response, message, null );
         else message.channel.send( response );
       break;
+      case "msgOps":
+      case "messageOps":
+      case "regex":
+        const ops = !!args[1] && (args[1] == 0 || args[1] == "off") ? false : true;
+        bot.var.messageOpsEnabled = ops;
+        message.channel.send( ops ? "***I HAVE AWAKENED***" : "I sleep" );
+        break;
+      case "uptime":
+        message.channel.send( (bot.uptime / 60000) + " minutes" );
+        break;
       case "vrms":
         response = execSync( "vrms" ).toString() || "exec vrms error";
         sendBulk( response, message, "code block" );

@@ -22,8 +22,16 @@
         "value": "During your turn, drops your peice on the board at the specified spot\nshorthand = p\n<x-pos/row> = number"
       },
       {
+        "name": "list",
+        "value": "List the players, the turn order, and their marker"
+      },
+      {
+        "name": "kick <username>",
+        "value": "Unconditionally remove the given user\n<username> = discord username minus #numbers"
+      },
+      {
         "name": "reset",
-        "value": "Resets the game and players\nshorthand subcommand = r"
+        "value": "Resets the game and players"
       }
     ]
   },
@@ -140,6 +148,14 @@
       {
         "name": "commands",
         "value": "List all available commands; Use <command name> -help for more info on a specific command"
+      },
+      {
+        "name": "uptime",
+        "value": "Display Bean's uptime"
+      },
+      {
+        "name": "regex <?mode>",
+        "value": "Turn regex and timestamp reactions on or off\n<?mode> = text\nOptions: <?mode> = off, 0\nDefaults: <?mode> = null"
       },
       {
         "name": "vrms",

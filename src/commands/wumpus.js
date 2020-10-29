@@ -87,6 +87,7 @@ export default {
         startConds = startConds.replace( /E/g, "" );
         startConds = startConds.replace( /F/, emojiSet.goal );
         response = this.state.boards.active + "\n**WHAT DO WE SEE?** " + startConds;
+        bot.user.setActivity( "WUMPUS" );
       break;
       case "m":
       case "move":
@@ -107,6 +108,10 @@ export default {
   },
   checkRoom() {
 
+    // there might be wrapping going on, I was able to detect a wumpus on the other side of the map
+    // E E E F E <-- still detected W here too
+    // W E E P J <-- detected W here
+    // E E E E E
     let roomInfo = "";
     const x1Regex = new RegExp( `(?<=(.+\\n){${this.state.player.pos.y}}(\\w\\s){${this.state.player.pos.x + 1}})(\\w)` );
     const x2Regex = new RegExp( `(?<=(.+\\n){${this.state.player.pos.y}}(\\w\\s){${this.state.player.pos.x - 1}})(\\w)` );

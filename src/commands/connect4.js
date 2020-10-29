@@ -20,6 +20,8 @@ export default {
   exec( message, bot ) {
     const args = message.content.slice( 1 ).split( /\s+/ );
     args.shift();
+    let response = "";
+    const stalemateRe = new RegExp( this.blankSpace );
     switch( args[0] ) {
       case "j":
       case "join":
@@ -35,6 +37,7 @@ export default {
         };
         this.state.players.set( playerData.username, playerData );
         message.reply( `You are player **${playerData.turnOrder}**` );
+        if( playerData.marker === String.fromCodePoint(9898) ) message.channel.send( "***STEALTH 100***" );
       break;
       case "n":
       case "new":
@@ -69,6 +72,7 @@ export default {
         }
 
         this.state.board = board;
+        bot.user.setActivity( "CONNECT 4" );
       break;
       case "p":
       case "place":
@@ -84,7 +88,13 @@ export default {
           //    (this can be fixed with the sticky RegEx flag --> y)
           const col = parseInt( args[1] ) - 1;
           const placeRegex = new RegExp( `(?<=(.+\\n)+(\\S+\\s){${col}})(${this.blankSpace})` );
+          if( placeRegex.test( this.state.board ) === false ) {
+            message.channel.send( `Column **${col+1}** is full, try one with a free space :white_circle:` );
+            break;
+          }
+
           this.state.board = this.state.board.replace( placeRegex, player.marker );
+
 
           if( this.state.board.length > 2000 ) {
             //sendBulk( this.state.board, message, null );
@@ -106,13 +116,41 @@ export default {
             const nextPlayer = this.state.players.find( p => p.turnOrder === currTurn + 1 ) || 1;
             player.hasTurn = false;
             nextPlayer.hasTurn = true;
-            // We could @ here
-            message.channel.send( `Next player: **${nextPlayer.username}**` );
+            message.channel.send( `**YOUR MOVE BR0:** ${nextPlayer.marker} ${nextPlayer.username} ${nextPlayer.marker}` );
           }
         }
+
+        if( stalemateRe.test( this.state.board ) === false ) {
+          message.channel.send( "No more blank spaces available; Games over pardner, it's a draw :sweat_drops:" );
+        }
       break;
+      case "list":
+        response = "Player list:\n";
+        this.state.players.forEach( p => { 
+          response += `player ${p.turnOrder}: **${p.username}** ${p.marker} ${p.hasTurn ? "**your turn**" : ""}\n`;
+        });
+        message.channel.send( response );
+        break;
+      case "kick":
+        if( !this.state.players.has( args[1] ) ) {
+          message.channel.send( `couldn't find ${args[1]}` );
+        }
+        else {
+          let decomTurn = 0, decomPlayer = this.state.players.get( args[1] );
+          if( decomPlayer.hasTurn ) decomTurn = decomPlayer.turnOrder;
+          this.state.players.delete( args[1] );
+          // TRUST ME
+          this.state.players.forEach( p => { 
+            if( decomTurn > 0 && p.turnOrder === decomTurn ) p.hasTurn = true;
+            p.turnOrder = (((p.turnOrder===1)+0)*1)+(((p.turnOrder!==1)+0)*(p.turnOrder - 1)) 
+          });
+          if( this.state.players.size > 0 && !this.state.players.find( p => p.hasTurn === true ) ) this.state.players.last().hasTurn = true;
+          response = `Kicked **${args[1]}**`;
+          message.channel.send( response );
+        }
+        break;
       case "reset":
-        this.state.players = new Collection();
+        this.state.players.deleteAll(); //= new Collection();
         this.state.board = null;
         message.channel.send( "Players & board reset" );
       break;
@@ -120,6 +158,8 @@ export default {
         console.warn( `connect4 arg ${args[1]} not found` );
         message.channel.send( `connect4 arg ${args[1]} not found` );
     }
+    // message.channel.send( response );
+
   },
   // No RegEx sorry
   winCheck( playerMarker, board ) {

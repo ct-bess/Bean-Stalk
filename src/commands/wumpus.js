@@ -201,6 +201,7 @@ export default {
       case "P": // pit
         if( what === "player" ) {
           response = `**ded** by ${emojiSet.pit} *DS1 falling scream*`;
+          // join audio channel and play DS1 falling screem
           this.state.gameOver = true;
         }
         else if( what === "arrow" && this.state.player.hasArrow === true ) {
@@ -224,6 +225,7 @@ export default {
       finalBoard = finalBoard.replace( /E/gm, emojiSet.empty );
       finalBoard = finalBoard.replace( /F/gm, emojiSet.goal );
       response += `\n${finalBoard}`;
+      bot.user.setActivity( "" );
     }
     else {
       // update board
@@ -237,10 +239,10 @@ export default {
       roomInfo += this.checkRoom();
       roomInfo = roomInfo.replace( /W/, emojiSet.stench );
       roomInfo = roomInfo.replace( /P/g, emojiSet.pit );
-      roomInfo = roomInfo.replace( /F/, emojiSet.goal );
+      //roomInfo = roomInfo.replace( /F/, emojiSet.goal );
       roomInfo = roomInfo.replace( /A/, emojiSet.bow ); // This peice of info might be OP
       roomInfo = roomInfo.replace( /J/, "if we see this text, there's a bug. We shouldn't be sensing the player; We are the player" );
-      roomInfo = roomInfo.replace( /[EXD]/g, "" );
+      roomInfo = roomInfo.replace( /[EXDF]/g, "" );
       response += this.state.boards.active + "\n**WHAT DO WE SEE?** " + roomInfo;
       response += `\n**Quiver**: ${!!this.state.player.hasArrow ? "full" : "empty"}`;
     }

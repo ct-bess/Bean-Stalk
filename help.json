@@ -111,6 +111,46 @@
       }
     ]
   },
+  "event": {
+    "fields": [
+      {
+        "name": "create <name> <date> <?location> <?frequency>",
+        "value": "Create a new event for people to join.\n<name> = event name\n<date> = IETF-compliant RFC 2822 timestamp\n<?location> = text\n<?frequency> = text\nOptions: <?frequency> one-off, daily, weekly\nDefaults: <?location> = No where, <?frequency> = one-off"
+      },
+      {
+        "name": "join <name>",
+        "value": "Join the specified event name\n<name> = event name"
+      },
+      {
+        "name": "show <name>",
+        "value": "Shows the specified event name\n<name> = event name"
+      },
+      {
+        "name": "list",
+        "value": "Lists all events"
+      },
+      {
+        "name": "edit <name> <variable> <value>",
+        "value": "Edits the specified event variable to the given value\n<name> = event name\n<variable> = event variable\n<value> = variable value"
+      },
+      {
+        "name": "leave <name>",
+        "value": "Executing user leaves the given event\n<name> = event name"
+      },
+      {
+        "name": "kick <user name>",
+        "value": "Lets an admin kick the given user from the event object\n<user name> = a participant's user name"
+      },
+      {
+        "name": "mod <name> <user name>",
+        "value": "Grants admin privilledges to the given user name for the specified event\n<name> = event name\n<user name> = participant's user name"
+      },
+      {
+        "name": "delete <name>",
+        "value": "Deletes the specified event\n<name> = event name"
+      }
+    ]
+  },
   "grantspeak": {
     "fields": [
       {

@@ -2,6 +2,7 @@ import { execSync } from "child_process";
 import { exit } from "process";
 import { loadCommands } from "../loadCommands.js";
 import { sendBulk } from "../sendBulk.js";
+import { writeFileSync } from "fs"
 
 export default {
   name: "system",
@@ -29,6 +30,9 @@ export default {
         message.channel.send( ":sweat_drops: **SIX** :sweat_drops: **HOT** :sweat_drops: **RELOADS** :sweat_drops:" );
       break;
       case "die":
+        console.info( "saving events..." );
+        writeFileSync( "events.json", JSON.stringify( bot.var.events ), error => { console.error(error) });
+        console.info( "saved events" );
         message.channel.send( "cya" );
         bot.destroy();
         exit( 0 );
@@ -46,7 +50,10 @@ export default {
         message.channel.send( ops ? "***I HAVE AWAKENED***" : "I sleep" );
         break;
       case "uptime":
-        message.channel.send( (bot.uptime / 60000) + " minutes" );
+        const totMinutes = Math.floor( bot.uptime / 60000 );
+        const minutes = Math.floor( totMinutes % 60 );
+        const totHours = Math.floor( totMinutes / 60 );
+        message.channel.send( `${totHours < 10 ? "0"+totHours : totHours}:${minutes < 10 ? "0"+minutes : minutes}` );
         break;
       case "vrms":
         response = execSync( "vrms" ).toString() || "exec vrms error";

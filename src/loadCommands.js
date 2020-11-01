@@ -1,4 +1,5 @@
 import { execSync } from "child_process";
+import events from "../events.json"; // <-- init as []
 
 export const loadCommands = ( bot, singularCommand ) => {
   if( !!singularCommand ) {
@@ -23,6 +24,17 @@ export const loadCommands = ( bot, singularCommand ) => {
         const command = require( `./commands/${file}` );
         bot.commands.set( command.default.name, command.default );
       }
+    }
+    // load events saved by events command
+    console.info( "Setting events..." );
+    //if( !!require.cache[ require.resolve( "../events.json" ) ] ) {
+      //delete require.cache[ require.resolve( "../events.json" ) ];
+    //}
+    for( let event in events ) {
+      events[event].date = new Date( events[event].date );
+      console.info( "=>", events[event].name );
+      //console.info( events[event] );
+      bot.var.events.set( events[event].name, events[event] );
     }
   }
 };

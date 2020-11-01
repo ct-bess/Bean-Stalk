@@ -52,6 +52,18 @@ function winCheck( board ) {
 
 try {
 
+  const yeet = "a";
+  switch( yeet ) {
+    case "a" && true:
+      console.info( "a1" );
+      break;
+    case "a":
+      console.info( "a2" );
+      break;
+    case "b":
+      console.info( "b" );
+  }
+  /*
   const vertBoard =":empty: :empty: :empty: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: "
   const horizBoard =":blue: :blue: :blue: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: "
   const forwardDiagBoard =":blue: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :blue: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :blue: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :blue: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: \n:empty: :empty: :empty: :empty: :empty: :empty: :empty: "
@@ -67,7 +79,7 @@ try {
   winCheck( forwardDiagBoard );
   console.info( "BACKWARD DIAGONAL" );
   winCheck( backwardDiagBoard );
-
+  */
 
 } catch( error ) {
   console.log( "LMAO!" );

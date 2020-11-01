@@ -110,6 +110,7 @@ export default {
           if( hasWon === true ) {
             message.reply( "A VERY CLEAN WIN :sweat_drops:" );
             message.channel.send( `**SHUCKS** this Connect4 game is over THNX ${player.marker}` );
+            bot.user.setActivity( "" );
           }
           else {
             const currTurn = player.turnOrder % this.state.players.size;
@@ -150,7 +151,7 @@ export default {
         }
         break;
       case "reset":
-        this.state.players.deleteAll(); //= new Collection();
+        this.state.players = new Collection();
         this.state.board = null;
         message.channel.send( "Players & board reset" );
       break;

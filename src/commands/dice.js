@@ -43,7 +43,7 @@ export default {
     }
 
     this.history.push({
-      playerID: author.username, //.username for no @
+      playerID: author.username,
       type: `d${max} x${count || 1}`,
       value: diceValue
     });
@@ -82,7 +82,7 @@ export default {
         const count = parseInt( args[1] );
         const min = 1;
         response = this.roll( max, min, count, message.author );
-        message.channel.send( `**${response}** :hotsprings: ${message.author}` );
+        message.channel.send( `**${response}** :hotsprings: <@!${message.author}>` );
     }
 
   }

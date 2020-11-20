@@ -12,7 +12,7 @@ export default {
       response = message.content.replace( /-grant|-grantspeak/i, "" );
     }
     else {
-      const latestMessage = message.channel.messages.last( 2 );
+      const latestMessage = message.channel.messages.cache.last( 2 );
       response = latestMessage[0].content;
     }
 

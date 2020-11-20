@@ -34,7 +34,7 @@ export default {
       response += " **DUBS** :hotsprings:";
     }
 
-    message.channel.send( `${response} :sweat_drops: ${message.author}` );
+    message.channel.send( `${response} :sweat_drops: <@!${message.author.id}>` );
     return;
 
   }

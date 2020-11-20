@@ -1,7 +1,8 @@
 import Discord from "discord.js";
 import auth from "../auth.json";
 import help from "../help.json";
-import { loadCommands } from "./loadCommands.js";
+import guild from "../guild.json";
+import { loadCommands, validateGuild } from "./loadCommands.js";
 import { messageOps } from "./messageOps.js";
 
 const bot = new Discord.Client();
@@ -9,22 +10,23 @@ bot.commands = new Discord.Collection();
 bot.var = {
   messageOpsEnabled: true,
   events: new Discord.Collection(),
-  channels: {
-    // Yes
-    general: "499279740935471109",
-    testing: "600120077446021131",
-    dev: "600059491144433665",
-    kenny: "519207339455414293"
-  }
+  guild: guild.id,
+  emojis: guild.emoji,
+  roles: guild.roles,
+  members: guild.members,
+  admins: guild.admins,
+  channels: guild.channels
 }
 
 bot.on( "ready", () => {
+  console.info( "INITIATING BEAN STALK ..." );
   loadCommands( bot, null );
-  //console.info( "Commands:", bot.commands );
-  //console.info( "events:", bot.var.events );
-  console.info( `Bean Stalk is in: ${bot.user.tag}` );
-  //console.info( bot.channels );
-  //bot.channels.resolve( bot.var.channels.testing ).send( "yo" );
+  validateGuild( bot );
+  console.info( "Channels:", bot.var.channels );
+  console.info( "Emojis:", bot.var.emojis );
+  console.info( "Roles:", bot.var.roles );
+  console.info( "Members:", bot.var.members );
+  console.info( "Admins:", bot.var.admins );
 });
 
 bot.on( "message", ( message ) => {
@@ -38,10 +40,11 @@ bot.on( "message", ( message ) => {
   const commandArgs = message.content.slice( 1 ).toLowerCase().split( /\s+/, 2 );
   const command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
   
-  console.debug( "[DEBUG] -", "User:", message.author.username, "Content:", message.content );
+  console.debug( "[ DEBUG ] -", "User:", message.author.username, "Content:", message.content );
 
   if( !command ) {
-    message.reply( "bruHh" );
+    if( message.createdTimestamp % 2 === 0 ) message.reply( "bruHh" );
+    else message.reply( "run `-bean commands` for available commands\nthen pick a command and run `-COMMAND_NAME help`" );
     return;
   }
 
@@ -61,110 +64,114 @@ bot.on( "message", ( message ) => {
   }
   catch( error ) {
     console.error( error );
-    message.reply( "**WHO DID THIS?!?!** :joy:\n" + "```diff\n" + error + "\n```" );
+    message.reply( "**WHO DID THIS?!?!** :joy:\n```diff\n" + error + "\n```" );
+    bot.user.setStatus( "dnd" );
   }
   
 });
 
-// add some try catch bro
 bot.setInterval( () => {
-  const date = new Date();
-  const currTime = (date.getHours() * 100) + date.getMinutes();
+  try {
+    const date = new Date();
+    const currTime = (date.getHours() * 100) + date.getMinutes();
 
-  if( currTime == 1620 ) {
-    bot.channels.resolve( bot.var.channels.general ).send( "<:blunt:766311145341845504>" );
-  }
-
-  const events = bot.var.events.filter( elem => elem.hasNotification && ((elem.date.getHours() * 100) + elem.date.getMinutes()) == currTime );
-  console.info( currTime, events );
-  // Yeah cool, but what about a 24hour reminder?
-  // also can we schedule this interval to be 'on the minute'?
-  // also what if it was only in 30/60 minute intervals? People don't normally start a thing at 5:37
-  events.forEach( elem => {
-    const freq = elem.frequency;
-    const eventDate = ((elem.date.getMonth() * 100) + elem.date.getDay());
-    const currDate = (date.getMonth() * 100) + date.getDay();
-    let validNotification = false;
-    if( freq == "one-off" && eventDate == currDate ) {
-      elem.hasNotification = false;
-      validNotification = true;
-    }
-    else if( freq == "daily" || ( freq == "weekly" && elem.date.getDate() == date.getDate() ) ) {
-      validNotification = true;
+    if( currTime == 1620 ) {
+      bot.channels.resolve( bot.var.channels.general ).send( bot.var.roles.random + bot.var.emojis.blunt );
     }
 
-    console.debug( freq, eventDate, currDate, validNotification );
-
-    if( validNotification ) {
-      ++elem.times;
-      let peeps = "";
-      for( const i of elem.participants ) {
-        peeps += !!i.name ? `<@!${i.id}> ` : "";
+    const events = bot.var.events.filter( elem => elem.hasNotification && ((elem.date.getHours() * 100) + elem.date.getMinutes()) == currTime );
+    console.info( currTime, events );
+    // Yeah cool, but what about a 24hour reminder?
+    // -- So add a .notification property: [ 'once', '24hr reminder', '30min reminder' ]
+    // also can we schedule this interval to be 'on the minute'?
+    // also what if it was only in 30/60 minute intervals? People don't normally start a thing at 5:37
+    events.forEach( elem => {
+      const freq = (elem.frequency + "").toLowerCase();
+      const eventDate = ((elem.date.getMonth() * 100) + elem.date.getDay());
+      const currDate = (date.getMonth() * 100) + date.getDay();
+      let validNotification = false;
+      if( eventDate == currDate && (freq === "once" || freq === "one-off") ) {
+        elem.hasNotification = false;
+        validNotification = true;
       }
-      bot.channels.resolve( bot.var.channels.testing ).send( `IT'S TIME FOR **${elem.name}**: ` + peeps );
-    }
+      else if( freq === "daily" || ( freq === "weekly" && elem.date.getDate() == date.getDate() ) ) {
+        validNotification = true;
+      }
 
-  });
+      console.debug( freq, eventDate, currDate, validNotification );
+
+      if( validNotification ) {
+        ++elem.times;
+        let peeps = "";
+        for( const i of elem.participants ) {
+          peeps += !!i.name ? `<@!${i.id}> ` : "";
+        }
+        bot.channels.resolve( bot.var.channels.commands ).send( `IT'S TIME FOR **${elem.name}** :sweat_drops:\n` + peeps );
+      }
+
+    });
+  }
+  catch( error ) {
+    console.error( "bot interval error: date", date, "currTime", currTime );
+    console.error( error );
+  }
 
 }, 60000 );
 
 bot.on( "presenceUpdate", ( oldPresence, newPresence ) => {
-  const username = newPresence.user.username.toLowerCase();
-
-  // this will trigger multiple times if bean & user are in multiple servers; Check the guild to stop this
-  if( username === "diekommissar" ) {
-    const risingEdge = !!oldPresence && oldPresence.status === "offline" && newPresence.status === "online";
-    const fallingEdge = !!oldPresence && oldPresence.status === "online" && newPresence.status === "offline";
-    // @kennyRole to notify them kenny is online
-    // Play tripoloski when kenny logs in
-    // paly sad poloski when kenny leaves
-    if( risingEdge === true ) {
-      console.info( "Kenny:", newPresence.user );
-      bot.channels.resolve( bot.var.channels.kenny ).send( `Hi <@!${newPresence.user.id}>\n${newPresence.user.displayAvatarURL()}` );
-      // kennyNewsletter 2.0 = markov chain or advanced AI system that has fish move out of the way when you swim close to them
-      let kennyNewsletter = "Here's a list of server events for you\n";
-      bot.var.events.forEach( elem => { kennyNewsletter += `Name: **${elem.name}**\n` });
-      bot.channels.resolve( bot.var.channels.kenny ).send( kennyNewsletter );
-      bot.channels.resolve( bot.var.channels.kenny ).send( "Run the command `-event show EVENT_NAME` for more details" );
-      bot.user.setActivity( "KENNY SPOTTED" );
+  try {
+    const who = (!!oldPresence ? oldPresence.userID : newPresence.userID) + "";
+    // this will trigger multiple times if bean & user are in multiple servers; Check the guild to stop this
+    if( who === bot.var.members.kenny ) {
+      //const risingEdge = !!oldPresence && oldPresence.status === "offline" && newPresence.status === "online";
+      const risingEdge = !oldPresence && newPresence.status === "online";
+      const fallingEdge = !!oldPresence && oldPresence.status === "online" && newPresence.status === "offline";
+      console.info( "Kenny Presence ~", "rising edge:", risingEdge, "falling edge:", fallingEdge );
+      if( risingEdge === true ) {
+        bot.channels.resolve( bot.var.channels.kenny ).send( `Hi ${bot.var.roles.kenny}` );
+        //let kennyNewsletter = "Here's a list of server events for you\n";
+        //bot.var.events.forEach( elem => { kennyNewsletter += `Name: **${elem.name}**\n` });
+        //bot.channels.resolve( bot.var.channels.kenny ).send( kennyNewsletter );
+        bot.user.setActivity( "KENNY SPOTTED" );
+      }
+      if( fallingEdge === true ) {
+        bot.user.setActivity( "SEE YOU SPACE MIATA" );
+      }
     }
-    if( fallingEdge === true ) {
-      bot.channels.resolve( bot.var.channels.kenny ).send( `Bye ken man :cry:` );
-      bot.user.setActivity( "GOOD BYE KEN MAN" );
-    }
+  }
+  catch( error ) {
+    console.error( "Kenny detection error:", error );
   }
 });
 
 bot.on( "messageDelete", ( message ) => {
   console.info( "message deleted", message.author.username, message.content );
   message.channel.send( message.content );
-  //message.reply( message.content );
 });
 
 bot.on( "channelCreate", ( channel ) => {
-  channel.setTopic( ":sweat_drops:" );
+  //channel.setTopic( ":sweat_drops:" );
+  if ( channel.isText() ) channel.send( "hey" );
 });
 
 bot.on( "guildMemberAdd", ( member ) => {
-  bot.channels.resolve( bot.var.channels.general ).send( `***WELCOME TO THE COMMUNE*** ${member} :sweat_drops:` );
+  bot.channels.resolve( bot.var.channels.general ).send( `hi <@!${member.id}> :sweat_drops:` );
 });
 
 bot.on( "emojiCreate", ( emoji ) => {
-  bot.channels.resolve( bot.var.channels.general ).send( `**SPICY NEW EMOTE** ${emoji}` );
+  bot.channels.resolve( bot.var.channels.general ).send( `**SPICY NEW EMOTE** by ${emoji.author.username} <:${emoji.name}:${emoji.id}>` );
 });
 
 bot.on( "emojiDelete", ( emoji ) => {
-  bot.channels.resolve( bot.var.channels.general ).send( `***F*** ${emoji}` );
+  bot.channels.resolve( bot.var.channels.general ).send( `***F*** <:${emoji.name}:${emoji.id}>` );
 });
 
 bot.on( "emojiUpdate", ( oldEmoji, newEmoji ) => {
-  bot.channels.resolve( bot.var.channels.general ).send( `${oldEmoji} changed to: ${newEmoji}` );
+  bot.channels.resolve( bot.var.channels.general ).send( `<:${oldEmoji.name}:${oldEmoji.id}> :arrow_right: <:${newEmoji.name}:${newEmoji}>` );
 });
 
 bot.on( "rateLimit", ( rateLimitInfo ) => {
   console.warn( "Bean's Being Throttled", rateLimitInfo );
-  //const response = "Chill BruH\n```" + rateLimitInfo.limit + "\n" + rateLimitInfo.method + "\n" + rateLimitInfo.timeout + "\n```";
-  //bot.channels.resolve( bot.var.channels.dev ).send( response );
 });
 
 bot.login( auth.token );

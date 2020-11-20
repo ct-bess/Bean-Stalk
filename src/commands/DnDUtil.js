@@ -77,22 +77,22 @@ export default {
             // How do we do bonuses? dueling, rage, bardic inspiration?
 
             response = `d${max} x${rollCount} *with modifier ${total}* `;
-            const rollValue = bot.commands.get( "dice" ).roll( max, min, rollCount, message.author );
+            const roll = bot.commands.get( "dice" ).roll( max, min, rollCount, message.author );
 
             if( subCommand === "save" ) {
 
               const isProf = this.players.get( message.author.username ).profs.includes( rollArg );
-              const savingThrow = rollValue + ( parseInt( isProf + 0 ) * 2 ) + modifier;
-              response += `:pray: ${isProf ? "*PROFICIENT BTW*" : ""} ${message.author}\n**${savingThrow}**`;
+              const savingThrow = roll.val + ( parseInt( isProf + 0 ) * 2 ) + modifier;
+              response += `:pray: ${isProf ? "*PROFICIENT BTW*" : ""} <@!${message.author.id}>\n**${savingThrow}**`;
 
             }
 
             else { // subcommand === check || hit || dmg
-              total += rollValue;
-              response += `:game_die: ${message.author}\n**${total}**`;
+              total += roll.val;
+              response += `:game_die: <@!${message.author.id}>\n**${total}**`;
             }
 
-            if( rollValue == max || rollValue == min ) response += " *(nat btw)*";
+            if( roll.val == max || roll.val == min ) response += " *(nat btw)*";
 
           }
           else response = `No such arg \`${rollArg}\`, or invalid arg data type \`${typeof(playerStat)}\``;

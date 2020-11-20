@@ -5,3 +5,4 @@ node_modules/
 kb/
 src/commands/.ccs/*.js
 events.json
+guild.json

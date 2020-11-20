@@ -2,9 +2,8 @@ export default {
   name: "template",
   aliases: [],
   description: "template",
-  options: [],
-  examples: [],
   exec( message, bot ) {
     const args = message.content.slice( 1 ).split( /\s+/ );
+    message.channel.send( "template" );
   }
 };

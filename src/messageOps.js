@@ -2,14 +2,14 @@
 export const messageOps = ( message ) => {
 
   const ts = message.createdTimestamp;
+  //const r = Math.floor( Math.random() * 2 );
 
   // --------------------------- REGEX ---------------------------  \\
 
   if( /16:20|0?4:?20|w[e3]{2,}d/i.test( message.content ) ) {
     message.react( ":blunt:766311145341845504" );
   }
-  //         |and?
-  if( /i\b.+(so|for)\b.+/i.test( message.content ) ) {
+  if( /i('m)?\b.+(really|so|for)\b.+/i.test( message.content ) ) {
     message.reply( "yeah same bro" );
   }
 

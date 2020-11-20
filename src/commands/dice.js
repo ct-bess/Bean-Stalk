@@ -1,4 +1,4 @@
-//import { execSync } from "child_process"
+import { sendBulk } from "../sendBulk.js";
 
 export default {
   name: "dice",
@@ -13,46 +13,54 @@ export default {
     
     console.debug( "[ entering roll() ]" );
 
-    let diceValue = 0;
+    let d = {
+      val: 0,
+      tot: 0,
+      rolls: [],
+      adv: count > 0
+    };
     if( max == 0 || min == 0 ) {
       console.info( "Invalid max for roll:", max, "Or min:", min );
-      diceValue = "bruH";
+      d.val = "bruH";
     }
 
     else if( !count || Math.abs( count ) === 1 || !parseInt( count ) ) {
       console.info( "Invalid count or no count:", count );
-      diceValue = Math.floor( Math.random() * ( max - 0 ) ) + min;
+      d.val = Math.floor( Math.random() * ( max - 0 ) ) + min;
+      d.tot = d.val;
+      d.rolls.push( d.val );
     }
 
     else if( count > 0xfffff ) {
-      diceValue = `Chill with that ${count} rolls`;
+      d.val = `Chill with that ${count} rolls`;
     }
 
     else {
       console.info( "valid count:", count );
-      let rolls = [];
       for( let i = 0; i < Math.abs( count ); ++i ) {
         const roll = Math.floor( Math.random() * ( max - 0 ) ) + min;
-        rolls.push( roll );
-        diceValue = 
-          ((count > 0) + 0)*(((( roll > diceValue ) + 0 ) * roll ) +  ((( roll <= diceValue ) + 0 ) * diceValue ))+
-          ((count < 0) + 0)*(((( roll < diceValue ) + 0 ) * roll ) +  ((( roll >= diceValue ) + 0 ) * diceValue ))+
-          ((count < 0) + 0)*(( i === 0 ) + 0)*roll; // diceValue is initialized as 0; So initialize it to roll in disadv
+        d.tot += roll;
+        d.rolls.push( roll );
+        d.val = 
+          ((d.adv)  + 0)*(((( roll > d.val ) + 0 ) * roll ) + ((( roll <= d.val ) + 0 ) * d.val )) +
+          ((!d.adv) + 0)*(((( roll < d.val ) + 0 ) * roll ) + ((( roll >= d.val ) + 0 ) * d.val )) +
+          ((!d.adv) + 0)*(( i === 0 ) + 0) * roll; // d.val is initialized as 0; So initialize it to roll in disadv
       }
-      console.debug( "rolls:", rolls );
     }
 
     this.history.push({
       playerID: author.username,
       type: `d${max} x${count || 1}`,
-      value: diceValue
+      value: d.val,
+      rolls: d.rolls.join(','),
+      total: d.tot,
+      adv: d.adv
     });
     if( this.history.length > 16 ) this.history.shift();
 
-    console.debug( "Roll Value:", diceValue );
     console.debug( "[ exiting roll() ]" );
 
-    return( diceValue );
+    return( d );
 
   },
   exec( message, bot ) {
@@ -65,8 +73,11 @@ export default {
       case "history":
         for( let i = 0; i < this.history.length; ++i ) {
           response += `**${this.history[i].playerID}**: ${this.history[i].type}, result: **${this.history[i].value}**\n`;
+          if( this.history[i].rolls.length > 1 ) {
+            response += `total: **${this.history[i].total}**; rolled with ${this.history[i].adv ? "advantage" : "disadvantage"}\n`;
+            response += `[ ${this.history[i].rolls} ]\n`;
+          }
         }
-        message.channel.send( response );
         break;
       case "proof":
       case "bread":
@@ -76,14 +87,22 @@ export default {
             name: "dice.js"
           }]
         });
-        break;
+        return;
       default:
         const max = parseInt( args[0] );
         const count = parseInt( args[1] );
         const min = 1;
-        response = this.roll( max, min, count, message.author );
-        message.channel.send( `**${response}** :hotsprings: <@!${message.author}>` );
+        const roll = this.roll( max, min, count, message.author );
+        const emoji = roll.val == max ? bot.var.emojis.solaire : ( roll.val == min ? ":alien:" : ":hotsprings:" );
+        response = `**${roll.val}** ${emoji} <@!${message.author.id}>`;
+        if( Math.abs( count ) > 1 ) {
+          response += `\n${roll.adv ? "" : "*rolled with disadvantage*; "}roll sum: **${roll.tot}**\n`;
+          response += `[ ${roll.rolls.join(', ')} ]`;
+        }
     }
+
+    if( response.length > 2000 ) sendBulk( response, message, null );
+    else message.channel.send( response );
 
   }
 

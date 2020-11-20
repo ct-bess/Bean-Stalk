@@ -1,10 +1,7 @@
-//import { Collection } from "discord.js";
-
 export default {
   name: "event",
   aliases: [ "rsvp" ],
   description: "RSVP/event tool. Bean will spam your group with this command",
-  //events: new Collection(),
   exec( message, bot ) {
     const args = message.content.slice( 1 ).split( /\s+/ );
     args.shift();
@@ -36,6 +33,7 @@ export default {
           frequency: !!args[4] ? (args[4] + "").toLowerCase() : "one-off",
           participants: [{ name: message.author.username, id: message.author.id, admin: true }],
           times: 0,
+          reminders: [], // 30min and 24hr reminders, but ideally what ever the user wants
           hasNotification: true
         };
         console.info( "New event:", newEvent );
@@ -89,7 +87,7 @@ export default {
       case "leave1":
         const literallyYou = event.participants.find( elem => elem.id === message.author.id );
         if( !!literallyYou ) {
-          event.participants.splice( literallyYou, 1 );
+          event.participants.splice( event.participants.indexOf( literallyYou ), 1 );
           response = `You left **${eventName}** :sob:`;
         }
         else {
@@ -102,7 +100,7 @@ export default {
           response = `You're not admin of **${eventName}** :triumph:`;
         }
         else if( !!user ) {
-          event.participants.splice( user, 1 );
+          event.participants.splice( event.participants.indexOf( user ), 1 );
           response = `Kicked ${args[2]}`;
         }
         else {

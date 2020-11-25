@@ -37,6 +37,7 @@ export const sendBulk = ( response, message, format ) => {
   }
   for( let i = 0; i < response.length; i += textBound ) {
     const chunk = response.substring( i, i + textBound );
-    message.channel.send( prefix + chunk + suffix );
+    //message.channel.send( prefix + chunk + suffix );
+    setTimeout( () => {message.channel.send( prefix + chunk + suffix )}, 300 );
   }
 };

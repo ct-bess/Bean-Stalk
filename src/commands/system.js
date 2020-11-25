@@ -10,9 +10,8 @@ export default {
   aliases: [ "sys", "bean" ],
   exec( message, bot ) {
     const args = message.content.slice( 1 ).split( /\s+/ );
-    args.shift();
     const isAdmin = bot.var.admins.includes( message.author.id );
-    const subcommand = ( args[0] + "" ).toLowerCase() + ( isAdmin + 0 );
+    const subcommand = ( args[1] + "" ).toLowerCase() + ( isAdmin + 0 );
     let response = "", responseType = "";
     switch( subcommand ) { 
       case "reload0":
@@ -22,9 +21,9 @@ export default {
         response = "```fix\n";
         if( !!args[1] ) {
           // -- Potential OS injection here
-          response += execSync( `babel src/commands/${args[1]}.js -o lib/commands/${args[1]}.js` ).toString() || args[1];
-          loadCommands( bot, args[1] );
-          console.info( `Re-loaded ${args[1]} command` );
+          response += execSync( `babel src/commands/${args[2]}.js -o lib/commands/${args[2]}.js` ).toString() || args[1];
+          loadCommands( bot, args[2] );
+          console.info( `Re-loaded ${args[2]} command` );
         }
         else {
           response += execSync( "babel src/commands -d lib/commands" ).toString();
@@ -49,10 +48,27 @@ export default {
       break;
       case "regex0":
       case "regex1":
-        const ops = !!args[1] && (args[1] == 0 || args[1] == "off") ? false : true;
+        const ops = !!args[2] && (args[2] == 0 || args[2] == "off") ? false : true;
         bot.var.messageOpsEnabled = ops;
         bot.user.setStatus( ops ? "online" : "idle" );
         response = ops ? "Real shit" : "I sleep";
+        break;
+      case "setnickname0":
+      case "setnickname1":
+        const nickname = message.content.substring( (args[0]+"").length + (args[1]+"").length + 2);
+        bot.guilds.resolve( bot.var.guild ).members.resolve( bot.user.id ).setNickname( nickname );
+        break;
+      case "setstatus0":
+      case "setstatus1":
+        //const status = args[1] + "", type = !!args[2] ? args[2] + "" : "PLAYING";
+        const typeCheck = (args[2]+"").startsWith( "-" );
+        let status = "yep", type = "PLAYING";
+        if( typeCheck ) {
+          status = message.content.substring( (args[0]+"").length + (args[1]+"").length + (args[2]+"").length + 3 );
+          type = (args[2]+"").substring(1);
+        }
+        else status = message.content.substring( (args[0]+"").length + (args[1]+"").length + 2 );
+        bot.user.setActivity( status, { type: type } );
         break;
       case "uptime0":
       case "uptime1":
@@ -73,9 +89,9 @@ export default {
         response = "```\n" + response + "\n```";
       break;
       default:
-        response = `no such subcommand: ${args[0]} :face_with_monocle:`;
+        response = `no such subcommand: ${args[1]} :face_with_monocle:`;
     }
     if( response.length > 2000 ) sendBulk( response, message, responseType );
-    else message.channel.send( response || "empty response; Complain to conor :triumph:" );
+    else if( response.length > 0 ) message.channel.send( response || "Complain to conor :triumph:" );
   }
 }

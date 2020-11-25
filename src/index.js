@@ -27,15 +27,16 @@ bot.on( "ready", () => {
   console.info( "Roles:", bot.var.roles );
   console.info( "Members:", bot.var.members );
   console.info( "Admins:", bot.var.admins );
+  console.info( "Ready" );
 });
 
 bot.on( "message", ( message ) => {
 
-  if( bot.var.messageOpsEnabled ) messageOps( message );
+  if( bot.var.messageOpsEnabled ) messageOps( message, bot );
 
   const prefixCheck = message.content.startsWith( "-" );
 
-  if( !prefixCheck || message.author.bot ) return;
+  if( !prefixCheck || ( message.author.id !== bot.var.members.terminus && message.author.bot ) ) return;
 
   const commandArgs = message.content.slice( 1 ).toLowerCase().split( /\s+/, 2 );
   const command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
@@ -76,7 +77,9 @@ bot.setInterval( () => {
     const currTime = (date.getHours() * 100) + date.getMinutes();
 
     if( currTime == 1620 ) {
-      bot.channels.resolve( bot.var.channels.general ).send( bot.var.roles.random + bot.var.emojis.blunt );
+      const randEmoji = bot.emojis.cache.random();
+      const randRole = bot.guilds.resolve( bot.var.guild ).roles.cache.random();
+      bot.channels.resolve( bot.var.channels.general ).send( `!echo YOO <@&${randRole}> <:${randEmoji.name}:${randEmoji.id}> ${bot.var.emojis.blunt}` );
     }
 
     const events = bot.var.events.filter( elem => elem.hasNotification && ((elem.date.getHours() * 100) + elem.date.getMinutes()) == currTime );
@@ -159,7 +162,7 @@ bot.on( "guildMemberAdd", ( member ) => {
 });
 
 bot.on( "emojiCreate", ( emoji ) => {
-  bot.channels.resolve( bot.var.channels.general ).send( `**SPICY NEW EMOTE** by ${emoji.author.username} <:${emoji.name}:${emoji.id}>` );
+  bot.channels.resolve( bot.var.channels.general ).send( `**SPICY NEW EMOTE** <:${emoji.name}:${emoji.id}>` );
 });
 
 bot.on( "emojiDelete", ( emoji ) => {

@@ -21,7 +21,7 @@ export const loadCommands = ( bot, singularCommand ) => {
       ...execSync( "ls lib/commands/.ccs/ | grep \.js | sed -E \"s/^(.+)/.ccs\\/\\1/\"" ).toString().split( /\s/ ) 
     ]
     for( const file of commandFiles ) {
-      console.info( "=> ", file );
+      //console.info( "=> ", file );
       if( !!file ) {
         if( !!require.cache[ require.resolve( `./commands/${file}` ) ] ) {
           delete require.cache[ require.resolve( `./commands/${file}` ) ];
@@ -37,7 +37,7 @@ export const loadCommands = ( bot, singularCommand ) => {
     //}
     for( let event in events ) {
       events[event].date = new Date( events[event].date );
-      console.info( "=>", events[event].name );
+      //console.info( "=>", events[event].name );
       //console.info( events[event] );
       bot.var.events.set( events[event].name, events[event] );
     }

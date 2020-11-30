@@ -12,16 +12,15 @@ To add a new command, or edit an existing one, follow the format of this example
 
 ```js
   /**
-   * @interface
    * @property { String } name
    * @property { String } description
    * @property { Array<String> } aliases
    * @method
    * * @name exec
+   * * @returns { void }
+   * * @requires Discord.js
    * * @param { Discord.Message } message
    * * @param { Discord.Client } bot
-   * * @requires Discord.js
-   * * @returns { void }
    **/
 export default {
   name: "the_command_name_without_spaces",
@@ -44,4 +43,24 @@ export default {
     // OPTIONAL
   },
 };
+```
+
+## Message Ops (Regex responses)
+
+This is a cheeky function ran against all messages and can be used to unleash your inner dad jokes.
+This file is found at `src/messageOps.js`
+
+```js
+/** 
+ * @name messageOps
+ * @returns { void }
+ * @requires Discord.js
+ * @param { Discord.Message } message 
+ * @param { Discord.Client } bot
+ * **/
+export const messageOps = ( message, bot ) => {
+  if( /i('m)?\b.+(really|so|for)\b.+/i.test( message.content ) ) {
+    message.reply( "yeah same bro" );
+  }
+  // ...
 ```

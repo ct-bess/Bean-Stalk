@@ -1,4 +1,6 @@
 import { execSync, spawnSync } from "child_process";
+import { writeFile } from "fs";
+import { get } from "https";
 
 export default {
   name: "custom",
@@ -7,15 +9,16 @@ export default {
   exec( message, bot ) {
     const args = message.content.slice( 1 ).split( /\s+/, 3 );
     args.shift();
-    const subcommand = args[0].toLowerCase();
-    const commandName = ( args[1] || "" ).toLowerCase();
+    const subcommand = (args[0]+"").toLowerCase();
+    let commandName = ( args[1] || "" ).toLowerCase();
+    const hasCommand = bot.commands.has( commandName );
     let lineNumber = null; //parseInt( args[2] || "" );
     let script = message.content.match( /(?<=(?:\w+\s+){3})(\d+\s+)?(.+)/ );
     console.debug( "Using:", subcommand, commandName );
 
     if( !!script ) { 
-      if( /require|import/.test( script ) ) {
-        message.reply( "DoNt Do that" );
+      if( /require|import/i.test( script ) ) {
+        message.reply( "external libraries are UNEPIC" );
         return;
       }
       lineNumber = parseInt( script[1] || "" );
@@ -28,19 +31,31 @@ export default {
     let cmd = null;
     let response = "";
 
-    switch( subcommand ) {
-      case "list":
+    switch( subcommand + (hasCommand + 0) ) {
+      case "show0":
+      case "delete0":
+      case "remove0":
+      case "edit0":
+      case "append0":
+      case "download0":
+        const emoji = [ ":flushed:", ":sunglasses:", ":face_with_monocle:" ][ Math.floor( Math.random() * 3 ) ];
+        response = `so you want to ${subcommand} ${commandName} that doesn't exist or is uncommitted? ${emoji}`;
+        break;
+      case "list0":
+      case "list1":
         cmd = "ls";
         cliargs = [ "lib/commands/.ccs", "src/commands/.ccs" ];
-        response += "```console\n";
+        response += "```\n";
         break;
-      case "show":
+      case "show1":
         cmd = "cat";
         cliargs = [ "-n", `src/commands/.ccs/${commandName}.js` ];
         response += "```js\n";
         break;
-      case "new":
-        // This will nuke duplicate commandName's BTW
+      case "new1":
+        response = `already have *${commandName}* :sunglasses:`;
+        break;
+      case "new0":
         cmd = "cp";
         cliargs = [ 
           "src/commands/.ccs/template", 
@@ -48,7 +63,22 @@ export default {
         ];
         response += `Creating new command \`${commandName}\` ...`;
         break;
-      case "commit":
+      case "upload0":
+      case "upload1":
+        console.debug( message.attachments );
+        get( message.attachments.first().url, resp => {
+          let data = "";
+          resp.on( "data", chunk => { data += chunk } );
+          resp.on( "end", () => {
+            commandName = !!commandName ? commandName + ".js" : message.attachments.first().name;
+            console.debug( `Writing ${commandName} ...` );
+            writeFile( `src/commands/.ccs/${commandName}`, data, error => {console.error(error)} );
+          } );
+        });
+        response = `creating command from upload file :grimacing: ... commit it next`;
+        break; // remove this break if we ever want to chain upload with commit, gotta await that get tho
+      case "commit1":
+      case "commit0":
         cmd = "babel";
         cliargs = [ 
           `src/commands/.ccs/${commandName}.js`,
@@ -56,7 +86,7 @@ export default {
           `lib/commands/.ccs/${commandName}.js`
         ];
         break;
-      case "edit":
+      case "edit1":
         cmd = "sed";
         cliargs = [ 
           "-E",
@@ -67,7 +97,7 @@ export default {
         ];
         response += `Editing ${commandName} with script \`${script}\` ...`;
         break;
-      case "append":
+      case "append1":
         if( !lineNumber ) lineNumber = parseInt( execSync( `cat src/commands/.ccs/${commandName}.js | wc -l` ).toString() ) - 2;
         script = script.replace( "/", "\\/\\/" );
         cmd = "sed";
@@ -80,12 +110,26 @@ export default {
         ];
         response += `Appending \`${script}\` at ${lineNumber} to ${commandName} ...`;
         break;
-      case "enable":
-      case "disable":
-      case "upload":
-      case "download":
+      case "delete1":
+        cmd = "mv";
+        cliargs = [
+          `src/commands/.ccs/${commandName}.js`,
+          `src/commands/.ccs/decom/${commandName}${message.createdTimestamp}.js`
+        ];
+      case "remove1":
+        response = `${subcommand}ing *${commandName}* :flushed:\n${ subcommand === "remove" ? "Re-commit to restore" : "GONE"}`;
+        bot.commands.delete( commandName );
+        break;
+      case "download1":
+        message.channel.send({
+          files: [{
+            attachment: `src/commands/.ccs/${commandName}.js`,
+            name: `${commandName}.js`
+          }]
+        });
+        break;
       default:
-        response = `Invalid subcommand ${subcommand}`;
+        response = `Invalid subcommand ${subcommand} :face_with_monocle:`;
     }
 
     if( !!cmd ) {
@@ -102,7 +146,7 @@ export default {
       else if( subcommand === "new" ) {
         execSync( `sed -i -E --sandbox s/template/${commandName}/g src/commands/.ccs/${commandName}.js` );
       }
-      else if( subcommand === "commit" ) {
+      else if( subcommand === "commit" ) { //|| subcommand === "upload" ) {
         if( !!require.cache[ require.resolve( `./.ccs/${commandName}.js` ) ] ) delete require.cache[ require.resolve( `./.ccs/${commandName}.js` ) ];
         const command = require( `./.ccs/${commandName}` );
         bot.commands.set( command.default.name, command.default );
@@ -112,7 +156,8 @@ export default {
     }
 
     console.debug( "Custom output:", subcommand, response );
-    message.channel.send( !!response ? response : "Empty response :triumph:" );
+    if( response.length > 0 ) message.channel.send( response );
+    else console.warn( "empty response in Custom.js exec" );
 
   }
 

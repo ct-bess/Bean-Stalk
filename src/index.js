@@ -15,6 +15,7 @@ bot.var = {
   roles: guild.roles,
   members: guild.members,
   admins: guild.admins,
+  bots: guild.bots,
   channels: guild.channels
 }
 
@@ -26,6 +27,7 @@ bot.on( "ready", () => {
   console.info( "Emojis:", bot.var.emojis );
   console.info( "Roles:", bot.var.roles );
   console.info( "Members:", bot.var.members );
+  console.info( "Bots:", bot.var.bots );
   console.info( "Admins:", bot.var.admins );
   console.info( "Ready" );
 });
@@ -34,9 +36,14 @@ bot.on( "message", ( message ) => {
 
   if( bot.var.messageOpsEnabled ) messageOps( message, bot );
 
+  if( message.channel.type === "dm" && !message.author.bot ) {
+    bot.channels.resolve( bot.var.channels.commands ).send( message.content );
+    return;
+  }
+
   const prefixCheck = message.content.startsWith( "-" );
 
-  if( !prefixCheck || ( message.author.id !== bot.var.members.terminus && message.author.bot ) ) return;
+  if( !prefixCheck || ( !bot.var.bots.includes( message.author.id ) && message.author.bot ) ) return;
 
   const commandArgs = message.content.slice( 1 ).toLowerCase().split( /\s+/, 2 );
   const command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
@@ -76,7 +83,18 @@ bot.setInterval( () => {
     const date = new Date();
     const currTime = (date.getHours() * 100) + date.getMinutes();
 
-    if( currTime == 1620 ) {
+    if( currTime === 1619 ) {
+      const filter = message => !!message.content;
+      bot.channels.resolve( bot.var.channels.general ).awaitMessages( filter, { time: 120000 } ).then( collected => {
+        let summary = "";
+        collected.forEach( message => {
+          const words = message.content.split(" ");
+          summary += (words[ Math.floor( Math.random() * words.length ) || 0 ] + " ") || "";
+        });
+        if( summary.length > 0 ) bot.channels.resolve( bot.var.channels.general ).send( summary );
+      });
+    }
+    else if( currTime === 1620 ) {
       const randEmoji = bot.emojis.cache.random();
       const randRole = bot.guilds.resolve( bot.var.guild ).roles.cache.random();
       bot.channels.resolve( bot.var.channels.general ).send( `!echo YOO <@&${randRole}> <:${randEmoji.name}:${randEmoji.id}> ${bot.var.emojis.blunt}` );
@@ -125,20 +143,27 @@ bot.on( "presenceUpdate", ( oldPresence, newPresence ) => {
   try {
     const who = (!!oldPresence ? oldPresence.userID : newPresence.userID) + "";
     // this will trigger multiple times if bean & user are in multiple servers; Check the guild to stop this
-    if( who === bot.var.members.kenny ) {
+    if( who === bot.var.members.kenny || who === bot.var.members.emmy ) {
       //const risingEdge = !!oldPresence && oldPresence.status === "offline" && newPresence.status === "online";
       const risingEdge = !oldPresence && newPresence.status === "online";
       const fallingEdge = !!oldPresence && oldPresence.status === "online" && newPresence.status === "offline";
       console.info( "Kenny Presence ~", "rising edge:", risingEdge, "falling edge:", fallingEdge );
       if( risingEdge === true ) {
-        bot.channels.resolve( bot.var.channels.kenny ).send( `Hi ${bot.var.roles.kenny}` );
+        if( who === bot.var.members.emmy ) {
+          bot.channels.resolve( bot.var.channels.commands ).send( "Happy birthday Emmy!" );
+          bot.user.setActivity( "MONKE MAIN SPOTTED" );
+        }
+        else {
+          bot.channels.resolve( bot.var.channels.kenny ).send( `Hi ${bot.var.roles.kenny}` );
         //let kennyNewsletter = "Here's a list of server events for you\n";
         //bot.var.events.forEach( elem => { kennyNewsletter += `Name: **${elem.name}**\n` });
         //bot.channels.resolve( bot.var.channels.kenny ).send( kennyNewsletter );
-        bot.user.setActivity( "KENNY SPOTTED" );
+          bot.user.setActivity( "KENNY SPOTTED" );
+        }
       }
       if( fallingEdge === true ) {
-        bot.user.setActivity( "SEE YOU SPACE MIATA" );
+        if( who === bot.var.members.emmy ) bot.user.setActivity( "SEE YOU DK" );
+        else bot.user.setActivity( "SEE YOU SPACE MIATA" );
       }
     }
   }
@@ -161,6 +186,7 @@ bot.on( "guildMemberAdd", ( member ) => {
   bot.channels.resolve( bot.var.channels.general ).send( `hi <@!${member.id}> :sweat_drops:` );
 });
 
+/* Not feelin these anymore
 bot.on( "emojiCreate", ( emoji ) => {
   bot.channels.resolve( bot.var.channels.general ).send( `**SPICY NEW EMOTE** <:${emoji.name}:${emoji.id}>` );
 });
@@ -172,6 +198,7 @@ bot.on( "emojiDelete", ( emoji ) => {
 bot.on( "emojiUpdate", ( oldEmoji, newEmoji ) => {
   bot.channels.resolve( bot.var.channels.general ).send( `<:${oldEmoji.name}:${oldEmoji.id}> :arrow_right: <:${newEmoji.name}:${newEmoji}>` );
 });
+*/
 
 bot.on( "rateLimit", ( rateLimitInfo ) => {
   console.warn( "Bean's Being Throttled", rateLimitInfo );

@@ -3,6 +3,10 @@ export default {
   aliases: [ "rsvp" ],
   description: "RSVP/event tool. Bean will spam your group with this command",
   exec( message, bot ) {
+
+    message.reply("Under heavy construction; Disabled for now");
+    return;
+
     const args = message.content.slice( 1 ).split( /\s+/ );
     args.shift();
     const subCommand = args[0].toLowerCase() || "lmao";

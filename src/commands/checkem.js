@@ -1,3 +1,5 @@
+import { argHandler } from "../argHandler.js";
+
 export default {
   name: "checkem",
   description: "Get your message time-stamp",
@@ -5,12 +7,11 @@ export default {
   options: [ "`rand`\tUses 9 random digits rather than your message timestamp" ],
   examples: [ "`checkem`", "`checkem rand`" ],
   exec( message, bot ) {
-    const args = message.content.slice( 1 ).split( /\s+/ );
-    args.shift();
+    const args = argHandler( message );
     
     // Use message.createdTimeStamp as a seed or somethin
     let response = "";
-    if( args[0] === "rand" ) {
+    if( args.has( "rand" ) || args.has( "r" ) ) {
 
       const max = 9;
       const min = 1;
@@ -19,6 +20,9 @@ export default {
         response += Math.floor( Math.random() * ( max - 0 ) ) + min;
       }
 
+    }
+    else if( args.has( "cheat" ) ) {
+      response = args.get( "cheat" )
     }
     else {
       response = message.createdTimestamp + "";

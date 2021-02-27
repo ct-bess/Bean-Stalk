@@ -3,27 +3,29 @@ import { exit } from "process";
 import { loadCommands } from "../loadCommands.js";
 import { sendBulk } from "../sendBulk.js";
 import { writeFileSync } from "fs"
+import { argHandler } from "../argHandler.js"
 
 export default {
   name: "system",
   description: "Bean Stalk system commands",
   aliases: [ "sys", "bean" ],
   exec( message, bot ) {
-    const args = message.content.slice( 1 ).split( /\s+/ );
+    const args = argHandler( message );
     const isAdmin = bot.var.admins.includes( message.author.id );
-    const subcommand = ( args[1] + "" ).toLowerCase() + ( isAdmin + 0 );
+    const subcommand = ( args.get( 0 ) + "" ).toLowerCase();
     let response = "", responseType = "";
-    switch( subcommand ) { 
+    switch( subcommand + (isAdmin + 0) ) { 
       case "reload0":
         response = "My potions are too strong for you traveler :face_with_monocle:";
         break;
       case "reload1":
         response = "```fix\n";
-        if( !!args[1] ) {
+        if( args.has( 1 ) ) {
           // -- Potential OS injection here
-          response += execSync( `babel src/commands/${args[2]}.js -o lib/commands/${args[2]}.js` ).toString() || args[1];
-          loadCommands( bot, args[2] );
-          console.info( `Re-loaded ${args[2]} command` );
+          const fileName = args.get( 1 );
+          response += execSync( `babel src/commands/${fileName}.js -o lib/commands/${fileName}.js` ).toString() || fileName + "";
+          loadCommands( bot, fileName );
+          console.info( `Re-loaded ${fileName} command` );
         }
         else {
           response += execSync( "babel src/commands -d lib/commands" ).toString();
@@ -36,38 +38,36 @@ export default {
         response = "Only the chosen may command such an atrocity";
         break;
       case "die1":
-        console.info( "saving events..." );
-        writeFileSync( "events.json", JSON.stringify( bot.var.events ), error => { console.error(error) });
-        console.info( "saved events" );
-        message.channel.send( "cya" );
-        bot.destroy();
-        exit( 0 );
+        //console.info( "saving events..." );
+        //writeFileSync( "events.json", JSON.stringify( bot.var.events ), error => { console.error(error) });
+        //console.info( "saved events" );
+        message.reply( "***CHANGE THE WORLD... MY FINAL MESSAGE... GOOD BYE...***" );
+        setTimeout( () => {
+          bot.destroy();
+          exit( 0 );
+        }, 5000 );
+        break;
       case "commands0":
       case "commands1":
         bot.commands.forEach( elem => response += `Name: **${elem.name}**\t${elem.description}\n` );
       break;
       case "regex0":
       case "regex1":
-        const ops = !!args[2] && (args[2] == 0 || args[2] == "off") ? false : true;
+        const ops = args.has( "on" ) ? true : false;
         bot.var.messageOpsEnabled = ops;
         bot.user.setStatus( ops ? "online" : "idle" );
         response = ops ? "Real shit" : "I sleep";
         break;
       case "setnickname0":
       case "setnickname1":
-        const nickname = message.content.substring( (args[0]+"").length + (args[1]+"").length + 2);
+        const nickname = args.get( "name" ) || args.get( "nickname" ) || args.get( 1 ) || "Bean-Stalk"
+        console.debug( "setting nickname to:", nickname );
         bot.guilds.resolve( bot.var.guild ).members.resolve( bot.user.id ).setNickname( nickname );
         break;
       case "setstatus0":
       case "setstatus1":
-        //const status = args[1] + "", type = !!args[2] ? args[2] + "" : "PLAYING";
-        const typeCheck = (args[2]+"").startsWith( "-" );
-        let status = "yep", type = "PLAYING";
-        if( typeCheck ) {
-          status = message.content.substring( (args[0]+"").length + (args[1]+"").length + (args[2]+"").length + 3 );
-          type = (args[2]+"").substring(1);
-        }
-        else status = message.content.substring( (args[0]+"").length + (args[1]+"").length + 2 );
+        const status = args.get( "status" ) || args.get( 1 ) || "nothing"
+        const type = args.has( "type" ) ? (args.get( "type" ) + "").toUpperCase() : "PLAYING";
         bot.user.setActivity( status, { type: type } );
         break;
       case "uptime0":
@@ -89,7 +89,7 @@ export default {
         response = "```\n" + response + "\n```";
       break;
       default:
-        response = `no such subcommand: ${args[1]} :face_with_monocle:`;
+        response = `no such subcommand: ${subcommand} :face_with_monocle:`;
     }
     if( response.length > 2000 ) sendBulk( response, message, responseType );
     else if( response.length > 0 ) message.channel.send( response || "Complain to conor :triumph:" );

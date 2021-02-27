@@ -1,5 +1,5 @@
 import { Collection } from "discord.js";
-import { sendBulk } from "../sendBulk.js";
+import { argHandler } from "../argHandler.js";
 
 export default {
   name: "connect4",
@@ -18,20 +18,20 @@ export default {
   ],
   blankSpace: ":white_circle:",
   exec( message, bot ) {
-    const args = message.content.slice( 1 ).split( /\s+/ );
-    args.shift();
+    const args = argHandler( message );
     let response = "";
     const stalemateRe = new RegExp( this.blankSpace );
-    switch( args[0] ) {
+    switch( args.get( 0 ) ) {
       case "j":
       case "join":
-        if( /[\[\]\\\^\$\?\.\*\+\{\}\)\(]+/g.test( args[1] || "" ) ) {
+        const marker = args.get( "marker" ) || args.get( 1 ) || null;
+        if( /[\[\]\\\^\$\?\.\*\+\{\}\)\(]+/g.test( marker || "" ) ) {
           message.channel.send( "Don't use regex reserved characters" );
           break;
         }
         const playerData = {
           username: message.author.username,
-          marker: args[1] || this.defaultMarkers[ Math.floor( Math.random() * this.defaultMarkers.length ) ],
+          marker: marker || this.defaultMarkers[ Math.floor( Math.random() * this.defaultMarkers.length ) ],
           turnOrder: this.state.players.array().length + 1 || 1,
           hasTurn: this.state.players.array().length === 0 ? true : false
         };
@@ -41,8 +41,8 @@ export default {
       break;
       case "n":
       case "new":
-        const boardWidth = parseInt( args[1] ) || 7;
-        const boardHeight = parseInt( args[2] ) || 6;
+        const boardWidth = parseInt( args.get( "width" ) ) || 7;
+        const boardHeight = parseInt( args.get( "height" ) ) || 6;
         let board = "";
         if( boardWidth === 7 ) {
           board = ":one: :two: :three: :four: :five: :six: :seven: \n";
@@ -86,7 +86,7 @@ export default {
         else {
           // -- Fuck it, we're playing inverted connect 4
           //    (this can be fixed with the sticky RegEx flag --> y)
-          const col = parseInt( args[1] ) - 1;
+          const col = parseInt( args.get( "col" ) || args.get( 1 )  ) - 1;
           const placeRegex = new RegExp( `(?<=(.+\\n)+(\\S+\\s){${col}})(${this.blankSpace})` );
           if( placeRegex.test( this.state.board ) === false ) {
             message.channel.send( `Column **${col+1}** is full, try one with a free space :white_circle:` );
@@ -133,20 +133,21 @@ export default {
         message.channel.send( response );
         break;
       case "kick":
-        if( !this.state.players.has( args[1] ) ) {
-          message.channel.send( `couldn't find ${args[1]}` );
+        const playerToKick = args.get( "player" ) || args.get( 1 );
+        if( !this.state.players.has( playerToKick ) ) {
+          message.channel.send( `aint got no ${playerToKick}` );
         }
         else {
-          let decomTurn = 0, decomPlayer = this.state.players.get( args[1] );
+          let decomTurn = 0, decomPlayer = this.state.players.get( playerToKick );
           if( decomPlayer.hasTurn ) decomTurn = decomPlayer.turnOrder;
-          this.state.players.delete( args[1] );
+          this.state.players.delete( playerToKick );
           // TRUST ME
           this.state.players.forEach( p => { 
             if( decomTurn > 0 && p.turnOrder === decomTurn ) p.hasTurn = true;
             p.turnOrder = (((p.turnOrder===1)+0)*1)+(((p.turnOrder!==1)+0)*(p.turnOrder - 1)) 
           });
           if( this.state.players.size > 0 && !this.state.players.find( p => p.hasTurn === true ) ) this.state.players.last().hasTurn = true;
-          response = `Kicked **${args[1]}**`;
+          response = `Kicked **${playerToKick}** :cry:`;
           message.channel.send( response );
         }
         break;
@@ -156,8 +157,7 @@ export default {
         message.channel.send( "Players & board reset" );
       break;
       default:
-        console.warn( `connect4 arg ${args[1]} not found` );
-        message.channel.send( `connect4 arg ${args[1]} not found` );
+        message.channel.send( `connect4 arg ${args.get( 0 )} not found :face_with_monocle:` );
     }
     // message.channel.send( response );
 

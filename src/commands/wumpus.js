@@ -1,3 +1,4 @@
+import { argHandler } from "../argHandler.js";
 // - Dynamic board size
 // - Fixing board scramble
 const emojiSet = {
@@ -30,12 +31,11 @@ export default {
     gameOver: true
   },
   exec( message, bot ) {
-    const args = message.content.slice( 1 ).split( /\s+/ );
-    args.shift();
-
+    const args = argHandler( message );
+    const subcommand = args.get( 0 );
     let response = "";
 
-    switch( args[0] ) {
+    switch( subcommand ) {
       case "n":
       case "new":
         // (P)it = 0x50, (W)umpus = 0x57, (E)mpty = 0x45, (F)lag = 0x46
@@ -64,7 +64,7 @@ export default {
 
         this.state.player.pos.y = Math.floor( playerPos / 8 );
         this.state.player.pos.x = Math.floor( ( playerPos - ( 8 * Math.floor( playerPos / 8 ) ) ) / 2 );
-        this.state.player.marker = args[1] || ":joy:";
+        this.state.player.marker = args.get( "marker" ) || args.get( 1 ) || ":joy:";
         this.state.player.hasArrow = true;
 
         console.debug( `x: ${this.state.player.pos.x}, y: ${this.state.player.pos.y}` );
@@ -92,15 +92,15 @@ export default {
       case "m":
       case "move":
         if( !!this.state.gameOver ) response = "Start a game first";
-        else response = this.move( args[1] || "error", "player" );
+        else response = this.move( args.get( "dir" ) || args.get( 1 ) || "error", "player", bot );
       break;
       case "s":
       case "shoot":
         if( !!this.state.gameOver ) response = "Start a game first";
-        else response = this.move( args[1] || "error", "arrow" );
+        else response = this.move( args.get( "dir" ) || args.get( 1 ) || "error", "arrow", bot );
         break;
       default:
-        response = `subcommand ${args[0]} doesn't exist`;
+        response = `subcommand ${subcommand} doesn't exist`;
     }
 
     message.channel.send( response );
@@ -124,7 +124,7 @@ export default {
     return( roomInfo );
 
   },
-  move( dir, what ) {
+  move( dir, what, bot ) {
 
     let newPos = { x: this.state.player.pos.x, y: this.state.player.pos.y };
     let response = "";

@@ -17,7 +17,7 @@ export default {
     console.debug( "Using:", subcommand, commandName );
 
     if( !!script ) { 
-      if( /require|import/i.test( script ) ) {
+      if( /require|import/.test( script ) ) {
         message.reply( "external libraries are UNEPIC" );
         return;
       }
@@ -69,13 +69,21 @@ export default {
         get( message.attachments.first().url, resp => {
           let data = "";
           resp.on( "data", chunk => { data += chunk } );
+          resp.on( "error", error => { 
+            console.error( `GET error:`, error );
+            message.reply( "bruH the netowrk died or something" );
+          });
           resp.on( "end", () => {
             commandName = !!commandName ? commandName + ".js" : message.attachments.first().name;
+            commandName = commandName.toLowerCase();
             console.debug( `Writing ${commandName} ...` );
-            writeFile( `src/commands/.ccs/${commandName}`, data, error => {console.error(error)} );
-          } );
+            if( /require|import/.test( data ) ) message.reply( "don't use external libraries" );
+            else {
+              writeFile( `src/commands/.ccs/${commandName}`, data, error => {console.error(error)} );
+              message.channel.send( `created **${commandName}** from your upload :grimacing: commit it next` );
+            }
+          });
         });
-        response = `creating command from upload file :grimacing: ... commit it next`;
         break; // remove this break if we ever want to chain upload with commit, gotta await that get tho
       case "commit1":
       case "commit0":
@@ -114,7 +122,9 @@ export default {
         cmd = "mv";
         cliargs = [
           `src/commands/.ccs/${commandName}.js`,
-          `src/commands/.ccs/decom/${commandName}${message.createdTimestamp}.js`
+          `src/commands/.ccs/decom/${commandName}${message.createdTimestamp}.js`,
+          "&&",
+          `rm lib/commands/.ccs/${commandName}.js`
         ];
       case "remove1":
         response = `${subcommand}ing *${commandName}* :flushed:\n${ subcommand === "remove" ? "Re-commit to restore" : "GONE"}`;

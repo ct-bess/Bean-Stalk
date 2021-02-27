@@ -2,6 +2,7 @@ import Discord from "discord.js";
 import auth from "../auth.json";
 import help from "../help.json";
 import guild from "../guild.json";
+import events from "../events.json";
 import { loadCommands, validateGuild } from "./loadCommands.js";
 import { messageOps } from "./messageOps.js";
 
@@ -23,12 +24,14 @@ bot.on( "ready", () => {
   console.info( "INITIATING BEAN STALK ..." );
   loadCommands( bot, null );
   validateGuild( bot );
+  /*
   console.info( "Channels:", bot.var.channels );
   console.info( "Emojis:", bot.var.emojis );
   console.info( "Roles:", bot.var.roles );
   console.info( "Members:", bot.var.members );
   console.info( "Bots:", bot.var.bots );
   console.info( "Admins:", bot.var.admins );
+  */
   console.info( "Ready" );
 });
 
@@ -74,6 +77,7 @@ bot.on( "message", ( message ) => {
     console.error( error );
     message.reply( "**WHO DID THIS?!?!** :joy:\n```diff\n" + error + "\n```" );
     bot.user.setStatus( "dnd" );
+    // crazy idea, what if we randomly DMed the error to a random guild member?
   }
   
 });
@@ -81,9 +85,15 @@ bot.on( "message", ( message ) => {
 bot.setInterval( () => {
   try {
     const date = new Date();
-    const currTime = (date.getHours() * 100) + date.getMinutes();
+    const currTime = date.getHours() + ":" + date.getMinutes();
 
-    if( currTime === 1619 ) {
+    if( !!events[currTime] ) {
+      for( const anEvent in events[currTime] ) {
+        bot.channels.resolve( bot.var.channels.commands ).send( `event **${anEvent}** triggered` );
+      }
+    }
+
+    if( currTime === "16:19" ) {
       const filter = message => !!message.content;
       bot.channels.resolve( bot.var.channels.general ).awaitMessages( filter, { time: 120000 } ).then( collected => {
         let summary = "";
@@ -94,46 +104,14 @@ bot.setInterval( () => {
         if( summary.length > 0 ) bot.channels.resolve( bot.var.channels.general ).send( summary );
       });
     }
-    else if( currTime === 1620 ) {
+    else if( currTime === "16:20" ) {
       const randEmoji = bot.emojis.cache.random();
       const randRole = bot.guilds.resolve( bot.var.guild ).roles.cache.random();
-      bot.channels.resolve( bot.var.channels.general ).send( `!echo YOO <@&${randRole}> <:${randEmoji.name}:${randEmoji.id}> ${bot.var.emojis.blunt}` );
+      bot.channels.resolve( bot.var.channels.general ).send( `!echo $echo YOO <@&${randRole}> <:${randEmoji.name}:${randEmoji.id}> ${bot.var.emojis.blunt}` );
     }
 
-    const events = bot.var.events.filter( elem => elem.hasNotification && ((elem.date.getHours() * 100) + elem.date.getMinutes()) == currTime );
-    console.info( currTime, events );
-    // Yeah cool, but what about a 24hour reminder?
-    // -- So add a .notification property: [ 'once', '24hr reminder', '30min reminder' ]
-    // also can we schedule this interval to be 'on the minute'?
-    // also what if it was only in 30/60 minute intervals? People don't normally start a thing at 5:37
-    events.forEach( elem => {
-      const freq = (elem.frequency + "").toLowerCase();
-      const eventDate = ((elem.date.getMonth() * 100) + elem.date.getDay());
-      const currDate = (date.getMonth() * 100) + date.getDay();
-      let validNotification = false;
-      if( eventDate == currDate && (freq === "once" || freq === "one-off") ) {
-        elem.hasNotification = false;
-        validNotification = true;
-      }
-      else if( freq === "daily" || ( freq === "weekly" && elem.date.getDate() == date.getDate() ) ) {
-        validNotification = true;
-      }
-
-      console.debug( freq, eventDate, currDate, validNotification );
-
-      if( validNotification ) {
-        ++elem.times;
-        let peeps = "";
-        for( const i of elem.participants ) {
-          peeps += !!i.name ? `<@!${i.id}> ` : "";
-        }
-        bot.channels.resolve( bot.var.channels.commands ).send( `IT'S TIME FOR **${elem.name}** :sweat_drops:\n` + peeps );
-      }
-
-    });
   }
   catch( error ) {
-    console.error( "bot interval error: date", date, "currTime", currTime );
     console.error( error );
   }
 
@@ -179,7 +157,8 @@ bot.on( "messageDelete", ( message ) => {
 
 bot.on( "channelCreate", ( channel ) => {
   //channel.setTopic( ":sweat_drops:" );
-  if ( channel.isText() ) channel.send( "hey" );
+  if( channel.type === "dm" ) channel.send( "Hey scuse me big guy. I heard some noises goin on in here, couple minutes ago" );
+  else if( channel.isText() ) channel.send( "Nice place" );
 });
 
 bot.on( "guildMemberAdd", ( member ) => {

@@ -1,4 +1,5 @@
 import { sendBulk } from "../sendBulk.js";
+import { argHandler } from "../argHandler.js";
 
 export default {
   name: "dice",
@@ -64,11 +65,9 @@ export default {
 
   },
   exec( message, bot ) {
-    const args = message.content.slice( 1 ).split( /\s+/ );
-    args.shift();
-    const subCommand = args[0].toLowerCase() || "lma0";
+    const args = argHandler( message );
     let response = "";
-    switch( subCommand ) {
+    switch( args.get( 0 ) ) {
       case "hist":
       case "history":
         for( let i = 0; i < this.history.length; ++i ) {
@@ -89,8 +88,8 @@ export default {
         });
         return;
       default:
-        const max = parseInt( args[0] );
-        const count = parseInt( args[1] );
+        const max = parseInt( args.get( 0 ) );
+        const count = parseInt( args.get( "count" ) || args.get( 1 ) );
         const min = 1;
         const roll = this.roll( max, min, count, message.author );
         const emoji = roll.val == max ? bot.var.emojis.solaire : ( roll.val == min ? ":alien:" : ":hotsprings:" );

@@ -1,6 +1,28 @@
 # Bean Stalk
 
-A personal Discord bot using Discord.js and questionable programming practices.
+A personal Discord bot using [Discord.js](https://discord.js.org) and questionable programming practices.
+Bean-Stalk was developed to run on a single server. Some commands may behave *strange* if multiple servers are using them at once.
+> For example, the connect4 command doesn't create seperate board instances per server.
+> So you could consider it a feature that you can play connect4 across different servers
+
+## Quick Start
+
+1. Install the node.js version Discord.js is dependent on
+
+   You can find out [here](https://www.npmjs.com/package/discord.js).
+   Installing node.js should also install `npm`
+
+2. Clone the repository and download this project's node module dependencies by running `npm i` in the project's directory
+
+3. Initialize some of Bean Stalk's private files so he doesn't break on start up (script pending)
+
+4. Optional: add Bean's home discord server to `id` in `guild.json`
+
+5. Add a discord bot token to `auth.json` and protect it with your life
+
+6. Build the bot with `npm run build` then start him with `npm run start`
+
+7. Finally invite Bean-Stalk to a server
 
 ## Commands
 

@@ -33,6 +33,7 @@ They are set to a Discord Collection map with the `name` as the key.
 To add a new command, or edit an existing one, follow the format of this example command:
 
 ```js
+import { argHandler } from "../argHandler.js";
   /**
    * @property { String } name
    * @property { String } description
@@ -46,16 +47,32 @@ To add a new command, or edit an existing one, follow the format of this example
    **/
 export default {
   name: "the_command_name_without_spaces",
-  description: "command's description help text",
+  description: "command's description; help text is defined in help.json",
   aliases: [ "alternative_command_names", "no_spaces_here_too" ],
   exec( message, bot ) {
-    const args = message.content.shift( 1 ).split( /\s+/ );
-    console.debug( "args for subcommands:", args );
-    if( /@|mention|reply/i.test( args[0] ) ) {
+    // You can create your own way of handling arguments:
+    const myCustomArgs = message.content.shift( 1 ).split( /\s+/ );
+    console.debug( "myCustomArgs:", myCustomArgs );
+    if( /@|mention|reply/i.test( myCustomArgs[0] ) ) {
       message.reply( "Hello!" );
     }
     else {
       message.channel.send( "Hello " + message.author.username );
+    }
+    // Or you can use my argHandler module:
+    const ezArgs = argHandler( message );
+    const subcommand = ezArgs.get( 0 ).toLowerCase(), expression = ezArgs.get( 1 ) || ":joy:";
+    switch( subcommand ) {
+      case "@":
+      case "reply":
+      case "mention":
+        message.reply( "Hello! " + expression );
+        break;
+      default:
+        message.channel.send( "Hello " + message.author.username + " " + expression );
+    }
+    if( ezArgs.has( "another-arg" ) ) {
+      message.channel.send( "another-arg: " + ezArgs.get( "another-arg" ) );
     }
     return;
   },

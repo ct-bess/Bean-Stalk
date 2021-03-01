@@ -51,7 +51,7 @@ export const argHandler = ( message ) => {
         do {
           argVal += " " + args.shift();
           console.debug( "concated argVal:", argVal );
-        } while( !argVal.endsWith( '"' ) && args.length > 1 );
+        } while( !argVal.endsWith( '"' ) && args.length > 0 );
         argVal = argVal.substring( 0, argVal.length-1 );
       }
       else {

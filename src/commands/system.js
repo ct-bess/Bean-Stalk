@@ -15,6 +15,17 @@ export default {
     const subcommand = ( args.get( 0 ) + "" ).toLowerCase();
     let response = "", responseType = "";
     switch( subcommand + (isAdmin + 0) ) { 
+      case "setprefix1":
+        const newPrefix = args.get( "prefix" ) || args.get( 1 ) || "-";
+        if( /\s/.test( newPrefix ) ) {
+          response = `Don's use spaces in your prefix: \`${newPrefix}\`, will add this feature later`;
+        }
+        else {
+          response = `Setting prefix to \`${newPrefix}\``;
+          bot.var.prefix = newPrefix + "";
+        }
+        break;
+      case "setprefix0":
       case "reload0":
         response = "My potions are too strong for you traveler :face_with_monocle:";
         break;
@@ -38,9 +49,9 @@ export default {
         response = "Only the chosen may command such an atrocity";
         break;
       case "die1":
-        //console.info( "saving events..." );
-        //writeFileSync( "events.json", JSON.stringify( bot.var.events ), error => { console.error(error) });
-        //console.info( "saved events" );
+        console.info( "saving events..." );
+        writeFileSync( "events.json", JSON.stringify( bot.var.events ), error => { console.error(error) });
+        console.info( "saved events" );
         message.reply( "***CHANGE THE WORLD... MY FINAL MESSAGE... GOOD BYE...***" );
         setTimeout( () => {
           bot.destroy();

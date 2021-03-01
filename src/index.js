@@ -2,7 +2,7 @@ import Discord from "discord.js";
 import auth from "../auth.json";
 import help from "../help.json";
 import guild from "../guild.json";
-import events from "../events.json";
+import config from "../config.json";
 import { loadCommands, validateGuild } from "./loadCommands.js";
 import { messageOps } from "./messageOps.js";
 
@@ -10,13 +10,14 @@ const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 bot.var = {
   messageOpsEnabled: true,
-  events: new Discord.Collection(),
+  prefix: config.prefix || "-",
   guild: guild.id,
   emojis: guild.emoji,
   roles: guild.roles,
   members: guild.members,
   admins: guild.admins,
   bots: guild.bots,
+  events: null,
   channels: guild.channels
 }
 
@@ -44,14 +45,14 @@ bot.on( "message", ( message ) => {
     return;
   }
 
-  const prefixCheck = message.content.startsWith( "-" );
+  const prefixCheck = message.content.startsWith( bot.var.prefix );
 
   if( !prefixCheck || ( !bot.var.bots.includes( message.author.id ) && message.author.bot ) ) return;
 
-  const commandArgs = message.content.slice( 1 ).toLowerCase().split( /\s+/, 2 );
+  const commandArgs = message.content.slice( bot.var.prefix.length ).toLowerCase().split( /\s+/, 2 );
   const command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
   
-  console.debug( "[ DEBUG ] -", "User:", message.author.username, "Content:", message.content );
+  console.debug( "[ Command ] -", "User:", message.author.username, "Content:", message.content );
 
   if( !command ) {
     if( message.createdTimestamp % 2 === 0 ) message.reply( "bruHh" );
@@ -75,23 +76,110 @@ bot.on( "message", ( message ) => {
   }
   catch( error ) {
     console.error( error );
-    message.reply( "**WHO DID THIS?!?!** :joy:\n```diff\n" + error + "\n```" );
+    message.reply( bot.var.emojis.lmao + "**WHO DID THIS?!?!**\n```diff\n" + error + "\n```" );
     bot.user.setStatus( "dnd" );
     // crazy idea, what if we randomly DMed the error to a random guild member?
   }
   
 });
 
+// export this to a file wowowowo
 bot.setInterval( () => {
   try {
+    const events = bot.var.events;
     const date = new Date();
     const currTime = date.getHours() + ":" + date.getMinutes();
 
+    // Dailys and Weeklys
     if( !!events[currTime] ) {
-      for( const anEvent in events[currTime] ) {
-        bot.channels.resolve( bot.var.channels.commands ).send( `event **${anEvent}** triggered` );
-      }
-    }
+
+      const currEvents = events[currTime]
+      console.debug( "Found events for:", currTime );
+
+      for( const key in currEvents ) {
+
+        console.debug( "processing:", key );
+        const eventObject = currEvents[key];
+
+        if( !!eventObject["period"] ) {
+
+          const period = parseInt( eventObject["period"] ) || 0;
+          const validTrigger = ( date.getDay() + 1 ) % ( period ) === 0 ? true : false;
+          console.debug( "Status:", period, validTrigger );
+
+          if( validTrigger ) {
+            // haha better hope these fields exist
+            let attendees = "";
+            for( const attendee of eventObject["attendees"] ) {
+              attendees += `<@!${attendee}> `;
+            }
+            for( const role of eventObject["roles"] ) {
+              attendees += `<&!${role}> `;
+            }
+            const eventEmbed = {
+              color: 0xffea00,
+              title: key || "lma0",
+              description: eventObject["description"] || "no description",
+              fields: [
+                {
+                  name: "Time",
+                  value: currTime
+                },
+                {
+                  name: "Location",
+                  value: `<#${eventObject["location"]}>`
+                },
+                {
+                  name: "Period",
+                  value: "Every " + eventObject["period"] + " day(s)"
+                },
+                {
+                  name: "Occurances",
+                  value: eventObject["occurances"]
+                },
+                {
+                  name: "The Chads",
+                  value: attendees || "none :triumph:"
+                }
+              ],
+              footer: {
+                text: "Sponsored by Bean-Stalk",
+                icon_url: bot.user.displayAvatarURL()
+              }
+            };
+
+            const alertChannel = bot.channels.resolve( eventObject["location"] ) || bot.channels.resolve( bot.var.channels.commands );
+
+            if( bot.channels.cache.has( eventObject["location"] ) ) {
+              if( !alertChannel.isText() ) {
+                eventEmbed.footer.text = "Yo this location ain't a text channel; So I'm droppin it here yo";
+              }
+            }
+            else {
+              eventEmbed.footer.text = "Yo this location ain't even real; So I'm droppin it here yo";
+            }
+
+            // ON WEDNESDAYS WE WHAT?
+            alertChannel.send({ embed: eventEmbed }).then( message => {
+              if( !!eventObject["command"] ) {
+                const cmdArg = eventObject.command.split( ' ', 2 );
+                const command = bot.commands.get( cmdArg[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( cmdArg[0] ) );
+                message.content = eventObject.command;
+                command.exec( message, bot );
+              }
+            });
+
+            ++eventObject["occurances"]
+
+          } // EO event trigger
+
+        } // EO valid event
+
+      } // EO curr event loop
+
+    } // EO event check
+
+    // could run a check on date.toLocaleDateString() for hyper specifics
 
     if( currTime === "16:19" ) {
       const filter = message => !!message.content;

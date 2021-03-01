@@ -1,0 +1,21 @@
+{
+  "id": "${HomeServerId}",
+  "channels": {
+    "general": "${GeneralTextChannelId}"
+  },
+  "emoji": {
+    "guildEmoji": "${EmojiId}"
+  },
+  "roles": {
+    "guildRole": "${RoleId}"
+  },
+  "members": {
+    "guildMember": "${MemberId}"
+  },
+  "bots": [
+    "${BotId}"
+  ],
+  "admins": [
+    "${MemberId}"
+  ]
+}

@@ -8,7 +8,7 @@
     "bundle": "babel src -d lib",
     "start": "node lib/index.js",
     "dab": "npm run bundle && npm run start",
-    "test": "babel src -d lib && node lib/test.js",
+    "test": "babel src/test.js -o lib/test.js && node lib/test.js",
     "clean": "rm -r lib/"
   },
   "keywords": [

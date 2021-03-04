@@ -1,51 +1,59 @@
-import { exec } from "child_process";
-import { sendBulk } from "../sendBulk.js";
+import { exec, spawn } from "child_process";
 import { argHandler } from "../argHandler.js";
 
-// here's a better remediation
-//import { writeFileSync } from "fs"
-//writeFileSync( "temp.js", code, error => { console.error(error) });
+const delay = ( time, value ) => {
+  return new Promise( resolve => {
+    setTimeout( resolve.bind( null, value ), time );
+  });
+}
 
 export default {
   name: "javascript",
   description: "Execute some spicy, arbitrary, uncontainiarized JavaScript",
   aliases: [ "js" ],
   exec( message, bot ) {
-    let response = "";
     const isAdmin = bot.var.admins.includes( message.author.id );
-
     const args = message.content.split( /\s+/, 2 );
-    console.debug( "args:", args );
-
-    const formatNL = !!args[1] && ((args[1]+"").substring(1)).toLowerCase() === "newlines";
-    let code = formatNL ? message.content.substring( args[0].length + args[1].length + 2 ) : message.content.substring( args[0].length + 1 );
-
-    console.debug( "output on new lines?", formatNL, "\nJavaScript:\n", code );
+    const code = message.content.substring( args[0].length + 1 );
 
     if( /require|import/.test( code ) && !isAdmin ) {
       message.reply( "Don't use external modules :fire:" );  
     }
     else {
 
+      let delay = 1500;
+      console.info( "Starting child process with base delay:", delay, "milliseconds" );
       message.channel.startTyping();
 
-      if( !isAdmin ) {
-        code = code.replace( /"/g, "'" );
-      }
+      const cliargs = [ "--harmony", "-e", code ];
+      let process = spawn( "node", cliargs );
 
-      // This is extremely vulnerable to injection --> code = " && whoami #
-      let process = exec( `node --harmony -e "${code}"`, ( error, stderr, stdout ) => {
-        if( !!error ) {
-          response = `${error.name} ${bot.var.emojis.lmao}\n` + "```diff\n" + error.message + "\n```";
-        }
-        else response = stderr || stdout;
-        message.channel.stopTyping();
+      process.stdout.on( "data", data => {
+        // You need to be incrementing the delay to avoid a rate limit
+        delay += 1500;
+        console.info( data.toString() );
+        setTimeout( () => {
+          message.channel.send( data.toString() );
+        }, delay );
+      });
+
+      process.stderr.on( "data", data => {
+        delay += 1500;
+        console.info( data.toString() );
+        setTimeout( () => {
+          message.channel.send( data.toString() );
+        }, delay );
+      });
+
+      process.on( "close", code => {
+        console.info( "spawn finished with exit code:", code );
       });
 
       console.debug( "exec spawned with PID:", process.pid, "&&", process.pid + 1 );
       console.debug( "args:", ...process.spawnargs );
 
       // To kill infinite loops and code that takes too long
+      // we'll wait until double the delay amount
       setTimeout( () => {
 
         // There's 2 processes to kill????? well Bettati never taught javascript
@@ -53,23 +61,12 @@ export default {
           process.kill();
         }
         exec( `kill ${process.pid + 1}` );
-        console.debug( "js subprocesses killed" );
+        console.info( "js subprocesses killed" );
+        console.info( "max delay reached:", delay, "ms" );
 
-        if( formatNL && response.length > 0 ) {
-          response = response.split( "\n" );
-          for( const r of response ) { 
-            if( !!r ) {
-              //message.channel.send( r ); 
-              setTimeout( () => { message.channel.send( r ) }, 2500 );
-            }
-          }
-        }
-        else if( response.length > 2000 ) sendBulk( response, message, null );
-        else message.channel.send( !!response.length ? response : "empty stdout :triumph:" );
         message.channel.stopTyping();
-       // bot.user.setActivity( "" );
 
-      }, 3000 );
+      }, delay*2 );
 
     }
 

@@ -3,19 +3,24 @@ import { argHandler } from "../argHandler.js";
 export default {
   name: "event",
   aliases: [ "rsvp" ],
-  description: "event tool to organize the boyz. Bean will spam your group with this command",
+  description: "an over-engineered event scheduler tool",
   exec( message, bot ) {
 
     const args = argHandler( message );
     const subCommand = ( args.get( 0 ) + "" ).toLowerCase();
     let response = "";
-    const eventName = args.get( "name" );
-    const eventTime = args.get( "time" );
+    let eventTime = args.get( "time" );
+    let eventName = args.get( "name" );
+    if( args.has( 1 ) && (!!eventTime || !!eventName) ) {
+      const exprSplit = args.get( 1 ).split( /\s+/, 2 );
+      eventTime = exprSplit[0];
+      eventName = exprSplit[1];
+    }
     //const eventExists = !!eventName && !!eventTime && !!bot.var.events?.eventTime?.eventName;
     let eventExists = false, isOrganizer = false;
     let event = null;
 
-    // OK
+    // OK thats it im upgrading to ES2021 for better nullish opperations
     if( !!eventName && !!eventTime ) {
       if( !!bot.var.events[eventTime] ) {
         if( !!bot.var.events[eventTime][eventName] ) {
@@ -64,16 +69,17 @@ export default {
         const newEvent = {
           period: args.get( "period" ) || 8,
           location: loc,
+          raw: args.has( "raw" ) || args.has( "r" ),
+          silent: args.has( "silent" ) || args.has( "s" ),
           occurances: 0,
-          description: args.get( "description" ) || args.get( 1 ) || "???",
+          description: args.get( "description" ) || ":sweat_drops:",
           command: args.get( "command" ),
+          // cool but allow the @ use case, normal people dont copy paste snowflake ids
           roles: args.has( "roles" ) ? args.get( "roles" ).split( ' ' ) : [],
           attendees: args.has( "attendees" ) ? args.get( "attendees" ).split( ' ' ) : [],
           organizers: [ message.author.id ]
         };
         console.info( "Creating New event ...", newEvent );
-        //Object.assign( bot.var.events, { eventTime } );
-        //Object.assign( bot.var.events[eventTime], { eventName } );
         bot.var.events[eventTime] = {};
         bot.var.events[eventTime][eventName] = newEvent;
         response = `created **${eventName}** for ${eventTime}`;
@@ -85,9 +91,30 @@ export default {
         response = "Can't let you do that star fox";
         break;
       case "edit11":
-        // lol
-        event[ args.lastKey() ] = args.last();
-        response = `Setting ${args.lastKey()} to ${args.last()}`;
+        // THIS IS HORRIBLE
+        let editKey = "", editVal = "", source = null;
+        if( args.has( "newname" ) ) {
+          editVal = args.get( "newname" );
+          editKey = "name";
+          source = Object.assign( {}, bot.var.events[eventTime][eventName] );
+          delete bot.var.events[eventTime][eventName]
+          bot.var.events[eventTime][editVal] = source;
+        }
+        else if( args.has( "newtime" ) ) {
+          editVal = args.get( "newtime" );
+          editKey = "time";
+          source = Object.assign( {}, bot.var.events[eventTime] );
+          editKey += ` (affecting ${Object.keys(source).length} event(s))`;
+          delete bot.var.events[eventTime]
+          bot.var.events[editVal] = source;
+        }
+        else {
+          // so that we can flip -raw
+          editKey = args.lastKey();
+          editVal = typeof( args.last() ) === "boolean" ? !event[editKey] : args.last();
+          bot.var.events[eventTime][eventName][editKey] = editVal;
+        }
+        response = `Setting ${editKey} to ${editVal}`;
         break;
       case "join11":
       case "join10":

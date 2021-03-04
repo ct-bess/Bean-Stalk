@@ -45,7 +45,7 @@ export const argHandler = ( message ) => {
       argName = fullArg[0].substring( 2 ) || -1;
       argVal = fullArg[1] || -2;
       console.debug( "processing verbose arg:", fullArg );
-      if( argVal.startsWith( '"' ) ) {
+      if( argVal.startsWith( '"' ) && !argVal.endsWith( '"' ) ) {
         args.shift();
         argVal = argVal.substring( 1 );
         do {

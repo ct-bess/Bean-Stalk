@@ -1,7 +1,7 @@
 /** @param { Discord.Message } message **/
 export const sendBulk = ( response, message, format ) => {
   console.info( "[ INFO ] sendBulk() response length: " + response.length );
-  let textBound = 2000;
+  let textBound = 2000, delay = 1500;
   let prefix = "", suffix = "";
   switch( format ) {
     case "italics":
@@ -37,7 +37,8 @@ export const sendBulk = ( response, message, format ) => {
   }
   for( let i = 0; i < response.length; i += textBound ) {
     const chunk = response.substring( i, i + textBound );
+    delay += 1500;
     //message.channel.send( prefix + chunk + suffix );
-    setTimeout( () => {message.channel.send( prefix + chunk + suffix )}, 300 );
+    setTimeout( () => { message.channel.send( prefix + chunk + suffix ) }, delay );
   }
 };

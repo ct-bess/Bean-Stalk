@@ -6,8 +6,8 @@ export const messageOps = ( message, bot ) => {
 
   // --------------------------- REGEX ---------------------------  \\
 
-  if( /16:20|4.?20|w[e3]{2,}d/i.test( message.content ) ) {
-    message.react( ":blunt:766311145341845504" );
+  if( /16:20|4[\D\W]?20|w[e3]{2,}d/i.test( message.content ) ) {
+    setTimeout( () => { message.react( ":blunt:766311145341845504" ) }, 1000 );
   }
   if( /i('m)?\b.+(really|so|for)\b.+/i.test( message.content ) && ts % 2 === 0 ) {
     message.reply( "yeah same bro" );

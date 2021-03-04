@@ -25,14 +25,6 @@ bot.on( "ready", () => {
   console.info( "INITIATING BEAN STALK ..." );
   loadCommands( bot, null );
   validateGuild( bot );
-  /*
-  console.info( "Channels:", bot.var.channels );
-  console.info( "Emojis:", bot.var.emojis );
-  console.info( "Roles:", bot.var.roles );
-  console.info( "Members:", bot.var.members );
-  console.info( "Bots:", bot.var.bots );
-  console.info( "Admins:", bot.var.admins );
-  */
   console.info( "Ready" );
 });
 
@@ -41,7 +33,9 @@ bot.on( "message", ( message ) => {
   if( bot.var.messageOpsEnabled ) messageOps( message, bot );
 
   if( message.channel.type === "dm" && !message.author.bot ) {
-    bot.channels.resolve( bot.var.channels.commands ).send( message.content );
+    setTimeout( () => {
+      bot.channels.resolve( bot.var.channels.commands ).send( message.content );
+    }, 1000 );
     return;
   }
 
@@ -56,7 +50,7 @@ bot.on( "message", ( message ) => {
 
   if( !command ) {
     if( message.createdTimestamp % 2 === 0 ) message.reply( "bruHh" );
-    else message.reply( "run `-bean commands` for available commands\nthen pick a command and run `-COMMAND_NAME help`" );
+    //else message.reply( "run `-bean commands` for available commands\nthen pick a command and run `-COMMAND_NAME help`" );
     return;
   }
 
@@ -76,7 +70,7 @@ bot.on( "message", ( message ) => {
   }
   catch( error ) {
     console.error( error );
-    message.reply( bot.var.emojis.lmao + "**WHO DID THIS?!?!**\n```diff\n" + error + "\n```" );
+    message.reply( bot.var.emojis.lmao + " **WHO DID THIS?!?!**\n```diff\n" + error + "\n```" );
     bot.user.setStatus( "dnd" );
     // crazy idea, what if we randomly DMed the error to a random guild member?
   }
@@ -116,10 +110,10 @@ bot.setInterval( () => {
             for( const role of eventObject["roles"] ) {
               attendees += `<&!${role}> `;
             }
-            const eventEmbed = {
+            const response = !!eventObject["raw"] ? eventObject["description"] : {
               color: 0xffea00,
-              title: key || "lma0",
-              description: eventObject["description"] || "no description",
+              title: key,
+              description: eventObject["description"],
               fields: [
                 {
                   name: "Time",
@@ -148,26 +142,58 @@ bot.setInterval( () => {
               }
             };
 
-            const alertChannel = bot.channels.resolve( eventObject["location"] ) || bot.channels.resolve( bot.var.channels.commands );
+            let alertChannel = null;
 
             if( bot.channels.cache.has( eventObject["location"] ) ) {
+              alertChannel = bot.channels.resolve( eventObject["location"] );
               if( !alertChannel.isText() ) {
-                eventEmbed.footer.text = "Yo this location ain't a text channel; So I'm droppin it here yo";
+                alertChannel = bot.channels.resolve( bot.var.channels.commands );
+                response.footer.text = "Yo this location ain't a text channel; So I'm droppin it here yo";
               }
             }
             else {
-              eventEmbed.footer.text = "Yo this location ain't even real; So I'm droppin it here yo";
+              alertChannel = bot.channels.resolve( bot.var.channels.commands );
+              response.footer.text = "Yo this location ain't even real; So I'm droppin it here yo";
             }
 
-            // ON WEDNESDAYS WE WHAT?
-            alertChannel.send({ embed: eventEmbed }).then( message => {
+            // putting silent logic here for now
+            // also make sure to validate that the command exists
+            // also maybe put a command call into a function???
+            if( !eventObject["silent"] ) {
+
+              // GALAXY BRAIN VERY WET
+              alertChannel.send( typeof( response ) === "object" ? { embed: response } : response ).then( message => {
+                try {
+                  if( !!eventObject["command"] ) {
+                    console.info( "executing event command:", eventObject.command );
+                    // For now, let's make this replace to enable this nested command
+                    message.content = eventObject.command.replace( /'/g, '"' );
+                    const commandArgs = message.content.slice( bot.var.prefix.length ).toLowerCase().split( /\s+/, 2 );
+                    const command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
+                    console.info( "command:", message.content );
+                    setTimeout( () => { command.exec( message, bot ) }, 3000 )
+                  }
+                } 
+                catch( error ) {
+                  console.error( error );
+                  message.channel.send( "event's command failed bro" );
+                }
+              });
+
+            }
+            // Nice one wow
+            else {
               if( !!eventObject["command"] ) {
-                const cmdArg = eventObject.command.split( ' ', 2 );
-                const command = bot.commands.get( cmdArg[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( cmdArg[0] ) );
-                message.content = eventObject.command;
+                const message = alertChannel.lastMessage;
+                console.info( "executing event command:", eventObject.command );
+                // For now, let's make this replace to enable this nested command
+                message.content = eventObject.command.replace( /'/g, '"' );
+                const commandArgs = message.content.slice( bot.var.prefix.length ).toLowerCase().split( /\s+/, 2 );
+                const command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
+                console.info( "command:", message.content );
                 command.exec( message, bot );
               }
-            });
+            }
 
             ++eventObject["occurances"]
 
@@ -180,6 +206,8 @@ bot.setInterval( () => {
     } // EO event check
 
     // could run a check on date.toLocaleDateString() for hyper specifics
+
+    // next, create a -collect command for the below:
 
     if( currTime === "16:19" ) {
       const filter = message => !!message.content;
@@ -240,7 +268,7 @@ bot.on( "presenceUpdate", ( oldPresence, newPresence ) => {
 
 bot.on( "messageDelete", ( message ) => {
   console.info( "message deleted", message.author.username, message.content );
-  message.channel.send( message.content );
+  if( message.content.length > 0 ) message.channel.send( message.content );
 });
 
 bot.on( "channelCreate", ( channel ) => {
@@ -250,7 +278,9 @@ bot.on( "channelCreate", ( channel ) => {
 });
 
 bot.on( "guildMemberAdd", ( member ) => {
-  bot.channels.resolve( bot.var.channels.general ).send( `hi <@!${member.id}> :sweat_drops:` );
+  const hopefullyGeneral = member.guild.channel.cache.first();//firstKey();//first().id;
+  hopefullyGeneral.send( `${guild.welcomeVideo} <@!${member.id}> :sweat_drops:` );
+  //bot.channels.resolve( hopefullyGeneral ).send( `https://www.youtube.com/watch?v=hSjNTH-xcLY <@!${member.id}> :sweat_drops:` );
 });
 
 /* Not feelin these anymore

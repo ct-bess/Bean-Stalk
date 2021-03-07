@@ -2,7 +2,6 @@ import Discord from "discord.js";
 import auth from "../auth.json";
 import help from "../help.json";
 import guild from "../guild.json";
-import config from "../config.json";
 import { loadCommands, validateGuild } from "./loadCommands.js";
 import { messageOps } from "./messageOps.js";
 
@@ -10,7 +9,7 @@ const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 bot.var = {
   messageOpsEnabled: true,
-  prefix: config.prefix || "-",
+  config: null,
   guild: guild.id,
   emojis: guild.emoji,
   roles: guild.roles,
@@ -19,7 +18,7 @@ bot.var = {
   bots: guild.bots,
   events: null,
   channels: guild.channels
-}
+};
 
 bot.on( "ready", () => {
   console.info( "INITIATING BEAN STALK ..." );
@@ -39,11 +38,12 @@ bot.on( "message", ( message ) => {
     return;
   }
 
-  const prefixCheck = message.content.startsWith( bot.var.prefix );
+  const prefixCheck = message.content.startsWith( bot.var.config.prefix );
+  const allowedBots = bot.var.bots.includes( message.author.id );
 
-  if( !prefixCheck || ( !bot.var.bots.includes( message.author.id ) && message.author.bot ) ) return;
+  if( !prefixCheck || ( !allowedBots && message.author.bot ) ) return;
 
-  const commandArgs = message.content.slice( bot.var.prefix.length ).toLowerCase().split( /\s+/, 2 );
+  const commandArgs = message.content.slice( bot.var.config.prefix.length ).toLowerCase().split( /\s+/, 2 );
   const command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
   
   console.debug( "[ Command ] -", "User:", message.author.username, "Content:", message.content );
@@ -63,6 +63,12 @@ bot.on( "message", ( message ) => {
       helpEmbed.footer = {};
       helpEmbed.footer.text = "aliases: " + command.aliases.join(', ');
       message.channel.send({ embed: helpEmbed });
+    }
+    // wait a fat second to execute messages from allowed bots so we don't send a billion requests
+    else if( allowedBots ) {
+      setTimeout( () => {
+        command.exec( message, bot );
+      }, bot.var.config.botReplyDelay );
     }
     else {
       command.exec( message, bot );
@@ -168,7 +174,7 @@ bot.setInterval( () => {
                     console.info( "executing event command:", eventObject.command );
                     // For now, let's make this replace to enable this nested command
                     message.content = eventObject.command.replace( /'/g, '"' );
-                    const commandArgs = message.content.slice( bot.var.prefix.length ).toLowerCase().split( /\s+/, 2 );
+                    const commandArgs = message.content.slice( bot.var.config.prefix.length ).toLowerCase().split( /\s+/, 2 );
                     const command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
                     console.info( "command:", message.content );
                     setTimeout( () => { command.exec( message, bot ) }, 3000 )
@@ -188,7 +194,7 @@ bot.setInterval( () => {
                 console.info( "executing event command:", eventObject.command );
                 // For now, let's make this replace to enable this nested command
                 message.content = eventObject.command.replace( /'/g, '"' );
-                const commandArgs = message.content.slice( bot.var.prefix.length ).toLowerCase().split( /\s+/, 2 );
+                const commandArgs = message.content.slice( bot.var.config.prefix.length ).toLowerCase().split( /\s+/, 2 );
                 const command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
                 console.info( "command:", message.content );
                 command.exec( message, bot );

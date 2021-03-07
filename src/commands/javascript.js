@@ -1,11 +1,4 @@
 import { exec, spawn } from "child_process";
-import { argHandler } from "../argHandler.js";
-
-const delay = ( time, value ) => {
-  return new Promise( resolve => {
-    setTimeout( resolve.bind( null, value ), time );
-  });
-}
 
 export default {
   name: "javascript",
@@ -25,6 +18,7 @@ export default {
       console.info( "Starting child process with base delay:", delay, "milliseconds" );
       message.channel.startTyping();
 
+      // RIP OS Injection: 2020-2021 "Admins are no longer worthy"
       const cliargs = [ "--harmony", "-e", code ];
       let process = spawn( "node", cliargs );
 
@@ -41,7 +35,7 @@ export default {
         delay += 1500;
         console.info( data.toString() );
         setTimeout( () => {
-          message.channel.send( data.toString() );
+          message.channel.send( bot.var.emojis.lmao + "\n```diff\n" + data.toString() + "\n```" );
         }, delay );
       });
 
@@ -60,6 +54,7 @@ export default {
         if( !process.killed ) {
           process.kill();
         }
+        // this hasn't killed a random process on my computer?
         exec( `kill ${process.pid + 1}` );
         console.info( "js subprocesses killed" );
         console.info( "max delay reached:", delay, "ms" );

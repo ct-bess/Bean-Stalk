@@ -42,20 +42,22 @@ export const argHandler = ( message ) => {
 
     if( arg.startsWith( '--' ) ) {
       const fullArg = arg.split( "=", 2 );
-      argName = fullArg[0].substring( 2 ) || -1;
+      argName = ( fullArg[0] + "" ).substring( 2 ) || -1;
       argVal = fullArg[1] || -2;
       console.debug( "processing verbose arg:", fullArg );
-      if( argVal.startsWith( '"' ) && !argVal.endsWith( '"' ) ) {
-        args.shift();
-        argVal = argVal.substring( 1 );
-        do {
-          argVal += " " + args.shift();
-          console.debug( "concated argVal:", argVal );
-        } while( !argVal.endsWith( '"' ) && args.length > 0 );
-        argVal = argVal.substring( 0, argVal.length-1 );
-      }
-      else {
-        args.shift();
+      if( fullArg.length === 2 ) {
+        if( argVal.startsWith( '"' ) && !argVal.endsWith( '"' ) ) {
+          args.shift();
+          argVal = argVal.substring( 1 );
+          do {
+            argVal += " " + args.shift();
+            console.debug( "concated argVal:", argVal );
+          } while( !argVal.endsWith( '"' ) && args.length > 0 );
+          argVal = argVal.substring( 0, argVal.length-1 );
+        }
+        else {
+          args.shift();
+        }
       }
     }
     else if( arg.startsWith( '-' ) ) {

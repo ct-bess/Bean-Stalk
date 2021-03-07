@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
 import events from "../events.json";
+import config from "../config.json";
 
 /** 
  * @param { Discord.Client } bot 
@@ -30,8 +31,9 @@ export const loadCommands = ( bot, singularCommand ) => {
         bot.commands.set( command.default.name, command.default );
       }
     }
-    console.info( "Loading events into bot variable ..." );
+    console.info( "Loading events & config into bot variable ..." );
     bot.var.events = events;
+    bot.var.config = config;
     console.info( "done wow" );
     /*
     //if( !!require.cache[ require.resolve( "../events.json" ) ] ) {

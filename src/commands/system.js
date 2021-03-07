@@ -22,7 +22,7 @@ export default {
         }
         else {
           response = `Setting prefix to \`${newPrefix}\``;
-          bot.var.prefix = newPrefix + "";
+          bot.var.config.prefix = newPrefix + "";
         }
         break;
       case "setprefix0":
@@ -49,9 +49,12 @@ export default {
         response = "Only the chosen may command such an atrocity";
         break;
       case "die1":
-        console.info( "saving events..." );
+        console.info( "saving events ..." );
         writeFileSync( "events.json", JSON.stringify( bot.var.events ), error => { console.error(error) });
         console.info( "saved events" );
+        console.info( "saving config ..." );
+        writeFileSync( "config.json", JSON.stringify( bot.var.config ), error => { console.error(error) });
+        console.info( "saved config" );
         message.reply( "***CHANGE THE WORLD... MY FINAL MESSAGE... GOOD BYE...***" );
         setTimeout( () => {
           bot.destroy();
@@ -61,6 +64,11 @@ export default {
       case "commands0":
       case "commands1":
         bot.commands.forEach( elem => response += `Name: **${elem.name}**\t${elem.description}\n` );
+      break;
+      case "channels0":
+      case "channels1":
+        const filter = c => c.type === "voice" || c.type === "text";
+        bot.channels.cache.filter( filter ).forEach( c => response += `${c.guild.name}\t${c.name}\t${c.id}\t${c.type}\n` );
       break;
       case "regex0":
       case "regex1":

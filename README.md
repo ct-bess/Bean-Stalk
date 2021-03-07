@@ -1,11 +1,21 @@
-# Bean Stalk
+# Bean-Stalk :seedling:
 
-A personal Discord bot using [Discord.js](https://discord.js.org) and questionable programming practices.
+A personal Discord bot using [Discord.js](https://discord.js.org) and questionable programming practices (proceed with caution).
+Started out as a joke and now look where we are!
+
+
 Bean-Stalk was developed to run on a single server. Some commands may behave *strange* if multiple servers are using them at once.
 > For example, the connect4 command doesn't create seperate board instances per server.
 > So you could consider it a feature that you can play connect4 across different servers
 
+
+## Design
+
+Bean-Stalk is designed to be agile. Commands can be added or even modified on the fly.
+Commands are also created with flexibility in mind; One command can call  or change the state of another.
+
 ## Quick Start
+
 
 1. Install the node.js version Discord.js is dependent on
 
@@ -60,7 +70,7 @@ export default {
       message.channel.send( "Hello " + message.author.username );
     }
     // Or you can use my argHandler module:
-    const ezArgs = argHandler( message );
+    const ezArgs = argHandler( message ); // type: Discord.Collection (basically a super map)
     const subcommand = ezArgs.get( 0 ).toLowerCase(), expression = ezArgs.get( 1 ) || ":joy:";
     switch( subcommand ) {
       case "@":
@@ -82,6 +92,7 @@ export default {
     // OPTIONAL
   },
 };
+// or add a helper function outside the export
 ```
 
 ## Message Ops (Regex responses)

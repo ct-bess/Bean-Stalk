@@ -7,6 +7,9 @@ kb/
 # Build Artifacts:
 lib/
 
+# Bot Generated Artifacts:
+a.out
+
 # Build Files:
 package-lock.json
 node_modules/

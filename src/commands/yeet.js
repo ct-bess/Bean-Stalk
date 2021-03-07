@@ -24,8 +24,9 @@ export default {
     if( bot.channels.cache.has( channel ) ) {
       try {
 
-        let m = "";
-        if( !args.has( 0 ) && !args.has( "channel" ) ) m = message.channel.messages.cache.last( 2 )[0].content;
+        let m = "", validChannel = false;
+        // since we're using the channel's message cache i'm guessing if it aint primed then we'll be yeeting the -yeet message
+        if( !args.has( 0 ) ) m = message.channel.messages.cache.last( 2 )[0].content;
         else m = args.get( "message" ) || ( args.has( 1 ) ? ( args.get( 0 ) + " " + args.get( 1 ) ) : args.get( 0 ) );
 
         do {
@@ -34,7 +35,7 @@ export default {
           const perm = actualChannel.permissionsFor( bot.user.id );
           console.info( perm.bitfield & 0x800 );
 
-          const validChannel = actualChannel.isText() && (perm.bitfield & 0x800 === 0x800);
+          validChannel = actualChannel.isText() && perm.has( "SEND_MESSAGES" ); //(perm.bitfield & 0x800 === 0x800);
 
           if( validChannel ) {
             actualChannel.send( m );

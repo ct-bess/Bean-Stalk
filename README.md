@@ -1,7 +1,6 @@
 # Bean-Stalk :seedling:
 
 A personal Discord bot using [Discord.js](https://discord.js.org) and questionable programming practices (proceed with caution).
-Started out as a joke and now look where we are!
 
 
 Bean-Stalk was developed to run on a single server. Some commands may behave *strange* if multiple servers are using them at once.

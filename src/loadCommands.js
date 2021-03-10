@@ -16,6 +16,7 @@ export const loadCommands = ( bot, singularCommand ) => {
     bot.commands.set( command.default.name, command.default );
   }
   else {
+    // EVER HEARD OF FS.READDIRSYNC ?????????????????????????????/
     // On Wednesdays We Kode
     const commandFiles = [
       ...execSync( "ls lib/commands/ | grep \.js" ).toString().split( /\s/ ),
@@ -35,6 +36,7 @@ export const loadCommands = ( bot, singularCommand ) => {
     bot.var.events = events;
     bot.var.config = config;
     console.info( "done wow" );
+
     /*
     //if( !!require.cache[ require.resolve( "../events.json" ) ] ) {
       //delete require.cache[ require.resolve( "../events.json" ) ];

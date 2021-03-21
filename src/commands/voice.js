@@ -1,7 +1,7 @@
 import { argHandler } from "../argHandler.js";
 import { sendBulk } from "../sendBulk.js";
-import { appendFile, existsSync, readdirSync } from "fs";
-import { decoder } from "../decode.js";
+import { appendFile, existsSync, readdirSync, createReadStream } from "fs";
+import { decoder, saveRecord } from "../audioUtil.js";
 
 export default {
   name: "voice",
@@ -9,7 +9,7 @@ export default {
   description: "connect bean to a voice channel to play music and sutff",
   audioStream: null,
   connection: null,
-  streamOptions: { volume: 1, bitrate: 96 },
+  streamOptions: { volume: 0.5, bitrate: 96, type: "unknown" },
   readStreams: {},
   // consider changing this to an array of objects
   // { uri, name, type }
@@ -17,43 +17,74 @@ export default {
   exec( message, bot ) {
     const args = argHandler( message );
 
-    // change the connection and audioStream to check if they are .connected() rather than just truthy
-    let subcommand = ( (args.get(0)+"") || "error").toLowerCase() + (!!this.connection + 0) + (!!this.audioStream + 0);
+    let subcommand = ( (args.get(0)+"") || "error").toLowerCase();// + (!!this.connection + 0) + (!!this.audioStream + 0);
+    if( !!this.connection ) subcommand += (this.connection.status !== 4) + 0;
+    else subcommand += !!(this.connection) + 0;
+    if( !!this.audioStream ) subcommand += !(this.audioStream.destroyed) + 0;
+    else subcommand += !!(this.audioStream) + 0;
+
+    let response = "", voiceChannel = null;
+    const clippath = "kb/voice-records";
 
     let resource = args.get( "resource" ) || args.get( "r" ) || args.get( 1 );
+    let memberId = args.get( "user" ) || args.get( "who" ) || message.author.id;
 
     // I am very much temporary
     const bngpath = "/home/ctbess/.steam/steam/steamapps/music/BallisticNG - Soundtrack/";
-    const clippath = "kb/voice-records";
     let bngfiles = null;
 
-    if( !!resource ) {
-      if( args.has( "recording" ) || args.has( "clip" ) ) {
-        resource = `${clippath}/${resource}.mp3`;
+    // -- process & validate resource if any
+
+    if( args.has( "recording" ) || args.has( "clip" ) ) {
+      if( !!resource ) {
+        resource = `${clippath}/${resource}`;
         if( !existsSync( resource ) ) {
           response = "aint got no resource";
-          console.info( "cannot find resource!" );
+          console.info( "cannot find resource:", resource );
           // wow brilliant
           subcommand = 1;
         }
       }
-      else if( !( resource.startsWith( "http" ) || resource.startsWith( "www" ) ) ) {
-        resource = bngpath + resource + ".mp3";
-      }
-    }
-    else {
-      if( args.has( "recording" ) || args.has( "clip" ) ) {
+      else {
         const allRecordings = readdirSync( clippath );
         resource = allRecordings[ Math.floor( Math.random() * allRecordings.length ) ];
         resource = `${clippath}/${resource}`;
       }
-      else {  
-        resource = this.resourceQueue[0];
-      }
     }
-    console.info( "Using resource:", resource );
+    else {
+      resource = bngpath + resource + ".mp3";
+    }
 
-    let response = "", voiceChannel = null;
+    // cool but what if we queued up an opus file? we'd need this as a callable function
+    if( !!resource ) {
+      const extension = ( resource.split( '.' )[1] || "unknown" ).toLowerCase();
+      switch( extension ) {
+        case "opus":
+          // OK FUNNY this throws the same error I'm having with @discord/opus
+          // but it's probly b/c this is just a buffer dump, there are not opus headers in this file
+          // ACTUALLY NVM it still dies if I properly create an opus file with the proper headers
+          this.streamOptions.type = "opus";
+          resource = createReadStream( resource );
+          break;
+        case "ogg":
+          this.streamOptions.type = "ogg/opus";
+          resource = createReadStream( resource );
+          break;
+        case "pcm":
+          this.streamOptions.type = "converted";
+          resource = createReadStream( resource );
+          break;
+        case "webm":
+          this.streamOptions.type = "webm/opus";
+          resource = createReadStream( resource );
+          break;
+        default:
+          this.streamOptions.type = "unknown";
+      }
+      console.info( "Using stream type:", this.streamOptions.type, "for file extension:", extension );
+    }
+
+    // -- validate voice channel
 
     // make sure you validate that's a voice channel dog
     // another case of "man I really need to upgrade to ES2021 w/e for better nullish ops"
@@ -91,34 +122,38 @@ export default {
           }
           for( let i = 0; i < bngfiles.length; ++i ) bngfiles[i] = bngpath + bngfiles[i];
           this.resourceQueue = [ ...this.resourceQueue, ...bngfiles ];
-          resource = this.resourceQueue.shift();
-          console.debug( "BNG Resource:", resource );
-          console.debug( this.resourceQueue );
+          console.debug( "resourceQueue:", this.resourceQueue );
         }
-        this.resourceQueue.push( resource );
+        else this.resourceQueue.push( resource );
 
         voiceChannel.join().then( connection => {
           this.configureVoiceConnection( connection );
-          this.audioStream = connection.play( resource, this.streamOptions );
+          this.audioStream = connection.play( this.resourceQueue[0], this.streamOptions );
           this.configureAudioStream();
         });
         break;
       // no stream, but we're already connected; meaning the resource queue probly finished
       case "play10":
-        this.audioStream = this.connection.play( resource, this.streamOptions );
+        this.resourceQueue.push( resource );
+        console.info( "playing resource:", this.resourceQueue[0] );
+        this.audioStream = this.connection.play( this.resourceQueue[0], this.streamOptions );
         this.configureAudioStream();
         break;
       // has connection and stream; so we append to our queue and nothign else
       case "play11":
+        console.info( "enqueueing resource:", resource );
         this.resourceQueue.push( resource );
         break;
       case "next10":
       case "playnext10":
       case "next11":
       case "playnext11":
+        this.resourceQueue.shift();
         console.info( "Playing next resource:", this.resourceQueue[0] );
-        this.audioStream = this.connection.play( this.resourceQueue.shift(), this.streamOptions );
-        this.configureAudioStream();
+        if( this.resourceQueue.length > 0 ) {
+          this.audioStream = this.connection.play( this.resourceQueue[0], this.streamOptions );
+          this.configureAudioStream();
+        }
         break;
       case "volume11":
       case "setvolume11":
@@ -150,28 +185,46 @@ export default {
       case "leave10":
         console.info( "stopping audio stream and connection ..." );
         this.connection.disconnect();
-        response = "aight bro cya";
         break;
       case "listen11":
       case "listen10":
-        // right now, all this does is append to the user's recording file
-        // also we're just droping this who in there un validated
-        this.createReadStream( args.get( "who" ) || message.author.id, 1 );
+        if( args.has( "pool" ) || args.has( "p" ) ) this.createReadStream( memberId, "pool", 1 );
+        else this.createReadStream( memberId, "record", 1 );
         break;
       case "listen01":
       case "listen00":
         voiceChannel.join().then( connection => {
           this.configureVoiceConnection( connection );
-          this.createReadStream( args.get( "who" ) || message.author.id, 1 );
+          if( args.has( "pool" ) || args.has( "p" ) ) this.createReadStream( memberId, "pool", 1 );
+          else this.createReadStream( memberId, "record", 1 );
+        });
+        break;
+      case "echo11":
+        this.createReadStream( memberId, null, 1 );
+        this.connection.play( this.readStreams[memberId], { type: "opus" } );
+        break;
+      case "echo10":
+        this.createReadStream( memberId, null, 1 );
+        this.audioStream = this.connection.play( this.readStreams[memberId], { type: "opus" } );
+        this.configureAudioStream();
+        break;
+      case "echo01":
+      case "echo00":
+        voiceChannel.join().then( connection => {
+          this.configureVoiceConnection( connection );
+          this.createReadStream( memberId, null, 1 );
+          this.audioStream = connection.play( this.readStreams[memberId], { type: "opus" } );
+          this.configureAudioStream();
         });
         break;
       case "clip00":
       case "clip01":
       case "clip10":
       case "clip11":
-        const id = args.get( "id" ) || message.author.id;
-        console.info( "Clipping recording for id:", id );
-        decoder( id, message, null );
+        // we might want to pause the VoiceReciever if there's an active one here
+        console.info( "Clipping recording for id:", memberId );
+        //decoder( memberId, message, null );
+        saveRecord( memberId, message );
         break;
       case "clips00":
       case "clips01":
@@ -184,6 +237,34 @@ export default {
       case "songs10":
       case "songs11":
         response = this.resourceQueue.join( "\n" );
+        break;
+      case "listeners00":
+      case "listeners01":
+      case "listeners10":
+      case "listeners11":
+        response = "Current listeners: ";
+        for( const key in this.readStreams ) {
+          if( !this.readStreams[key].destroyed ) {
+            let name = bot.guilds.resolve( bot.var.guild ).members.resolve( key );
+            name = !!name ? name.nickname || name.displayName : key;
+            response += name + " ";
+            console.info( name, key );
+          }
+        }
+        break;
+      case "destroy00":
+      case "destroy01":
+      case "destroy10":
+      case "destroy11":
+        if( !!this.readStreams[memberId] ) {
+          console.info( "Destroying VoiceReciever:", memberId );
+          this.readStreams[memberId].destroy();
+          message.react( "\u0030\u20E3" );
+        }
+        else {
+          console.info( "Cannot find VoiceReciever:", memberId );
+          message.react( "\u0031\u20E3" );
+        }
         break;
       case "next00":
       case "playnext00":
@@ -209,35 +290,51 @@ export default {
         response = "no connection lol, but why tf we still have a stream?";
         break;
       default:
-        //response = "WHAT'RE THOASEEE!!!";
-        console.warn( "no really, what's", subcommand, "???" );
+        console.warn( "no such subcommand:", subcommand );
+        message.react( "\u0031\u20E3" );
     }
 
     if( response.length > 2000 ) sendBulk( response, message, null );
     else if( response.length > 0 ) message.channel.send( response );
 
   }, // EO exec
-  createReadStream( memberId, duration ) {
+  createReadStream( memberId, type, duration ) {
     const minutes = Math.floor( duration * 60 * 1000 );
     const mode = "opus";
     console.info( "Creating VoiceReciever read stream for:", memberId );
     this.readStreams[memberId] = this.connection.receiver.createStream( memberId, { mode: mode, end: "manual" } );
-    this.readStreams[memberId].on( "data", ( chunk ) => {
-      // chunk.length = number of bytes in buffer
-      appendFile( `kb/voice-receiver/${memberId}.${mode}`, chunk, ( error ) => {
-        if( error ) {
-          console.error( `Error appending to ${memberId}`, error );
-          this.readStreams[memberId].destroy();
-        }
+
+    if( type === "record" ) {
+      this.readStreams[memberId].on( "data", ( chunk ) => {
+        // chunk.length = number of bytes in buffer
+        appendFile( `kb/voice-receiver/${memberId}.${mode}`, chunk, ( error ) => {
+          if( error ) {
+            console.error( `Error appending to ${memberId}`, error );
+            this.readStreams[memberId].destroy();
+          }
+        });
       });
-    });
+    }
+    else if( type === "pool" ) {
+      const timestamp = ( new Date() ).toLocaleString().replace( /[/, :]/g, "" );
+      this.readStreams[memberId].on( "data", ( chunk ) => {
+        appendFile( `kb/voice-receiver/pool-${timestamp}.${mode}`, chunk, ( error ) => {
+          if( error ) {
+            console.error( `Error appending to ${memberId}`, error );
+            this.readStreams[memberId].destroy();
+          }
+        });
+      });
+    }
     // Opus codec is actually OP, I think we can just kill the stream when the person disconnects from audio
     // the alternative is to save an Interval and check to see if it's time to end it
     // Or we can do something within appendFile
+    /*
     setTimeout( () => {
       console.info( "Destroying VoiceReciever for:", memberId );
       this.readStreams[memberId].destroy();
     }, minutes )
+    */
   },
   configureVoiceConnection( connection ) {
     this.connection = connection;
@@ -261,26 +358,23 @@ export default {
       // not speaking? assume song is over
       if( !value ) {
 
-        console.info( "StreamDispatcher speaking state:", value ) 
-        // we have to shift twice for somereason here
         this.resourceQueue.shift();
-        console.info( "Resource queue length:", this.resourceQueue.length ) 
-
         if( this.resourceQueue.length > 0 ) {
+          console.info( "StreamDispatcher is speaking?:", value == true ) 
+          console.info( "Resource queue length:", this.resourceQueue.length ) 
           console.info( "Previous resource finished; StreamDispatcher starting next resource:", this.resourceQueue[0] ) 
           // include (bot) if you want this
           //bot.user.setActivity( this.resourceQueue[0], { type: "LISTENING" } );
-          this.audioStream = this.connection.play( this.resourceQueue.shift(), this.streamOptions );
-          // nice, this is officially recursive, forgive me hardware
+          this.audioStream = this.connection.play( this.resourceQueue[0], this.streamOptions );
           this.configureAudioStream();
         }
         else {
-          console.info( "No more resources; Destroying StreamDispatcher and disconnecting" );
-          this.audioStream.destroy();
-          this.connection.disconnect();
+          //console.info( "No more resources; Destroying StreamDispatcher and disconnecting" );
+          //this.audioStream.destroy();
+          //this.connection.disconnect();
           // hope this Okaaay
-          this.audioStream = null;
-          this.connection = null;
+          //this.audioStream = null;
+          //this.connection = null;
         }
       }
     });

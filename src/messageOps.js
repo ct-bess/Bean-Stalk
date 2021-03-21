@@ -1,16 +1,27 @@
-/** @param { Discord.Message } message **/
+const sameBroRE = /i(?:'?m)?\s.*(love|just|for|really|look)\s(\w+)/i;
+
+/** 
+ * @method messageOps
+ * * @param { Discord.Message } message 
+ * * @param { Discord.Client } bot 
+ * **/
 export const messageOps = ( message, bot ) => {
 
   const ts = message.createdTimestamp;
   //const r = Math.floor( Math.random() * 2 );
 
+  if( message.content === "S" ) {
+    message.channel.send( "S" );
+  }
+
   // --------------------------- REGEX ---------------------------  \\
 
   if( /16:20|4[\D\W]?20|w[e3]{2,}d/i.test( message.content ) ) {
-    setTimeout( () => { message.react( ":blunt:766311145341845504" ) }, 1000 );
+    setTimeout( () => { message.react( ":blunt:766311145341845504" ) }, 1500 );
   }
-  if( /i('m)?\b.+(really|so|for)\b.+/i.test( message.content ) && ts % 2 === 0 ) {
-    message.reply( "yeah same bro" );
+  if( sameBroRE.test( message.content ) ) {
+    if( ts % 2 === 0 ) message.reply( "yeah same bro" );
+    else message.channel.send( message.content.replace( sameBroRE, "Yeah, $1 $2 bro" ) );
   }
 
   // --------------------------- USER SPECIFIC -------------------------- \\
@@ -28,7 +39,7 @@ export const messageOps = ( message, bot ) => {
 
   if( ts % 69 === 0 ) {
     message.react( "\u0036\u20E3" );
-    setTimeout( () => { message.react( "\u0039\u20E3" ) }, 1000 );
+    setTimeout( () => { message.react( "\u0039\u20E3" ) }, 1500 );
     const filter = ( reaction, user ) => !!reaction.emoji && user.id !== bot.user.id
     message.awaitReactions( filter, { time: 25000 } ).then( (collected) => {
       if( collected.size > 2 ) {
@@ -42,7 +53,7 @@ export const messageOps = ( message, bot ) => {
   // 0x5f3759df = 99841437 in base ten, there's a slim chance a timestamp can be a multiple of this magic number
   else if( ts % 0x5f3759df === 0 ) { 
     message.pin({ reason: "important" });
-    setTimeout( () => { message.react( ":pray:" ) }, 1000 );
+    setTimeout( () => { message.react( ":pray:" ) }, 3000 );
     message.reply( "`// what the fuck?` https://github.com/id-Software/Quake-III-Arena/blob/master/code/game/q_math.c#L552" );
     message.channel.send( ":pray: ***YOU ARE THE CHOSEN ONE*** :pray:" );
   }

@@ -55,11 +55,12 @@ export default {
         console.info( "saving config ..." );
         writeFileSync( "config.json", JSON.stringify( bot.var.config ), error => { console.error(error) });
         console.info( "saved config" );
-        message.reply( "***CHANGE THE WORLD... MY FINAL MESSAGE... GOOD BYE...***" );
+        //message.reply( "***CHANGE THE WORLD... MY FINAL MESSAGE... GOOD BYE...***" );
+        message.react( "\u0030\u20E3" );
         setTimeout( () => {
           bot.destroy();
           exit( 0 );
-        }, 5000 );
+        }, 3000 );
         break;
       case "commands0":
       case "commands1":
@@ -75,19 +76,33 @@ export default {
         const ops = args.has( "on" ) ? true : false;
         bot.var.messageOpsEnabled = ops;
         bot.user.setStatus( ops ? "online" : "idle" );
-        response = ops ? "Real shit" : "I sleep";
+        response = ops ? "Real shit??" : "I sleep";
         break;
       case "setnickname0":
       case "setnickname1":
-        const nickname = args.get( "name" ) || args.get( "nickname" ) || args.get( 1 ) || "Bean-Stalk"
+        let nickname = args.get( "name" ) || args.get( "nickname" ) || args.get( 1 );
+        if( !nickname ) {
+          const randUser = message.guild.members.cache.random();
+          if( !!randUser.nickname ) nickname = nickname = randUser.nickname;
+          else nickname = randUser.user.username;
+        }
         console.debug( "setting nickname to:", nickname );
         bot.guilds.resolve( bot.var.guild ).members.resolve( bot.user.id ).setNickname( nickname );
         break;
       case "setstatus0":
       case "setstatus1":
-        const status = args.get( "status" ) || args.get( 1 ) || "nothing"
+        const status = args.get( "status" ) || args.get( 1 );
+        // not seeing a prop for user's statuses
         const type = args.has( "type" ) ? (args.get( "type" ) + "").toUpperCase() : "PLAYING";
         bot.user.setActivity( status, { type: type } );
+        break;
+      case "resetavatar0":
+      case "resetavatar1":
+        bot.user.setAvatar( bot.user.defaultAvatarURL );
+        break;
+      case "setavatar0":
+      case "setavatar1":
+        bot.user.setAvatar( message.guild.members.cache.random().user.displayAvatarURL() );
         break;
       case "uptime0":
       case "uptime1":

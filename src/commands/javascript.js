@@ -1,4 +1,5 @@
 import { exec, spawn } from "child_process";
+import { sendBulk } from "../sendBulk.js";
 
 export default {
   name: "javascript",
@@ -18,16 +19,17 @@ export default {
       console.info( "Starting child process with base delay:", delay, "milliseconds" );
       message.channel.startTyping();
 
-      // RIP OS Injection: 2020-2021 "Admins are no longer worthy"
+      // RIP OS Injection (Bashdoor; CWE-78): 2020-2021 "Admins are no longer worthy"
       const cliargs = [ "--harmony", "-e", code ];
       let process = spawn( "node", cliargs );
 
       process.stdout.on( "data", data => {
+        const stdout = data.toString();
         // You need to be incrementing the delay to avoid a rate limit
         delay += 1500;
-        console.info( data.toString() );
         setTimeout( () => {
-          message.channel.send( data.toString() );
+          if( stdout.length < 2000 ) message.channel.send( stdout );
+          else sendBulk( stdout, message, null );
         }, delay );
       });
 

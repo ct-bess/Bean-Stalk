@@ -11,9 +11,9 @@ import { Collection } from "discord.js";
  **/
 
 /**
- * @param { Discord.Message } message
- * @param { integer } splits
- * @returns { Discord.Collection }
+ * @method argHandler
+ * * @param { Discord.Message } message
+ * * @returns { Discord.Collection }
  **/
 export const argHandler = ( message ) => {
 

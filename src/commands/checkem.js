@@ -1,11 +1,9 @@
-import { argHandler } from "../argHandler.js";
+import { argHandler } from "../commandUtil.js";
 
 export default {
   name: "checkem",
   description: "Get your message time-stamp",
   aliases: [ "eric" ],
-  options: [ "`rand`\tUses 9 random digits rather than your message timestamp" ],
-  examples: [ "`checkem`", "`checkem rand`" ],
   exec( message, bot ) {
     const args = argHandler( message );
     

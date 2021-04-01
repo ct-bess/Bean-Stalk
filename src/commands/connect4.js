@@ -1,5 +1,5 @@
 import { Collection } from "discord.js";
-import { argHandler } from "../argHandler.js";
+import { argHandler } from "../commandUtil.js";
 
 export default {
   name: "connect4",

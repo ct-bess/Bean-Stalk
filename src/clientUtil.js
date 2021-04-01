@@ -29,13 +29,13 @@ export const execCommand = ( message, bot ) => {
 
       const allowedBots = bot.var.bots.includes( message.author.id );
 
+      //if( /^(?:-{1,2})?help$/.test( commandArgs[1] ) ) {
       if( commandArgs[1] === "help" ) {
         const helpEmbed = help[command.name] || {};
         helpEmbed.color = 0xffea00;
         helpEmbed.title = command.name + "";
         helpEmbed.description = command.description + "";
-        helpEmbed.footer = {};
-        helpEmbed.footer.text = "aliases: " + command.aliases.join(', ');
+        helpEmbed.footer = { text: "aliases: " + command.aliases.join(', ') };
         message.channel.send({ embed: helpEmbed });
       }
       // wait a fat second to execute messages from allowed bots so we don't send a billion requests
@@ -156,7 +156,7 @@ export const handleEvent = ( bot ) => {
             }
             else { // is silent
               if( !!eventObject.command ) {
-                let message = alertChannel.lastMessage;
+                let message = alertChannel.messages.last( 2 )[0];
                 message.content = eventObject.command;
                 if( !message.content.startsWith( bot.var.config.prefix ) ) message.content = bot.var.config.prefix + message.content;
                 console.info( "executing event command:", eventObject.command, "with content:", message.content );

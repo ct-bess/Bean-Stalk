@@ -7,6 +7,18 @@
       }
     ]
   },
+  "collect": {
+    "fields": [
+      {
+        "name": "channel",
+        "value": "The channel to attach the message collecter to\nFormat = `ChannelResolvable`\nDefault: random text channel"
+      },
+      {
+        "name": "time",
+        "value": "How long to collect messages for; Specify minutes or seconds\nFormat = `number(m|s)`\nDefault: 1m"
+      }
+    ]
+  },
   "connect4": {
     "fields": [
       {

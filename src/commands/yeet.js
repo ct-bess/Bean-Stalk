@@ -1,4 +1,4 @@
-import { argHandler } from "../argHandler.js";
+import { argHandler, coalesce } from "../commandUtil.js";
 
 export default {
   name: "yeet",
@@ -7,21 +7,15 @@ export default {
   exec( message, bot ) {
     const args = argHandler( message );
 
-    let channel = bot.channels.cache.random().id;
+    let channel = null;
     if( args.has( "channel" ) ) {
       channel = args.get( "channel" );
+      channel = coalesce( channel, "channel", bot, null );
     }
+    else channel = bot.channels.cache.random();
 
-    if( args.has( 0 ) ) {
-      const arg0 = args.get( 0 );
-      if( arg0.startsWith( "<#" && arg0.endsWith( ">" ) ) ) {
-        channel = arg0.substring( 2, arg0.length - 1 );
-      }
-    }
-
-    console.debug( channel );
-
-    if( bot.channels.cache.has( channel ) ) {
+    if( !!channel ) {
+      let iterations = 0;
       try {
 
         let m = "", validChannel = false;
@@ -30,20 +24,18 @@ export default {
         else m = args.get( "message" ) || ( args.has( 1 ) ? ( args.get( 0 ) + " " + args.get( 1 ) ) : args.get( 0 ) );
 
         do {
-          const actualChannel = bot.channels.resolve( channel );
-
-          const perm = actualChannel.permissionsFor( bot.user.id );
-          console.info( perm.bitfield & 0x800 );
-
-          validChannel = actualChannel.isText() && perm.has( "SEND_MESSAGES" ); //(perm.bitfield & 0x800 === 0x800);
+          const perm = channel.permissionsFor( bot.user.id );
+          validChannel = channel.isText() && perm.has( "SEND_MESSAGES" ); //(perm.bitfield & 0x800 === 0x800);
 
           if( validChannel ) {
-            actualChannel.send( m );
-            //console.info( m );
+            channel.send( m );
             break;
           }
-          channel = bot.channels.cache.random().id;
-        } while( !validChannel && m.length > 0 )
+          channel = bot.channels.cache.random();
+          ++iterations;
+
+        } while( !validChannel && m.length > 0 && iterations < 69 )
+
       } catch( error ) {
         console.error( error );
       }

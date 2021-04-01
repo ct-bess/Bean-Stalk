@@ -1,4 +1,4 @@
-import { argHandler } from "../argHandler.js";
+import { argHandler } from "../commandUtil.js";
 // - Dynamic board size
 // - Fixing board scramble
 const emojiSet = {

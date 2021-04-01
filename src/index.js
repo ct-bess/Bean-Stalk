@@ -96,7 +96,14 @@ bot.on( "channelCreate", ( channel ) => {
 
 bot.on( "guildMemberAdd", ( member ) => {
   const joinedGuild = bot.guilds.resolve( member.guild.id );
-  if( !!joinedGuild ) joinedGuild.channels.cache.first().send( `${guild.welcomeVideo} <@!${member.id}> :sweat_drops:` );
+  if( !!joinedGuild ) {
+    // this will probly break if there are no channels
+    const veryStableGeneral = joinedGuild.channels.cache.first();
+    const perm = veryStableGeneral.permissionsFor( bot.user.id );
+    if( veryStableGeneral.isText() && perm.has( "SEND_MESSAGES" ) ) {
+      veryStableGeneral.send( `${guild.welcomeVideo} <@!${member.id}> :sweat_drops:` );
+    }
+  }
 });
 
 bot.on( "rateLimit", ( rateLimitInfo ) => {

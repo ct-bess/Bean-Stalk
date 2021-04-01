@@ -1,4 +1,4 @@
-import { argHandler } from "../argHandler.js";
+import { argHandler } from "../commandUtil.js";
 
 export default {
   name: "event",

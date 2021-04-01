@@ -1,5 +1,4 @@
-import { argHandler } from "../argHandler.js";
-import { sendBulk } from "../sendBulk.js";
+import { argHandler, sendBulk, coalesce } from "../commandUtil.js";
 import { appendFile, existsSync, readdirSync, createReadStream } from "fs";
 import { decoder, saveRecord } from "../audioUtil.js";
 
@@ -27,7 +26,17 @@ export default {
     const clippath = "kb/voice-records";
 
     let resource = args.get( "resource" ) || args.get( "r" ) || args.get( 1 );
-    let memberId = args.get( "user" ) || args.get( "who" ) || message.author.id;
+    let memberId = null;
+    if( args.has( "user" ) ) {
+      const member = coalesce( args.get( "user" ), "member", null, message.member.guild  );
+      if( !!memberId ) memberId = memberId.author.id;
+      else {
+        response = "bruH can't find given user";
+        console.warn( `couldnt find user: ${args.get( "user" )}` );
+        subcommand = 1;
+      }
+    }
+    else memberId = message.author.id;
 
     // I am very much temporary
     const bngpath = "/home/ctbess/.steam/steam/steamapps/music/BallisticNG - Soundtrack/";
@@ -63,6 +72,7 @@ export default {
           // OK FUNNY this throws the same error I'm having with @discord/opus
           // but it's probly b/c this is just a buffer dump, there are not opus headers in this file
           // ACTUALLY NVM it still dies if I properly create an opus file with the proper headers
+          // word on the street is you gotta make extra super sure it's a real opus file
           this.streamOptions.type = "opus";
           resource = createReadStream( resource );
           break;
@@ -89,12 +99,16 @@ export default {
     // make sure you validate that's a voice channel dog
     // another case of "man I really need to upgrade to ES2021 w/e for better nullish ops"
     if( args.has( "channel" ) ) {
-      if( bot.channels.cache.has( args.get( "channel" ) ) ) {
-        const channel = bot.channels.cache.resolve( args.get( "channel" ) );
+
+      let channel = args.get( "channel" );
+      channel = coalesce( channel, "channel", bot, null );
+
+      if( !!channel ) {
         if( channel.type === "voice" ) {
           voiceChannel = channel;
         }
       }
+
     }
 
     if( !!this.connection ) {
@@ -200,21 +214,16 @@ export default {
         });
         break;
       case "echo11":
-        this.createReadStream( memberId, null, 1 );
-        this.connection.play( this.readStreams[memberId], { type: "opus" } );
-        break;
       case "echo10":
         this.createReadStream( memberId, null, 1 );
-        this.audioStream = this.connection.play( this.readStreams[memberId], { type: "opus" } );
-        this.configureAudioStream();
+        this.connection.play( this.readStreams[memberId], { type: "opus" } );
         break;
       case "echo01":
       case "echo00":
         voiceChannel.join().then( connection => {
           this.configureVoiceConnection( connection );
           this.createReadStream( memberId, null, 1 );
-          this.audioStream = connection.play( this.readStreams[memberId], { type: "opus" } );
-          this.configureAudioStream();
+          connection.play( this.readStreams[memberId], { type: "opus" } );
         });
         break;
       case "clip00":
@@ -247,7 +256,7 @@ export default {
           if( !this.readStreams[key].destroyed ) {
             let name = bot.guilds.resolve( bot.var.guild ).members.resolve( key );
             name = !!name ? name.nickname || name.displayName : key;
-            response += name + " ";
+            response += name + "\n";
             console.info( name, key );
           }
         }

@@ -12,6 +12,7 @@ import { Collection } from "discord.js";
 
 /**
  * @method argHandler
+ * @description returns a command input into arguments mapped to a subcommand, flags/variables, and an expression
  * * @param { Discord.Message } message
  * * @returns { Discord.Collection }
  **/
@@ -105,4 +106,92 @@ export const argHandler = ( message ) => {
 
   return( argMap );
 
+};
+
+/** 
+ * @method coalesce
+ * @description converts a name or snowflake ID to its' corresponding discord class
+ * * @param { string } name
+ * * @param { string } type
+ * * @param { Discord.Client } bot
+ * * @param { Discord.Guild } guild
+ * * @returns { * }
+ * **/
+export const coalesce = ( name, type, bot, guild ) => {
+
+  const isID = /\d{18}/.test( name );
+  // if we get an ID, we simply try to resolve it
+  type = ( type + "" ).toLowerCase() + (isID + 0);
+
+  let base = null;
+
+  switch( type ) {
+    case "channel1":
+      base = bot.channels.resolve( name );
+      break;
+    case "channel0":
+      base = bot.channels.cache.find( channel => channel.name === name );
+      break;
+    case "member1":
+      base = guild.members.resolve( name );
+      break;
+    case "member0":
+      base = guild.members.cache.find( member => member.user.username || member.nickname === name );
+      break;
+    default:
+      console.warn( "coalesce called on invalid type:", type );
+  }
+
+  return( base );
+
+};
+
+/** 
+ * @method sendBulk
+ * @description partitions a large message into 2000 character pieces and sends each part every 1.5 seconds
+ * * @param { Discord.Message } message 
+ * * @returns { void }
+ * **/
+export const sendBulk = ( response, message, format ) => {
+  console.info( "[ INFO ] sendBulk() response length: " + response.length );
+  let textBound = 2000, delay = 1500;
+  let prefix = "", suffix = "";
+  switch( format ) {
+    case "italics":
+      textBound = 1998;
+      prefix = "*", suffix = prefix;
+      break;
+    case "bold":
+      textBound = 1996;
+      prefix = "**", suffix = prefix;
+      break;
+    case "inline code":
+      textBound = 1998;
+      prefix = "`", suffix = prefix;
+      break;
+    case "quote":
+      textBound = 1998;
+      prefix = "> ";
+      break;
+    case "quote block":
+      textBound = 1996;
+      prefix = ">>> ";
+      break;
+    case "code block":
+      textBound = 1992;
+      prefix = "```\n", suffix = "\n```";
+      break;
+    default:
+      textBound = 2000;
+      prefix = "", suffix = "";
+  }
+  if( response.length < textBound ) {
+    console.warn( "[ WARN ] sendBulk called on string < 2000" );
+  }
+  for( let i = 0; i < response.length; i += textBound ) {
+    const chunk = response.substring( i, i + textBound );
+    delay += 1500;
+    //message.channel.send( prefix + chunk + suffix );
+    setTimeout( () => { message.channel.send( prefix + chunk + suffix ) }, delay );
+  }
 };

@@ -1,5 +1,4 @@
-import { sendBulk } from "../sendBulk.js";
-import { argHandler } from "../argHandler.js";
+import { argHandler, sendBulk } from "../commandUtil.js";
 
 export default {
   name: "dice",

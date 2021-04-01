@@ -3,9 +3,11 @@ import events from "../events.json";
 import config from "../config.json";
 
 /** 
- * @param { Discord.Client } bot 
- * @param { String } singularCommand
- * @returns { void }
+ * @method loadCommands
+ * @description imports all or one command module into the bot. Overwrites the require cache if the command was already imported
+ * * @param { Discord.Client } bot client to load to
+ * * @param { string } singularCommand optional: the name of one command to load
+ * * @returns { void }
  * **/
 export const loadCommands = ( bot, singularCommand ) => {
   if( !!singularCommand ) {
@@ -51,7 +53,12 @@ export const loadCommands = ( bot, singularCommand ) => {
   }
 };
 
-/** @param { Discord.Client } bot **/
+/** 
+ * @method validateGuild
+ * @description validates guild.json to prevent the client from breaking from my expertly hard coded guild variables
+ * * @param { Discord.Client } bot client to validate guild.json on
+ * * @returns { void }
+ * **/
 export const validateGuild = ( bot ) => {
 
   console.info( "Validating Guild bot variables ..." );

@@ -13,8 +13,8 @@ import { Collection } from "discord.js";
 /**
  * @method argHandler
  * @description returns a command input into arguments mapped to a subcommand, flags/variables, and an expression
- * * @param { Discord.Message } message
- * * @returns { Discord.Collection }
+ * * @param { Discord.Message } message the message that executed the command
+ * * @returns { Discord.Collection } the mapped results: subcommand get(0), expression get(1), flags/variables get("x")
  **/
 export const argHandler = ( message ) => {
 
@@ -32,7 +32,10 @@ export const argHandler = ( message ) => {
   let subcommandSet = false, expressionSet = false;
 
   // command name is always first no exceptions
-  const command = args.shift();
+  const command = args.shift().toLowerCase();
+  // this was an after thought, one day i'll make it 0, 1, 2 for cmd, sub cmd, expr
+  argMap.set( -1, command );
+
   console.info( "Parsing arguments for", command );
 
   // Version 2: Fungal Smelter
@@ -111,11 +114,11 @@ export const argHandler = ( message ) => {
 /** 
  * @method coalesce
  * @description converts a name or snowflake ID to its' corresponding discord class
- * * @param { string } name
- * * @param { string } type
- * * @param { Discord.Client } bot
- * * @param { Discord.Guild } guild
- * * @returns { * }
+ * * @param { string } name the user, channel, or role name we are coalescing
+ * * @param { string } type what discord class type we are converting it to (member, channel, or role)
+ * * @param { Discord.Client } bot discord client processing this (not needed for member and role coalescing)
+ * * @param { Discord.Guild } guild guild origin (not needed for channel coalescing)
+ * * @returns { * } the discord class with respect to the input type; If null the coalescing failed
  * **/
 export const coalesce = ( name, type, bot, guild ) => {
 
@@ -138,6 +141,12 @@ export const coalesce = ( name, type, bot, guild ) => {
     case "member0":
       base = guild.members.cache.find( member => member.user.username || member.nickname === name );
       break;
+    case "role1":
+      base = guild.roles.resolve( name );
+      break;
+    case "role0":
+      base = guild.roles.cache.find( role => role.name === name );
+      break;
     default:
       console.warn( "coalesce called on invalid type:", type );
   }
@@ -149,7 +158,7 @@ export const coalesce = ( name, type, bot, guild ) => {
 /** 
  * @method sendBulk
  * @description partitions a large message into 2000 character pieces and sends each part every 1.5 seconds
- * * @param { Discord.Message } message 
+ * * @param { Discord.Message } message the message origin
  * * @returns { void }
  * **/
 export const sendBulk = ( response, message, format ) => {

@@ -1,7 +1,7 @@
 import Discord from "discord.js";
 import auth from "../auth.json";
 import guild from "../guild.json";
-import { loadCommands, validateGuild } from "./loadCommands.js";
+import { loadCommands, validateGuild } from "./systemUtil.js";
 import { messageOps } from "./messageOps.js";
 import { execCommand, handleEvent } from "./clientUtil.js";
 
@@ -59,20 +59,28 @@ bot.on( "presenceUpdate", ( oldPresence, newPresence ) => {
       //const risingEdge = !!oldPresence && oldPresence.status === "offline" && newPresence.status === "online";
       const risingEdge = !oldPresence && newPresence.status === "online";
       const fallingEdge = !!oldPresence && oldPresence.status === "online" && newPresence.status === "offline";
-      console.info( "Kenny Presence ~", "rising edge:", risingEdge, "falling edge:", fallingEdge );
+      console.debug( "Kenny Emmy Presence ~", "rising edge:", risingEdge, "falling edge:", fallingEdge );
       if( risingEdge === true ) {
         if( who === bot.var.members.emmy ) {
+          console.info( "Emmy logged in bro" );
           bot.channels.resolve( bot.var.channels.commands ).send( "Happy birthday Emmy!" );
-          bot.user.setActivity( "MONKE MAIN SPOTTED" );
+          bot.user.setActivity( "ONE WINGED KONG" );
         }
         else {
+          console.info( "Kenny logged in bro" );
           bot.channels.resolve( bot.var.channels.kenny ).send( `Hi ${bot.var.roles.kenny}` );
           bot.user.setActivity( "KENNY SPOTTED" );
         }
       }
       if( fallingEdge === true ) {
-        if( who === bot.var.members.emmy ) bot.user.setActivity( "SEE YOU DK" );
-        else bot.user.setActivity( "SEE YOU SPACE MIATA" );
+        if( who === bot.var.members.emmy ) {
+          console.info( "Emmy logged out :'[" );
+          bot.user.setActivity( "SEE YOU DK" );
+        }
+        else {
+          console.info( "Kenny logged out :'[" );
+          bot.user.setActivity( "SEE YOU SPACE MIATA" );
+        }
       }
     }
   }

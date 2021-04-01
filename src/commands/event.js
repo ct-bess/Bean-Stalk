@@ -1,4 +1,4 @@
-import { argHandler } from "../commandUtil.js";
+import { argHandler, coalesce } from "../commandUtil.js";
 
 export default {
   name: "event",
@@ -61,11 +61,27 @@ export default {
 
         let loc = "none specified";
         if( args.has( "location" ) ) {
-          loc = args.get( "location" ) + "";
-          if( loc.startsWith( "<#" && loc.endsWith( ">" ) ) ) {
-            loc = loc.substring( 2, loc.length - 1 );
+          loc = args.get( "location" );
+          const channel = coalesce( loc, "channel", bot, null );
+          if( !!channel ) loc = channel.id;
+        }
+        let roles = [];
+        if( args.has( "roles" ) ) {
+          let roleArg = args.get( "roles" ).split( " " );
+          for( const role of roleArg ) {
+            const roleObj = coalesce( role, "role", null, message.member.guild );
+            if( !!roleObj ) roles.push( roleObj.id );
           }
         }
+        let attendees = [];
+        if( args.has( "attendees" ) ) {
+          let attendeeArg = args.get( "attendees" ).split( " " );
+          for( const attendee of attendeeArg ) {
+            const userObj = coalesce( attendee, "member", null, message.member.guild );
+            if( !!userObj ) attendees.push( userObj.id );
+          }
+        }
+
         const newEvent = {
           period: args.get( "period" ) || 8,
           location: loc,
@@ -74,9 +90,8 @@ export default {
           occurances: 0,
           description: args.get( "description" ) || ":sweat_drops:",
           command: args.get( "command" ),
-          // cool but allow the @ use case, normal people dont copy paste snowflake ids
-          roles: args.has( "roles" ) ? args.get( "roles" ).split( ' ' ) : [],
-          attendees: args.has( "attendees" ) ? args.get( "attendees" ).split( ' ' ) : [],
+          roles: roles,
+          attendees: attendees,
           organizers: [ message.author.id ]
         };
         console.info( "Creating New event ...", newEvent );
@@ -161,14 +176,14 @@ export default {
         }
         break;
       case "kick11":
-        const user = args.get( "attendee" ) || args.get( "who" ) || args.get( 1 );
+        const user = coalesce( args.get( "attendee" ) || args.get( 1 ), "member", null, message.member.guild );
         if( !!user ) {
-          const isInEvent = event.attendees.includes( user );
-          const isOrg = event.organizers.includes( user );
+          const isInEvent = event.attendees.includes( user.id );
+          const isOrg = event.organizers.includes( user.id );
 
-          if( isOrg ) event.organizers.splice( event.organizers.indexOf( user ), 1 );
+          if( isOrg ) event.organizers.splice( event.organizers.indexOf( user.id ), 1 );
           if( isInEvent ) {
-            event.attendees.splice( event.attendees.indexOf( user ), 1 );
+            event.attendees.splice( event.attendees.indexOf( user.id ), 1 );
             response = `Kicked the supplied user from ${eventTime} ${eventTime} :cry:`;
           }
           else response = "Supplied user isn't an attendee";

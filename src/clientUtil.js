@@ -2,8 +2,10 @@ import help from "../help.json";
 
 /**
  * @method execCommand
- * * @param { Discord.Message || String } message
- * * @param { Discord.Client } bot
+ * @description process and execute a bot command from a text channel. Prefix validation does not happen here, only command validation
+ * * @param { Discord.Message | string } message the message that called this function. If called with a string, sets the bot's last message as the origin
+ * * @param { Discord.Client } bot the discord client processing the command
+ * * @returns { void }
  **/
 export const execCommand = ( message, bot ) => {
 
@@ -17,13 +19,15 @@ export const execCommand = ( message, bot ) => {
       message.content = content;
     }
 
-    commandArgs = message.content.slice( bot.var.config.prefix.length ).toLowerCase().split( /\s+/, 2 );
+    message.content = message.content.slice( bot.var.config.prefix.length );
+    commandArgs = message.content.toLowerCase().split( /\s+/, 2 );
     command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
 
     console.debug( "[ execCommand ] -", "User:", message.author.username, "Command:", commandArgs[0] );
 
     if( !command ) {
       message.reply( "bruHh" );
+      console.info( "Unknown command" );
     }
     else {
 
@@ -62,7 +66,9 @@ export const execCommand = ( message, bot ) => {
 
 /**
  * @method handleEvent
- * * @param { Discord.Client } bot
+ * @description processes time based client events for scheduled commands
+ * * @param { Discord.Client } bot the client to handle the event
+ * * @returns { void }
  **/
 export const handleEvent = ( bot ) => {
   try {
@@ -156,7 +162,7 @@ export const handleEvent = ( bot ) => {
             }
             else { // is silent
               if( !!eventObject.command ) {
-                let message = alertChannel.messages.last( 2 )[0];
+                let message = alertChannel.lastMessage;
                 message.content = eventObject.command;
                 if( !message.content.startsWith( bot.var.config.prefix ) ) message.content = bot.var.config.prefix + message.content;
                 console.info( "executing event command:", eventObject.command, "with content:", message.content );

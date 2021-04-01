@@ -2,8 +2,10 @@ const sameBroRE = /i(?:'?m)?\s.*(love|just|for|really|look)\s(\w+)/i;
 
 /** 
  * @method messageOps
- * * @param { Discord.Message } message 
- * * @param { Discord.Client } bot 
+ * @description runs a message through a gauntlet of horrible inside jokes and makes the client respond accordingly
+ * * @param { Discord.Message } message the message origin
+ * * @param { Discord.Client } bot client processing the message
+ * * @returns { void }
  * **/
 export const messageOps = ( message, bot ) => {
 

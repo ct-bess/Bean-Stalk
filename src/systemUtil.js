@@ -84,8 +84,16 @@ export const validateGuild = ( bot ) => {
     const emoji = bot.emojis.cache.has( bot.var.emojis[key] );
     let e = { name: "huge-error", id: "if-this-shows-up" };
     if( !emoji ) {
-      console.warn( `Emoji: ${bot.var.emojis[key]} doesn't exist; Falling back to a random emoji` );
-      e = bot.emojis.cache.random();
+      const fuzzyNameRE = new RegExp( `${key}`, "i" );
+      const candidate = bot.emojis.cache.find( emoji => fuzzyNameRE.test( emoji.name ) );
+      if( !!candidate ) {
+        console.warn( `Emoji: ${bot.var.emojis[key]} is invalid; Using a close match :${candidate.name}:${candidate.id}` );
+        e = candidate;
+      }
+      else {
+        console.warn( `Emoji: ${bot.var.emojis[key]} doesn't exist; Falling back to a random emoji` );
+        e = bot.emojis.cache.random();
+      }
     }
     else {
       e = bot.emojis.cache.get( bot.var.emojis[key] );

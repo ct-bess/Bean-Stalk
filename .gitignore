@@ -19,3 +19,4 @@ src/commands/.ccs/decom/
 # Miscellaneous:
 temp.js
 test.js
+*.awk

@@ -91,7 +91,7 @@ bot.on( "presenceUpdate", ( oldPresence, newPresence ) => {
 
 bot.on( "messageDelete", ( message ) => {
   console.info( "message deleted", message.author.username, message.content );
-  if( message.content.length > 0 ) message.channel.send( message.content );
+  if( !message.author.bot && message.content.length > 0 ) message.channel.send( message.content );
 });
 
 bot.on( "channelCreate", ( channel ) => {

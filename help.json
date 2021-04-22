@@ -10,40 +10,40 @@
   "collect": {
     "fields": [
       {
-        "name": "channel",
-        "value": "The channel to attach the message collecter to\nFormat = `ChannelResolvable`\nDefault: random text channel"
+        "name": "--channel=`ChannelResolvable`",
+        "value": "The channel to attach the message collecter to\nDefault: random text channel"
       },
       {
-        "name": "time",
-        "value": "How long to collect messages for; Specify minutes or seconds\nFormat = `number(m|s)`\nDefault: 1m"
+        "name": "--time=`number(m|s)`",
+        "value": "How long to collect messages for; Specify minutes or seconds\nDefault: `1m`"
       }
     ]
   },
   "connect4": {
     "fields": [
       {
-        "name": "new <?width> <?height>",
-        "value": "Create a new board\nshorthand = n\n<?width> = number\n<?height> = number\nDefaults: <?width> = 7, <?height> = 6"
+        "name": "new --width=`number` --height=`number`",
+        "value": "Create a new board\nshorthand = n\nDefaults: width = `7`, height = `6`"
       },
       {
-        "name": "join <?emoji>",
-        "value": "Join the active game\nshorthand = j\n<?emoji> = text\nDefaults: <?emoji> = random circle emoji"
+        "name": "join --marker=`string`",
+        "value": "Join the active game\nshorthand = j\nCan shorthand marker expression\nDefault: marker = random circle emoji"
       },
       {
-        "name": "place <x-pos/row>",
-        "value": "During your turn, drops your peice on the board at the specified spot\nshorthand = p\n<x-pos/row> = number"
+        "name": "place --col=`number`",
+        "value": "During your turn, drops your peice on the board at the specified spot\nshorthand = p\nCan shorthand column as expression"
       },
       {
         "name": "list",
         "value": "List the players, the turn order, and their marker"
       },
       {
-        "name": "kick <username>",
-        "value": "Unconditionally remove the given user\n<username> = discord username minus #numbers"
+        "name": "kick --player=`GuildMemberResolvable`",
+        "value": "Unconditionally remove the given player from the game\nCan shorthand player as expression\n`GuildMemberResolvable` is an ID, name, or nickname"
       },
       {
         "name": "reset",
-        "value": "Resets the game and players"
+        "value": "Unconditionally resets the game and players"
       }
     ]
   },
@@ -90,8 +90,8 @@
   "dice": {
     "fields": [
       {
-        "name": "<size> <?rolls>",
-        "value": "Roll a dice of the specified size. Optionally roll <?rolls> ammount of dies, picking the highest if <?rolls> is positive and picks the lowest if <?rolls> is negative\n<size> = number\n<?rolls> = number\nDefaults: <?rolls> = 1"
+        "name": "`number` --count=`number`",
+        "value": "That's right, you use the dice size as the subcommand here. Use count to roll multiple dice at once\nCan shorthand count as expression\nDefault: count = `1`"
       },
       {
         "name": "history",
@@ -126,72 +126,72 @@
   "event": {
     "fields": [
       {
-        "name": "create <name> <date> <?location> <?frequency>",
-        "value": "Create a new event for people to join.\n<name> = event name\n<date> = IETF-compliant RFC 2822 timestamp\n<?location> = text\n<?frequency> = text\nOptions: <?frequency> one-off, daily, weekly\nDefaults: <?location> = No where, <?frequency> = one-off"
+        "name": "create --name=`string` --time=`HH:MM` --location=`ChannelResolvable` --attendees=`list<GuildMemberResolvable>` --roles=`list<GuildRoleResolvable>` --period=`number` --description=`string` -raw -silent --command=`string`",
+        "value": "creates a new event with the given variables\n-raw = only output event description\n-silent = don't event details\nThe list variables are space seperated, so you'll need to double quote them if your adding multiple users/roles"
       },
       {
-        "name": "join <name>",
-        "value": "Join the specified event name\n<name> = event name"
+        "name": "join --name=`string` --time=`HH:MM`",
+        "value": "join the specified event"
       },
       {
-        "name": "show <name>",
-        "value": "Shows the specified event name\n<name> = event name"
+        "name": "show --name=`string` --time=`HH:MM`",
+        "value": "display the specified event"
       },
       {
         "name": "list",
         "value": "Lists all events"
       },
       {
-        "name": "edit <name> <variable> <value>",
-        "value": "Edits the specified event variable to the given value\n<name> = event name\n<variable> = event variable\n<value> = variable value"
+        "name": "edit --name=`string` --time=`HH:MM` `variable/flag`=`new value`",
+        "value": "edit the field of the specified event\nnote: to change the name and time, use newtime and newname as the change variables"
       },
       {
-        "name": "leave <name>",
-        "value": "Executing user leaves the given event\n<name> = event name"
+        "name": "leave --name=`string` --time=`HH:MM`",
+        "value": "voluntarily exile yourself from the specified event"
       },
       {
-        "name": "kick <user name>",
-        "value": "Lets an admin kick the given user from the event object\n<user name> = a participant's user name"
+        "name": "kick --name=`string` --time=`HH:MM` --attendee=`GuildMemberResolvable`",
+        "value": "forcably remove the given attendee from the specified event. Only an event mod can do this"
       },
       {
-        "name": "mod <name> <user name>",
-        "value": "Grants admin privilledges to the given user name for the specified event\n<name> = event name\n<user name> = participant's user name"
+        "name": "mod --name=`string` --time=`HH:MM` --attendee=`GuildMemberResolvable`",
+        "value": "Give a user admin/mod permissions. Only an event mod can do this"
       },
       {
-        "name": "delete <name>",
-        "value": "Deletes the specified event\n<name> = event name"
+        "name": "delete --name=`string` --time=`HH:MM`",
+        "value": "Remove the specified event. Only an event mod can do this"
       }
     ]
   },
   "grantspeak": {
     "fields": [
       {
-        "name": "<?message>",
-        "value": "convert the given message to Grant Speak\n<?message> = text\nDefaults: <?message> = previous message in channel"
+        "name": "`string`",
+        "value": "convert the given message to Grant Speak\nDefault: if no string is provided, tries to use the message before the command"
       }
     ]
   },
   "javascript": {
     "fields": [
       {
-        "name": "<script>",
-        "value": "Execute the given script in JavaScript and return stdout. Your script is only given 3 seconds to complete\n<script> = text\nExample <script> = for(let i=0;i<5;++i){console.log(':sweat_drops:'*3)}"
+        "name": "`javascriptCode`",
+        "value": "The javascript to execute. stdout is slowly printed to the message channel as it recieves it. Process will be manually killed if it takes too long"
       }
     ]
   },
   "radiant": {
     "fields": [
       {
-        "name": "<?line number>",
-        "value": "Fetch the specified line number\n<?line number> = number\nDefaults: <?line number> = random line number in file"
+        "name": "`lineNumber`",
+        "value": "Fetch the specified line number\nDefault: random line number in file"
       }
     ]
   },
   "system": {
     "fields": [
       {
-        "name": "reload <?command name>",
-        "value": "Transpile and reload the specified <?command name> or all commands if none specified\nDefaults: <?command name> = null"
+        "name": "reload `commandName`",
+        "value": "Transpile and reload the specified command or all commands if none specified"
       },
       {
         "name": "die",
@@ -199,15 +199,15 @@
       },
       {
         "name": "commands",
-        "value": "List all available commands; Use <command name> -help for more info on a specific command"
+        "value": "List all available commands"
       },
       {
         "name": "uptime",
         "value": "Display Bean's uptime"
       },
       {
-        "name": "regex <?mode>",
-        "value": "Turn regex and timestamp reactions on or off\n<?mode> = text\nOptions: <?mode> = off, 0\nDefaults: <?mode> = null"
+        "name": "regex -on",
+        "value": "Turn regex and timestamp reactions on or off\n-on = if supplied in command, turns regex responses on\nDefault: off"
       },
       {
         "name": "vrms",
@@ -222,16 +222,16 @@
   "wumpus": {
     "fields": [
       {
-        "name": "new <?emoji>",
-        "value": "Create a new board\nshorthand subcommand = n\nDefaults: <?emoji> = :joy:"
+        "name": "new `playerMarker`",
+        "value": "Create a new board\nshorthand subcommand = n\nDefaults: `playerMarker` = :joy:"
       },
       {
-        "name": "move <direction>",
-        "value": "Move your player in the specified direction\nshorthand subcommand = m\n<direction> = text\nOptions: <direction> = up, down, left, right, u, d, l, r"
+        "name": "move `direction`",
+        "value": "Move your player in the specified direction\nshorthand subcommand = m\n`direction` = up, down, left, right, u, d, l, r"
       },
       {
-        "name": "shoot <direction>",
-        "value": "Shoot an arrow in the specified direction\nshorthand subcommand = s\n<direction> = text\nOptions: <direction> = up, down, left, right, u, d, l, r"
+        "name": "shoot `direction`",
+        "value": "Shoot your bow in the specified direction\nshorthand subcommand = s\n`direction` = up, down, left, right, u, d, l, r"
       }
     ]
   }

@@ -27,9 +27,13 @@ export default {
         const perm = channel.permissionsFor( bot.user.id );
         let validChannel = channel.isText() && perm.has( "SEND_MESSAGES" );
 
+        // called with no message to echo
         if( !args.has( 0 ) ) m = message.channel.messages.cache.last( 2 )[0].content;
-        // cool
-        else m = message.content.slice( bot.var.config.prefix.length + args.get( -1 ).length );
+        // STAND ASIDE AND LET A REAL ENGINEER HANDLE IT
+        else if( args.has( 0 ) && !args.has( 1 ) ) m = args.get( 0 );
+        else m = args.get( 0 ) + " " + args.get( 1 );
+        // this will attach flags and variables to the echo response
+        //else m = message.content.slice( bot.var.config.prefix.length + args.get( -1 ).length );
 
         while( !validChannel && iterations < 69 ) {
           channel = bot.channels.cache.random();

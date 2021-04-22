@@ -29,7 +29,7 @@ export default {
     let memberId = null;
     if( args.has( "user" ) ) {
       const member = coalesce( args.get( "user" ), "member", null, message.member.guild  );
-      if( !!memberId ) memberId = memberId.author.id;
+      if( !!member ) memberId = member.user.id;
       else {
         response = "bruH can't find given user";
         console.warn( `couldnt find user: ${args.get( "user" )}` );
@@ -215,6 +215,7 @@ export default {
         break;
       case "echo11":
       case "echo10":
+        // multiple listeners is probly broken b/c there's a promise I need to play it from?
         this.createReadStream( memberId, null, 1 );
         this.connection.play( this.readStreams[memberId], { type: "opus" } );
         break;

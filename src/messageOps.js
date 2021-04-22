@@ -1,4 +1,7 @@
+import { createDigraphs, generateSentence } from "./digraphUtil.js";
+
 const sameBroRE = /i(?:'?m)?\s.*(love|just|for|really|look)\s(\w+)/i;
+const amogusRE = /amon?g.?us|sus|red|task|meet|vent|scan|trash|button|vote|imposter|O2|electrical/i;
 
 /** 
  * @method messageOps
@@ -10,20 +13,30 @@ const sameBroRE = /i(?:'?m)?\s.*(love|just|for|really|look)\s(\w+)/i;
 export const messageOps = ( message, bot ) => {
 
   const ts = message.createdTimestamp;
-  //const r = Math.floor( Math.random() * 2 );
+
+  // --------------------------- YUP ---------------------------  \\
 
   if( message.content === "S" ) {
     message.channel.send( "S" );
+  }
+  else if( message.content === "ok" && ts % 2 === 0 ) {
+    message.channel.send( "ok" );
   }
 
   // --------------------------- REGEX ---------------------------  \\
 
   if( /16:20|4[\D\W]?20|w[e3]{2,}d/i.test( message.content ) ) {
-    setTimeout( () => { message.react( ":blunt:766311145341845504" ) }, 1500 );
+    setTimeout( () => { message.react( bot.var.emojis.blunt ) }, 1000 );
   }
   if( sameBroRE.test( message.content ) ) {
-    if( ts % 2 === 0 ) message.reply( "yeah same bro" );
-    else message.channel.send( message.content.replace( sameBroRE, "Yeah, $1 $2 bro" ) );
+    if( ts % 7 === 0 ) message.reply( `yeah same bro ${bot.var.emojis.goodpoint}` );
+    else if( ts % 11 === 0 )  message.channel.send( message.content.replace( sameBroRE, "Yeah, $1 $2 bro" ) );
+    else setTimeout( () => { message.react( bot.var.emojis.goodpoint ) }, 1000 );
+  }
+  if( amogusRE.test( message.content ) ) {
+    if( ts % 7 === 0 ) message.channel.send( `${bot.var.emojis.sus} That's sus ${bot.var.emojis.sus}` );
+    else if( ts % 11 === 0 ) message.reply( "You are SUS" );
+    else setTimeout( () => { message.react( bot.var.emojis.sus ) }, 1000 );
   }
 
   // --------------------------- USER SPECIFIC -------------------------- \\
@@ -39,7 +52,25 @@ export const messageOps = ( message, bot ) => {
 
   // --------------------------- TIME STAMPS -------------------------- \\
 
-  if( ts % 69 === 0 ) {
+  if( ts % 19 === 0 ) {
+    const filter = message => !!message.content;
+    const channel = message.channel;
+    const messages = [ message.content ];
+
+    channel.awaitMessages( filter, { time: 60*1000 } ).then( collected => {
+
+      collected.forEach( message => {
+        messages.push( message.content );
+      });
+      const size = Math.floor( Math.random() * 20 ) + 1;
+      const digraphs = createDigraphs( messages );
+      const sentence = generateSentence( digraphs, size ) || "";
+      if( sentence.length > 0 ) channel.send( sentence );
+      else console.error( "sentence was empty" );
+
+    });
+  }
+  else if( ts % 69 === 0 ) {
     message.react( "\u0036\u20E3" );
     setTimeout( () => { message.react( "\u0039\u20E3" ) }, 1500 );
     const filter = ( reaction, user ) => !!reaction.emoji && user.id !== bot.user.id

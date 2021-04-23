@@ -3,7 +3,7 @@ import help from "../../help.json";
 
 export default {
   name: "help",
-  aliases: [],
+  aliases: [ "h" ], 
   description: "get help on the specified command and/or subcommand",
   exec( message, bot ) {
     const args = argHandler( message );
@@ -12,7 +12,7 @@ export default {
       const cmdFormatEmbed = {
         color: 0xffea00,
         title: "Command help:",
-        description: "",
+        description: "*Ya'll wana learn how to do a command???*",
         fields: [
           {
             name: "Command Format:",
@@ -29,8 +29,16 @@ export default {
           {
             name: "expressions:",
             value: "A command's expression is always the last part; It is usually something a bit more involved than the rest that the command processes. Expressions are sometimes required and sometimes are used as a shorthand for a flag/variable (usually when a subcommand has 1 required option)"
+          },
+          {
+            name: "What's next?",
+            value: "Run `[bean commands` for a list of commands and `[help CommandName` on the command you want to run."
           }
-        ]
+        ],
+        footer: { 
+          text: "A certified Bean-Stalk #moment",
+          icon_url: bot.user.displayAvatarURL()
+        }
       };
 
       message.channel.send({ embed: cmdFormatEmbed });
@@ -54,7 +62,10 @@ export default {
       helpEmbed.color = 0xffea00;
       helpEmbed.title = command.name + "";
       helpEmbed.description = command.description + "";
-      helpEmbed.footer = { text: "aliases: " + command.aliases.join(', ') };
+      helpEmbed.footer = {
+        text: "aliases: " + command.aliases.join(', '),
+        icon_url: bot.user.displayAvatarURL()
+      };
 
       message.channel.send({ embed: helpEmbed });
 

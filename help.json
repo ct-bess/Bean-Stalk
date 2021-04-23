@@ -123,6 +123,18 @@
       }
     ]
   },
+  "echo": {
+    "fields": [
+      {
+        "name": "--channel=`TextChannelResolvable` `message`",
+        "value": "Which channel to send the message in\nIf called as echo: defaults to the current channel\nIf called as yeet: defaults to a random text channel\nMessage defaults to the previous message if none is given."
+      },
+      {
+        "name": "--delay=`integer`",
+        "value": "How long to wait in seconds until the message is sent\nDefault: right now"
+      }
+    ]
+  },
   "event": {
     "fields": [
       {
@@ -134,8 +146,8 @@
         "value": "join the specified event"
       },
       {
-        "name": "show --name=`string` --time=`HH:MM`",
-        "value": "display the specified event"
+        "name": "show --name=`string` --time=`HH:MM` -loud",
+        "value": "display the specified event\n-loud = use this flag to @ the attendees"
       },
       {
         "name": "list",
@@ -171,11 +183,19 @@
       }
     ]
   },
+  "help": {
+    "fields": [
+      {
+        "name": "`CommandNameResolvable`",
+        "value": "Display the help object for the given command name or alias.\nDefault: display general command help"
+      }
+    ]
+  },
   "javascript": {
     "fields": [
       {
-        "name": "`javascriptCode`",
-        "value": "The javascript to execute. stdout is slowly printed to the message channel as it recieves it. Process will be manually killed if it takes too long"
+        "name": "`JavaScriptCode`",
+        "value": "The JavaScript to execute. stdout is slowly printed to the message channel as it recieves it. Process will be manually killed if it takes too long"
       }
     ]
   },
@@ -190,7 +210,7 @@
   "system": {
     "fields": [
       {
-        "name": "reload `commandName`",
+        "name": "reload `CommandNameResolvable`",
         "value": "Transpile and reload the specified command or all commands if none specified"
       },
       {
@@ -206,7 +226,7 @@
         "value": "Display Bean's uptime"
       },
       {
-        "name": "regex -on",
+        "name": "regex -on -off",
         "value": "Turn regex and timestamp reactions on or off\n-on = if supplied in command, turns regex responses on\nDefault: off"
       },
       {
@@ -232,6 +252,66 @@
       {
         "name": "shoot `direction`",
         "value": "Shoot your bow in the specified direction\nshorthand subcommand = s\n`direction` = up, down, left, right, u, d, l, r"
+      }
+    ]
+  },
+  "voice": {
+    "fields": [
+      {
+        "name": "play -bng -shuffle -clip --channel=`AudioChannelResolvable` `resource`",
+        "value": "Play the given `resource` into the audio channel.\n-clip = play an clipped resource\n-bng = play BallisticNG soundtrack (legally obtained btw)\n-shuffle = shuffle the resource list being added\nDefaults: channel = audio channel of member who initiated command"
+      },
+      {
+        "name": "playnext",
+        "value": "Play the next resource in the queue\nshorthand = next"
+      },
+      {
+        "name": "setvolume `float 0.0-2.0`",
+        "value": "Sets the output volume from 0% to 200%\nUse a floating point number\nshorthand = volume\ndefaults: volume = 1"
+      },
+      {
+        "name": "bitrate `integer`",
+        "value": "Sets the output bitrate. This is limited by the server\ndefaults: bitrate = 96"
+      },
+      {
+        "name": "pause",
+        "value": "Pause the audio stream"
+      },
+      {
+        "name": "resume",
+        "value": "Continue the audio stream"
+      },
+      {
+        "name": "stop",
+        "value": "Terminates the audio stream and Bean leaves the audio channel\nalias = leave"
+      },
+      {
+        "name": "listen --user=`GuildMemberResolvable`",
+        "value": "Record the audio output of the given user"
+      },
+      {
+        "name": "echo --user=`GuildMemberResolvable`",
+        "value": "Play the given user's audio back to the audio channel"
+      },
+      {
+        "name": "clip --user=`GuildMemberResolvable`",
+        "value": "Save the current audio recording from the given user to a safe location and decode it to a playable format"
+      },
+      {
+        "name": "clips",
+        "value": "Display all audio clips from `clip`"
+      },
+      {
+        "name": "songs",
+        "value": "Display the current audio resource queue"
+      },
+      {
+        "name": "listeners",
+        "value": "Display all audio recievers from `listen`"
+      },
+      {
+        "name": "destroy --user=`GuildMemberResolvable`",
+        "value": "Kill the given user's audio reciever"
       }
     ]
   }

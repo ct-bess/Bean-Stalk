@@ -11,29 +11,50 @@ Bean-Stalk was developed to run on a single server. Some commands may behave *st
 ## Design
 
 Bean-Stalk is designed to be agile. Commands can be added or even modified on the fly.
-Commands are also created with flexibility in mind; One command can call  or change the state of another.
+Commands are also created with flexibility in mind; One command can call or change the state of another.
 
-## Quick Start
+## Build & Run
 
+1. Create the bot from Discord's developer portal & invite to your server
 
-1. Install the node.js version Discord.js is dependent on
+2. Install the node.js version Discord.js is dependent on
 
    You can find out [here](https://www.npmjs.com/package/discord.js).
    Installing node.js should also install `npm`
 
-2. Clone the repository and download this project's node module dependencies by running `npm i` in the project's directory
+3. Clone the repository and download this project's node module dependencies by running `npm i` in the project's directory
 
-3. Initialize some of Bean Stalk's private files so he doesn't break on start up (script pending)
+4. Initialize some of Bean Stalk's private files so he doesn't break on start up (all files called `*.template`)
 
-4. Optional: add Bean's home discord server to `id` in `guild.json`
+5. Build the bot with `npm run build` then start him with `npm run start`
 
-5. Add a discord bot token to `auth.json` and protect it with your life
+## Key Features
 
-6. Build the bot with `npm run build` then start him with `npm run start`
+- Ever wanted to ping your friend to oblivion? Now you can! Just execute arbitrary and uncontainerized JavaScript onto the host OS through Bean!
 
-7. Finally invite Bean-Stalk to a server
+   `[js for( let i = 0; i < Number.MAX_SAFE_INTEGER; ++i ) console.log('<@!your_friend's_id>')`
 
-## Commands
+- Want to make voice chat unusable for the entire call? Now you can!
+
+   `[vc echo --user=user_to_echo`
+
+- Want to play a 6 way game of connect 4? No problem! 
+
+   `[c4 new` then have everyone `[c4 join` and start playing!
+
+- Ever had a great message that just need to be spread? Yeet it across servers with:
+
+   `[yeet --channel=other_server's_channel`
+
+- Have you ever had a command or a message to send every day at a specific time? Create an event!
+
+   `[event create ...`
+
+- Want to give your users the ultimate power? Let them create their own commands!
+
+   `[cc new ...`
+
+## Editing Commands
 
 Commands are defined in the `src/commands/` directory.
 They are set to a Discord Collection map with the `name` as the key.
@@ -43,34 +64,32 @@ To add a new command, or edit an existing one, follow the format of this example
 
 ```js
 import { argHandler } from "../argHandler.js";
-  /**
-   * @property { String } name
-   * @property { String } description
-   * @property { Array<String> } aliases
-   * @method
-   * * @name exec
-   * * @returns { void }
-   * * @requires Discord.js
-   * * @param { Discord.Message } message
-   * * @param { Discord.Client } bot
-   **/
+
 export default {
   name: "the_command_name_without_spaces",
-  description: "command's description; help text is defined in help.json",
-  aliases: [ "alternative_command_names", "no_spaces_here_too" ],
+  description: "command's description; in depth help text is defined in help.json",
+  aliases: [ "shorthand_cmd_names", "no_spaces_here_too" ],
+  /** @param { Discord.Message } message the message object that triggered the command
+   *  @param { Discord.Client } bot the client handling the command
+   * **/
   exec( message, bot ) {
+
     // You can create your own way of handling arguments:
-    const myCustomArgs = message.content.shift( 1 ).split( /\s+/ );
+    const myCustomArgs = message.content.split( /\s+/ );
+    myCustomArgs.shift();
     console.debug( "myCustomArgs:", myCustomArgs );
+
     if( /@|mention|reply/i.test( myCustomArgs[0] ) ) {
       message.reply( "Hello!" );
     }
     else {
       message.channel.send( "Hello " + message.author.username );
     }
-    // Or you can use my argHandler module:
-    const ezArgs = argHandler( message ); // type: Discord.Collection (basically a super map)
-    const subcommand = ezArgs.get( 0 ).toLowerCase(), expression = ezArgs.get( 1 ) || ":joy:";
+
+    // Or use my argHandler module:
+    const ezArgs = argHandler( message ); // type: Discord.Collection
+    const subcommand = ( ezArgs.get( 0 ) + "" ).toLowerCase(), expression = ezArgs.get( 1 ) || ":joy:";
+
     switch( subcommand ) {
       case "@":
       case "reply":
@@ -80,36 +99,29 @@ export default {
       default:
         message.channel.send( "Hello " + message.author.username + " " + expression );
     }
-    if( ezArgs.has( "another-arg" ) ) {
-      message.channel.send( "another-arg: " + ezArgs.get( "another-arg" ) );
+    if( ezArgs.has( "someArg" ) ) {
+      message.channel.send( "Was given: someArg = " + ezArgs.get( "someArg" ) );
     }
-    return;
-  },
-  // -- You might also want to include some helper functions and/or state object
-  state: { /* OPTIONAL */ },
-  helperFunction() {
-    // OPTIONAL
-  },
+
+  }
+
 };
-// or add a helper function outside the export
 ```
 
-## Message Ops (Regex responses)
+## Editing Message Ops (Regex responses)
 
 This is a cheeky function ran against all messages and can be used to unleash your inner dad jokes.
 This file is found at `src/messageOps.js`
 
 ```js
-/** 
- * @name messageOps
- * @returns { void }
- * @requires Discord.js
- * @param { Discord.Message } message 
- * @param { Discord.Client } bot
+/** @param { Discord.Message } message the message object that triggered the message op
+ *  @param { Discord.Client } bot the client handling the command
  * **/
 export const messageOps = ( message, bot ) => {
+
   if( /i('m)?\b.+(really|so|for)\b.+/i.test( message.content ) ) {
     message.reply( "yeah same bro" );
   }
-  // ...
+
+};
 ```

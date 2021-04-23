@@ -30,27 +30,31 @@ Commands are also created with flexibility in mind; One command can call or chan
 
 ## Key Features
 
-- Ever wanted to ping your friend to oblivion? Now you can! Just execute arbitrary and uncontainerized JavaScript onto the host OS through Bean!
+- Show the server how many mistakes you make by developing new commands or editing existing ones on the fly with the system command!
+
+   `[system reload CommandName`
+
+- Ping your friends to oblivion with arbitrary and uncontainerized JavaScript sent straight to the host OS running Bean!
 
    `[js for( let i = 0; i < Number.MAX_SAFE_INTEGER; ++i ) console.log('<@!your_friend's_id>')`
 
-- Want to make voice chat unusable for the entire call? Now you can!
+- Make voice chat unusable for the entire call with the voice echoing command!
 
    `[vc echo --user=user_to_echo`
 
-- Want to play a 6 way game of connect 4? No problem! 
+- Play a 6 way game of inverted connect 4!
 
    `[c4 new` then have everyone `[c4 join` and start playing!
 
-- Ever had a great message that just need to be spread? Yeet it across servers with:
+- Yeet very important messages across servers with the echo command!
 
    `[yeet --channel=other_server's_channel`
 
-- Have you ever had a command or a message to send every day at a specific time? Create an event!
+- Create custom events to trigger messages or commands at certain hours of the day with the event commands!
 
    `[event create ...`
 
-- Want to give your users the ultimate power? Let them create their own commands!
+- Give your server members the power of the gods by letting them create and run their own custom commands!
 
    `[cc new ...`
 

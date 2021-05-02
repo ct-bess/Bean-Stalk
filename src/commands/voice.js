@@ -227,6 +227,16 @@ export default {
           connection.play( this.readStreams[memberId], { type: "opus" } );
         });
         break;
+      case "join11":
+      case "join10":
+        console.info( "join called but already in a vc" );
+        break;
+      case "join01":
+      case "join00":
+        voiceChannel.join().then( connection => {
+          this.configureVoiceConnection( connection );
+        });
+        break;
       case "clip00":
       case "clip01":
       case "clip10":

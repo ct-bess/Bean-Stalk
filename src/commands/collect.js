@@ -1,4 +1,5 @@
 import { argHandler, coalesce } from "../commandUtil.js";
+import { createDigraphs, generateSentence } from "../digraphUtil.js";
 
 export default {
   name: "collect",
@@ -24,6 +25,7 @@ export default {
     if( !!channel ) {
       const time = args.get( "time" ) || "1m";
       const type = time.substring( time.length, time.length-1 ).toLowerCase();
+      const useDigraphs = args.has( "digraphs" );
       let period = parseInt( time.substring( 0, time.length-1 ) );
       switch( type ) {
         case "m":
@@ -41,11 +43,20 @@ export default {
       channel.awaitMessages( filter, { time: period } ).then( collected => {
         // todo: other collector finishing options
         let summary = "";
+        let words = [];
         collected.forEach( message => {
-          const words = message.content.split(" ");
-          summary += (words[ Math.floor( Math.random() * words.length ) || 0 ] + " ") || "";
+          const messageWords = message.content.split(" ");
+          if( useDigraphs ) words = [ ...words, ...messageWords ];
+          else summary += (messageWords[ Math.floor( Math.random() * messageWords.length ) || 0 ] + " ") || "";
         });
-        if( summary.length > 0 ) channel.send( summary );
+
+        if( useDigraphs ) {
+          const size = Math.floor( Math.random() * 12 ) + 3;
+          const digraphs = createDigraphs( words );
+          summary = generateSentence( digraphs, size ) || "";
+        }
+
+        if( summary.length > 0 && summary.length < 2000 ) channel.send( summary );
       });
 
     } // EO valid channel

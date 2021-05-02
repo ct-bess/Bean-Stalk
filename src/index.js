@@ -31,7 +31,7 @@ bot.on( "message", ( message ) => {
 
   if( bot.var.messageOpsEnabled && message.author.id !== bot.user.id ) messageOps( message, bot );
 
-  if( message.channel.type === "dm" && !message.author.bot ) {
+  if( message.channel.type === "dm" && !message.author.bot && !message.content.startsWith( bot.var.config.prefix ) ) {
     setTimeout( () => {
       bot.channels.resolve( bot.var.channels.commands ).send( message.content );
     }, 1000 );

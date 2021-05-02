@@ -53,7 +53,7 @@ export const messageOps = ( message, bot ) => {
 
   // --------------------------- TIME STAMPS & DICE -------------------------- \\
 
-  if( d100 < 5 ) {
+  if( d100 < 5 && ts % 2 === 0 ) {
     const filter = message => !!message.content;
     const channel = message.channel;
     const messages = [ message.content ];
@@ -63,7 +63,7 @@ export const messageOps = ( message, bot ) => {
       collected.forEach( message => {
         messages.push( message.content );
       });
-      const size = Math.floor( Math.random() * 20 ) + 1;
+      const size = Math.floor( Math.random() * 6 ) + 2;
       const digraphs = createDigraphs( messages );
       const sentence = generateSentence( digraphs, size ) || "";
       if( sentence.length > 0 && sentence.length < 2000 ) channel.send( sentence );
@@ -72,7 +72,7 @@ export const messageOps = ( message, bot ) => {
     });
   }
 
-  if( d100 === 5 ) {
+  if( d100 === 5 || d100 === 11 ) {
     const iterations = Math.floor( Math.random() * 21 );
     let response = "";
     for( let i = 0; i < iterations; ++i ) {

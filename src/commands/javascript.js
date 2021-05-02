@@ -15,7 +15,7 @@ export default {
     }
     else {
 
-      let delay = 1500;
+      let delay = 0;
       console.info( "Starting child process with base delay:", delay, "milliseconds" );
       message.channel.startTyping();
 
@@ -64,6 +64,8 @@ export default {
         message.channel.stopTyping();
 
       }, delay*2 );
+
+      console.info( "Process will be manually killed in", delay*2, "ms" );
 
     }
 

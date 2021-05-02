@@ -139,7 +139,7 @@ export const coalesce = ( name, type, bot, guild ) => {
       base = guild.members.resolve( name );
       break;
     case "member0":
-      base = guild.members.cache.find( member => member.user.username || member.nickname === name );
+      base = guild.members.cache.find( member => member.user.username === name || member.nickname === name );
       break;
     case "role1":
       base = guild.roles.resolve( name );

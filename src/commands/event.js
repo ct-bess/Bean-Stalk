@@ -228,10 +228,14 @@ export default {
             {
               name: "The Chads",
               value: event.attendees.length == 0 ? "NO ONE :sob:" : ""
+            },
+            {
+              name: "Command",
+              value: event.command || "none"
             }
           ],
           footer: {
-            text: "Sponsored by Bean-Stalk",
+            text: "Sponsored by Bean-Stalk" + (!!event.raw ? " (is raw" : "(") + (!!event.silent ? " silent)" : ")"),
             icon_url: bot.user.displayAvatarURL()
           }
         };

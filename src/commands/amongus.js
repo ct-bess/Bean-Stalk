@@ -1,5 +1,5 @@
 import { Collection } from "discord.js";
-import { argHandler } from "../commandUtil.js";
+import { argHandler, coalesce } from "../commandUtil.js";
 
 export default {
   name: "amongus",
@@ -13,5 +13,6 @@ export default {
   },
   exec( message, bot ) {
     // trust me
+    message.reply( "amogus" );
   }
 };

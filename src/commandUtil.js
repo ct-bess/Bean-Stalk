@@ -192,7 +192,6 @@ export const sendBulk = ( response, message, format ) => {
       break;
     default:
       textBound = 2000;
-      prefix = "", suffix = "";
   }
   if( response.length < textBound ) {
     console.warn( "[ WARN ] sendBulk called on string < 2000" );
@@ -200,7 +199,8 @@ export const sendBulk = ( response, message, format ) => {
   for( let i = 0; i < response.length; i += textBound ) {
     const chunk = response.substring( i, i + textBound );
     delay += 1500;
-    //message.channel.send( prefix + chunk + suffix );
-    setTimeout( () => { message.channel.send( prefix + chunk + suffix ) }, delay );
+    setTimeout( () => { 
+      message.channel.send( prefix + chunk + suffix ) 
+    }, delay );
   }
 };

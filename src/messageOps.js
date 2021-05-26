@@ -15,9 +15,15 @@ export const messageOps = ( message, bot ) => {
   const ts = message.createdTimestamp;
   const d100 = Math.floor( Math.random() * 101 );
 
+  const last3m = message.channel.messages.cache.last( 4 );
+  const last3mMatch = last3m[0]?.content === last3m[1]?.content;
+
   // --------------------------- YUP ---------------------------  \\
 
-  if( message.content === "S" ) {
+  if( last3mMatch && (last3m[0]?.content === last3m[2]?.content) && message.content.length > 0 ) {
+    message.channel.send( message.content ).catch( e => console.error(e) );
+  }
+  else if( message.content === "S" ) {
     message.channel.send( "S" );
   }
   else if( message.content === "ok" && ts % 2 === 0 ) {
@@ -72,14 +78,17 @@ export const messageOps = ( message, bot ) => {
     });
   }
 
-  if( d100 === 5 || d100 === 11 ) {
+  if( d100 > 97 && ts % 2 === 0 ) {
     const iterations = Math.floor( Math.random() * 21 );
     let response = "";
     for( let i = 0; i < iterations; ++i ) {
       const char = String.fromCodePoint( 8 + Math.floor( Math.random() * 169993 ) );
       response += char + " ";
     }
-    if( response.length > 0 && response.length > 2000 ) message.channel.send( response );
+    console.info( "Wacky unicode messageOp incoming:", response );
+    message.channel.send( response ).catch( error => {
+      console.error( error );
+    });
   }
 
   if( ts % 69 === 0 ) {

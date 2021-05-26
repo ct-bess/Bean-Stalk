@@ -160,7 +160,7 @@ export default {
         if( !!require.cache[ require.resolve( `./.ccs/${commandName}.js` ) ] ) delete require.cache[ require.resolve( `./.ccs/${commandName}.js` ) ];
         const command = require( `./.ccs/${commandName}` );
         bot.commands.set( command.default.name, command.default );
-        response += `Committed \`${commandName}\`; give it a spin :cyclone:`;
+        message.react( "\u0030\u20E3" );
       }
 
     }

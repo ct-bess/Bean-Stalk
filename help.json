@@ -2,13 +2,17 @@
   "checkem": {
     "fields": [
       {
-        "name": "rand",
+        "name": "-rand",
         "value": "Generates 9 random digits rather than fetching your timestamp"
       }
     ]
   },
   "collect": {
     "fields": [
+      {
+        "name": "-digraphs",
+        "value": "Use the collected digraphs to generate the response"
+      },
       {
         "name": "--channel=`ChannelResolvable`",
         "value": "The channel to attach the message collecter to\nDefault: random text channel"
@@ -26,20 +30,20 @@
         "value": "Create a new board\nshorthand = n\nDefaults: width = `7`, height = `6`"
       },
       {
-        "name": "join --marker=`string`",
-        "value": "Join the active game\nshorthand = j\nCan shorthand marker expression\nDefault: marker = random circle emoji"
+        "name": "join `marker`",
+        "value": "Join the active game using the specified `marker` if any\nshorthand = j\nDefault: marker = random circle emoji"
       },
       {
-        "name": "place --col=`number`",
-        "value": "During your turn, drops your peice on the board at the specified spot\nshorthand = p\nCan shorthand column as expression"
+        "name": "place `columnNumber`",
+        "value": "During your turn, drops your peice on the board at the specified spot\nshorthand = p"
       },
       {
         "name": "list",
         "value": "List the players, the turn order, and their marker"
       },
       {
-        "name": "kick --player=`GuildMemberResolvable`",
-        "value": "Unconditionally remove the given player from the game\nCan shorthand player as expression\n`GuildMemberResolvable` is an ID, name, or nickname"
+        "name": "kick `GuildMemberResolvable`",
+        "value": "Unconditionally remove the given player from the game\n`GuildMemberResolvable` is an ID, name, or nickname"
       },
       {
         "name": "reset",
@@ -126,12 +130,16 @@
   "echo": {
     "fields": [
       {
-        "name": "--channel=`TextChannelResolvable` `message`",
-        "value": "Which channel to send the message in\nIf called as echo: defaults to the current channel\nIf called as yeet: defaults to a random text channel\nMessage defaults to the previous message if none is given."
+        "name": "`Message`",
+        "value": "The message to echo/yeet. Defaults to previous message if nothing is given\nIf called as echo: defaults to the current channel\nIf called as yeet: defaults to a random text channel"
+      },
+      {
+        "name": "--channel=`TextChannelResolvable`",
+        "value": "Which channel to send the message in. Specify a channel name or ID"
       },
       {
         "name": "--delay=`integer`",
-        "value": "How long to wait in seconds until the message is sent\nDefault: right now"
+        "value": "How long to wait in seconds until the message is sent\nDefault: 0 seconds"
       }
     ]
   },
@@ -178,7 +186,7 @@
   "grantspeak": {
     "fields": [
       {
-        "name": "`string`",
+        "name": "`Message`",
         "value": "convert the given message to Grant Speak\nDefault: if no string is provided, tries to use the message before the command"
       }
     ]
@@ -195,7 +203,19 @@
     "fields": [
       {
         "name": "`JavaScriptCode`",
-        "value": "The JavaScript to execute. stdout is slowly printed to the message channel as it recieves it. Process will be manually killed if it takes too long"
+        "value": "The JavaScript to execute. stdout and stderr are slowly printed to the message channel as they are recieved"
+      },
+      {
+        "name": "__Additional Notes:__",
+        "value": "Below are notes on the behavior of this command"
+      },
+      {
+        "name": "> Process Timeout",
+        "value": "Each instance of stdout accrues a 1.5 second tax on the response time. Bean will give your code twice the total amount of tax delay you incur before your process is manually killed"
+      },
+      {
+        "name": "> Detatch stdout buffer",
+        "value": "Execute as `js-nl` alias to force stdout to print to new messages rather than buffered together by node. This will make the process take significantly longer and you will be taxed accordingly"
       }
     ]
   },
@@ -222,12 +242,16 @@
         "value": "List all available commands"
       },
       {
+        "name": "channels",
+        "value": "List all cached channels available to bean"
+      },
+      {
         "name": "uptime",
         "value": "Display Bean's uptime"
       },
       {
-        "name": "regex -on -off",
-        "value": "Turn regex and timestamp reactions on or off\n-on = if supplied in command, turns regex responses on\nDefault: off"
+        "name": "regex",
+        "value": "Turn regex and timestamp reactions on or off\n**Flags:**\n-on = if supplied in command, turns regex responses on\nDefault: off"
       },
       {
         "name": "vrms",
@@ -266,7 +290,7 @@
         "value": "Play the next resource in the queue\nshorthand = next"
       },
       {
-        "name": "setvolume `float 0.0-2.0`",
+        "name": "setvolume `float=[0.0, 2.0]`",
         "value": "Sets the output volume from 0% to 200%\nUse a floating point number\nshorthand = volume\ndefaults: volume = 1"
       },
       {

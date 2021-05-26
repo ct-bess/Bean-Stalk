@@ -97,17 +97,18 @@ export default {
     // -- validate voice channel
 
     // make sure you validate that's a voice channel dog
-    // another case of "man I really need to upgrade to ES2021 w/e for better nullish ops"
     if( args.has( "channel" ) ) {
 
       let channel = args.get( "channel" );
       channel = coalesce( channel, "channel", bot, null );
-
+      voiceChannel = channel?.type === "voice" ? channel : null;
+      /*
       if( !!channel ) {
         if( channel.type === "voice" ) {
           voiceChannel = channel;
         }
       }
+      */
 
     }
 

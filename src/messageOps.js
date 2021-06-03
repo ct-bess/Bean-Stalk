@@ -21,29 +21,29 @@ export const messageOps = ( message, bot ) => {
   // --------------------------- YUP ---------------------------  \\
 
   if( last3mMatch && (last3m[0]?.content === last3m[2]?.content) && message.content.length > 0 ) {
-    message.channel.send( message.content ).catch( e => console.error(e) );
+    message.send( message.content );
   }
   else if( message.content === "S" ) {
-    message.channel.send( "S" );
+    message.send( "S" );
   }
-  else if( message.content === "ok" && ts % 2 === 0 ) {
-    message.channel.send( "ok" );
+  else if( ( message.content === "ok" || message.content.length > 1420 ) && ts % 2 === 0 ) {
+    message.send( "ok" );
   }
 
   // --------------------------- REGEX ---------------------------  \\
 
   if( /16:20|4[\D\W]?20|w[e3]{2,}d/i.test( message.content ) ) {
-    setTimeout( () => { message.react( bot.var.emojis.blunt ) }, 1000 );
+    message.react( bot.var.emojis.blunt );
   }
   if( sameBroRE.test( message.content ) ) {
     if( ts % 7 === 0 && d100 > 50 ) message.reply( `yeah same bro ${bot.var.emojis.goodpoint}` );
-    else if( ts % 11 === 0 && d100 > 75 )  message.channel.send( message.content.replace( sameBroRE, "Yeah, $1 $2 bro" ) );
-    else setTimeout( () => { message.react( bot.var.emojis.goodpoint ) }, 1000 );
+    else if( ts % 11 === 0 && d100 > 75 ) message.send( message.content.replace( sameBroRE, "Yeah, $1 $2 bro" ) );
+    else message.react( bot.var.emojis.goodpoint );
   }
   if( amogusRE.test( message.content ) ) {
-    if( ts % 7 === 0 && d100 > 50 ) message.channel.send( `${bot.var.emojis.sus} That's sus ${bot.var.emojis.sus}` );
+    if( ts % 7 === 0 && d100 > 50 ) message.send( `${bot.var.emojis.sus} That's sus ${bot.var.emojis.sus}` );
     else if( ts % 11 === 0 && d100 > 75 ) message.reply( "You are SUS" );
-    else setTimeout( () => { message.react( bot.var.emojis.sus ) }, 1000 );
+    else message.react( bot.var.emojis.sus );
   }
 
   // --------------------------- USER SPECIFIC -------------------------- \\
@@ -59,7 +59,7 @@ export const messageOps = ( message, bot ) => {
 
   // --------------------------- TIME STAMPS & DICE -------------------------- \\
 
-  if( d100 < 5 && ts % 2 === 0 ) {
+  if( d100 < 4 && ts % 2 === 0 ) {
     const filter = message => !!message.content;
     const channel = message.channel;
     const messages = [ message.content ];
@@ -78,7 +78,7 @@ export const messageOps = ( message, bot ) => {
     });
   }
 
-  if( d100 > 97 && ts % 2 === 0 ) {
+  if( d100 > 98 && ts % 2 === 0 ) {
     const iterations = Math.floor( Math.random() * 21 );
     let response = "";
     for( let i = 0; i < iterations; ++i ) {
@@ -86,29 +86,27 @@ export const messageOps = ( message, bot ) => {
       response += char + " ";
     }
     console.info( "Wacky unicode messageOp incoming:", response );
-    message.channel.send( response ).catch( error => {
-      console.error( error );
-    });
+    message.send( response );
   }
 
   if( ts % 69 === 0 ) {
     message.react( "\u0036\u20E3" );
-    setTimeout( () => { message.react( "\u0039\u20E3" ) }, 1500 );
+    message.react( "\u0039\u20E3", 2000 );
     const filter = ( reaction, user ) => !!reaction.emoji && user.id !== bot.user.id
     message.awaitReactions( filter, { time: 25000 } ).then( (collected) => {
       if( collected.size > 2 ) {
-        message.channel.send( ts % 2 === 0 ? "SHUCKS :sweat_drops:" : "AWESOME" ); 
+        message.send( ts % 2 === 0 ? "SHUCKS :sweat_drops:" : "AWESOME" ); 
       }
       else if( collected.size > 0 ) {
-        message.channel.send( ts % 2 === 0 ? "YALL ARE EPIC" : "THNX !" );
+        message.send( ts % 2 === 0 ? "YALL ARE EPIC" : "THNX !" );
       }
     });
   }
   // 0x5f3759df = 99841437 in base ten, there's a slim chance a timestamp can be a multiple of this magic number
   else if( ts % 0x5f3759df === 0 ) { 
-    setTimeout( () => { message.react( ":pray:" ) }, 3000 );
+    message.react( ":pray:" );
     message.reply( "`// what the fuck?` https://github.com/id-Software/Quake-III-Arena/blob/master/code/game/q_math.c#L552" );
-    message.channel.send( ":pray: ***YOU ARE THE CHOSEN ONE*** :pray:" );
+    message.send( ":pray: ***YOU ARE THE CHOSEN ONE*** :pray:" );
     message.pin({ reason: "important" });
   }
 

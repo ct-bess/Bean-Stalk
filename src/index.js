@@ -4,6 +4,7 @@ import guild from "../guild.json";
 import { loadCommands, validateGuild } from "./systemUtil.js";
 import { messageOps } from "./messageOps.js";
 import { execCommand, handleEvent } from "./clientUtil.js";
+import "./SaferMessage.js";
 
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();

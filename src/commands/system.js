@@ -12,7 +12,17 @@ export default {
     const args = argHandler( message );
     const isAdmin = bot.var.admins.includes( message.author.id );
     const subcommand = ( args.get( 0 ) + "" ).toLowerCase();
-    let response = "", responseType = "";
+
+    let response = {
+      embed: {
+        color: 0xffea00,
+        title: null,
+        description: "awesome",
+        fields: []
+      }
+    };
+    let responseType = "";
+
     switch( subcommand + (isAdmin + 0) ) { 
       case "setprefix1":
         const newPrefix = args.get( "prefix" ) || args.get( 1 ) || "-";
@@ -63,12 +73,31 @@ export default {
         break;
       case "commands0":
       case "commands1":
-        bot.commands.forEach( elem => response += `Name: **${elem.name}**\t${elem.description}\n` );
+        response.embed.title = "Commands";
+        response.embed.description = `Use prefix: \`${bot.var.config.prefix}\` to run`;
+        bot.commands.forEach( command => {
+          response.embed.fields.push({ name: command.name, value: command.description });
+          //response += `Name: **${elem.name}**\t${elem.description}\n` 
+        });
       break;
       case "channels0":
       case "channels1":
         const filter = c => c.type === "voice" || c.type === "text";
-        bot.channels.cache.filter( filter ).forEach( c => response += `${c.guild.name}\t${c.name}\t${c.id}\t${c.type}\n` );
+        bot.channels.cache.filter( filter ).forEach( channel => {
+          if( !response.embed.title ) {
+            response.embed.title = channel.guild.name
+            response.embed.fields = [{ name: channel.name + ": " + channel.type, value: channel.id }]
+          }
+          else if( channel.guild.name !== response.embed.title ) {
+            message.send( response );
+            response.embed.title = channel.guild.name
+            response.embed.fields = [{ name: channel.name + ": " + channel.type, value: channel.id }]
+          }
+          else {
+            response.embed.fields.push({ name: channel.name + ": " + channel.type, value: channel.id });
+          }
+          //response += `${c.guild.name}\t${c.name}\t${c.id}\t${c.type}\n` 
+        });
       break;
       case "regex0":
       case "regex1":
@@ -125,6 +154,6 @@ export default {
         response = `no such subcommand: ${subcommand} :face_with_monocle:`;
     }
     if( response.length > 2000 ) sendBulk( response, message, responseType );
-    else if( response.length > 0 ) message.channel.send( response || "Complain to conor :triumph:" );
+    else message.send( response );
   }
 }

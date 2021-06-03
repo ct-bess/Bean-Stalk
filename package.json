@@ -4,7 +4,6 @@
   "description": "Discord Bot",
   "main": "index.js",
   "scripts": {
-    "init": "echo '[]' > events.json && echo '{}' > guild.json",
     "bundle": "babel src -d lib",
     "start": "node lib/index.js",
     "dab": "npm run bundle && npm run start",

@@ -1,4 +1,4 @@
-import { argHandler, coalesce } from "../commandUtil.js";
+import { argHandler, coalesce } from "../util/commandUtil";
 
 export default {
   name: "echo",

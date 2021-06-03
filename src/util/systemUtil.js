@@ -1,20 +1,20 @@
 import { execSync } from "child_process";
-import events from "../events.json";
-import config from "../config.json";
+import events from "../../events.json";
+import config from "../../config.json";
 
 /** 
  * @method loadCommands
  * @description imports all or one command module into the bot. Overwrites the require cache if the command was already imported
- * * @param { Discord.Client } bot client to load to
- * * @param { string } singularCommand optional: the name of one command to load
- * * @returns { void }
+ * @param { Discord.Client } bot client to load to
+ * @param { string } singularCommand optional: the name of one command to load
+ * @returns { void }
  * **/
 export const loadCommands = ( bot, singularCommand ) => {
   if( !!singularCommand ) {
-    if( !!require.cache[ require.resolve( `./commands/${singularCommand}` ) ] ) {
-      delete require.cache[ require.resolve( `./commands/${singularCommand}` ) ];
+    if( !!require.cache[ require.resolve( `../commands/${singularCommand}` ) ] ) {
+      delete require.cache[ require.resolve( `../commands/${singularCommand}` ) ];
     }
-    const command = require( `./commands/${singularCommand}` );
+    const command = require( `../commands/${singularCommand}` );
     bot.commands.set( command.default.name, command.default );
   }
   else {
@@ -27,10 +27,10 @@ export const loadCommands = ( bot, singularCommand ) => {
     for( const file of commandFiles ) {
       //console.info( "=> ", file );
       if( !!file ) {
-        if( !!require.cache[ require.resolve( `./commands/${file}` ) ] ) {
-          delete require.cache[ require.resolve( `./commands/${file}` ) ];
+        if( !!require.cache[ require.resolve( `../commands/${file}` ) ] ) {
+          delete require.cache[ require.resolve( `../commands/${file}` ) ];
         }
-        const command = require( `./commands/${file}` );
+        const command = require( `../commands/${file}` );
         bot.commands.set( command.default.name, command.default );
       }
     }
@@ -56,8 +56,8 @@ export const loadCommands = ( bot, singularCommand ) => {
 /** 
  * @method validateGuild
  * @description validates guild.json to prevent the client from breaking from my expertly hard coded guild variables
- * * @param { Discord.Client } bot client to validate guild.json on
- * * @returns { void }
+ * @param { Discord.Client } bot client to validate guild.json on
+ * @returns { void }
  * **/
 export const validateGuild = ( bot ) => {
 

@@ -1,7 +1,5 @@
 import { createReadStream, appendFile, readdirSync, existsSync, unlink, rename, copyFile } from "fs";
 import { OpusEncoder } from "@discordjs/opus";
-import stream from "stream";
-
 
 const sourceDir = "kb/voice-receiver";
 const destDir = "kb/voice-records";
@@ -10,10 +8,10 @@ const destDir = "kb/voice-records";
 /**
  * @method decoder
  * @description decodes an opus file to a pcm file; Then converts that pcm file to an mp3
- * * @param { string } fileName the base name of the file to decode (minus the file extension)
- * * @param { Discord.Message } message the Discord message that called this function
- * * @param { integer } ar the sampling frequency to decode with in Hz (defaults to 48K Hz)
- * * @returns { void }
+ * @param { string } fileName the base name of the file to decode (minus the file extension)
+ * @param { Discord.Message } message the Discord message that called this function
+ * @param { integer } ar the sampling frequency to decode with in Hz (defaults to 48K Hz)
+ * @returns { void }
  * **/
 export const decoder = ( fileName, message, ar ) => {
 
@@ -95,9 +93,9 @@ export const decoder = ( fileName, message, ar ) => {
 /**
  * @method saveRecord
  * @description saves the current opus file being streamed to
- * * @param { string } fileName the name of the opus file to save
- * * @param { Discord.Message } message the Discord message that called this function
- * * @returns { void }
+ * @param { string } fileName the name of the opus file to save
+ * @param { Discord.Message } message the Discord message that called this function
+ * @returns { void }
  * **/
 export const saveRecord = ( fileName, message ) => {
 
@@ -124,16 +122,3 @@ export const saveRecord = ( fileName, message ) => {
   });
 
 }; // EO saveRecord
-
-export const pipeRS = ( dest ) => {
-  const s = new stream.Readable();
-
-  for( let i = 0; i < 100; ++i ) {
-    const r = Math.floor( Math.random() * i ) + 1;
-    const d = [ 0x1 + i, 0x2 + i, 0x3 * i, 0x4 + 1, 0x5 + i, 0x6 + i ];
-    s.push( Buffer.from(d) );
-  }
-
-  s.pipe( dest );
-  s.destroy();
-};

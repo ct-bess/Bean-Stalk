@@ -1,5 +1,5 @@
 import { Collection } from "discord.js";
-import { argHandler, coalesce } from "../commandUtil.js";
+import { argHandler, coalesce } from "../util/commandUtil";
 
 export default {
   name: "amongus",

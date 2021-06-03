@@ -1,4 +1,4 @@
-import { argHandler } from "../commandUtil.js";
+import { argHandler } from "../util/commandUtil";
 import help from "../../help.json";
 
 export default {

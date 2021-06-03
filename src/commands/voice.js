@@ -1,6 +1,6 @@
-import { argHandler, sendBulk, coalesce } from "../commandUtil.js";
 import { appendFile, existsSync, readdirSync, createReadStream } from "fs";
-import { decoder, saveRecord } from "../audioUtil.js";
+import { argHandler, sendBulk, coalesce } from "../util/commandUtil";
+import { decoder, saveRecord } from "../util/audioUtil";
 
 export default {
   name: "voice",

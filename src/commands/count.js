@@ -1,4 +1,4 @@
-import { argHandler } from "../argHandler.js";
+import { argHandler } from "../util/commandUtil";
 
 export default {
   name: "count",

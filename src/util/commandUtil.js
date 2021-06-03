@@ -13,8 +13,8 @@ import { Collection } from "discord.js";
 /**
  * @method argHandler
  * @description returns a command input into arguments mapped to a subcommand, flags/variables, and an expression
- * * @param { Discord.Message } message the message that executed the command
- * * @returns { Discord.Collection } the mapped results: subcommand get(0), expression get(1), flags/variables get("x")
+ * @param { Discord.Message } message the message that executed the command
+ * @returns { Discord.Collection } the mapped results: subcommand get(0), expression get(1), flags/variables get("x")
  **/
 export const argHandler = ( message ) => {
 
@@ -114,11 +114,11 @@ export const argHandler = ( message ) => {
 /** 
  * @method coalesce
  * @description converts a name or snowflake ID to its' corresponding discord class
- * * @param { string } name the user, channel, or role name we are coalescing
- * * @param { string } type what discord class type we are converting it to (member, channel, or role)
- * * @param { Discord.Client } bot discord client processing this (not needed for member and role coalescing)
- * * @param { Discord.Guild } guild guild origin (not needed for channel coalescing)
- * * @returns { * } the discord class with respect to the input type; If null the coalescing failed
+ * @param { string } name the user, channel, or role name we are coalescing
+ * @param { string } type what discord class type we are converting it to (member, channel, or role)
+ * @param { Discord.Client } bot discord client processing this (not needed for member and role coalescing)
+ * @param { Discord.Guild } guild guild origin (not needed for channel coalescing)
+ * @returns { * } the discord class with respect to the input type; If null the coalescing failed
  * **/
 export const coalesce = ( name, type, bot, guild ) => {
 
@@ -158,8 +158,8 @@ export const coalesce = ( name, type, bot, guild ) => {
 /** 
  * @method sendBulk
  * @description partitions a large message into 2000 character pieces and sends each part every 1.5 seconds
- * * @param { Discord.Message } message the message origin
- * * @returns { void }
+ * @param { Discord.Message } message the message origin
+ * @returns { void }
  * **/
 export const sendBulk = ( response, message, format ) => {
   console.info( "[ INFO ] sendBulk() response length: " + response.length );

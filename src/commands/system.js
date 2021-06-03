@@ -1,8 +1,8 @@
 import { execSync } from "child_process";
 import { exit } from "process";
-import { loadCommands } from "../systemUtil.js";
 import { writeFileSync } from "fs"
-import { argHandler, sendBulk } from "../commandUtil.js"
+import { argHandler, sendBulk } from "../util/commandUtil"
+import { loadCommands } from "../util/systemUtil";
 
 export default {
   name: "system",

@@ -1,5 +1,5 @@
-import { exec, spawn } from "child_process";
-import { sendBulk } from "../commandUtil.js";
+import { spawn } from "child_process";
+import { sendBulk } from "../util/commandUtil";
 
 export default {
   name: "javascript",

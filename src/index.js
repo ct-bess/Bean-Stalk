@@ -1,29 +1,16 @@
-import Discord from "discord.js";
 import auth from "../auth.json";
 import guild from "../guild.json";
-import { loadCommands, validateGuild } from "./systemUtil.js";
-import { messageOps } from "./messageOps.js";
-import { execCommand, handleEvent } from "./clientUtil.js";
-import "./SaferMessage.js";
+import { messageOps } from "./messageOps";
+import { execCommand, handleEvent } from "./util/clientUtil";
+import { loadCommands, validateGuild } from "./util/systemUtil";
+import Bot from "./struct/Bot";
+import "./struct/SaferMessage";
 
-const bot = new Discord.Client();
-bot.commands = new Discord.Collection();
-bot.var = {
-  messageOpsEnabled: true,
-  config: null,
-  guild: guild.id,
-  emojis: guild.emoji,
-  roles: guild.roles,
-  members: guild.members,
-  admins: guild.admins,
-  bots: guild.bots,
-  events: null,
-  channels: guild.channels
-};
+const bot = new Bot();
 
 bot.on( "ready", () => {
   console.info( "INITIATING BEAN STALK ..." );
-  loadCommands( bot, null );
+  loadCommands( bot );
   validateGuild( bot );
   console.info( "Start-up processes complete; Bean is good to go" );
 });

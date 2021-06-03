@@ -6,8 +6,8 @@ import { spawnSync } from "child_process";
 /** 
  * @method createDigraphs
  * @description loops thru an array of strings and creates an array of digraphs used in each string
- * * @param { array<string> } messages the messages to check
- * * @returns { array<string> } the array of digraphs; No frequencies, just all digraphs including duplicates
+ * @param { array<string> } messages the messages to check
+ * @returns { array<string> } the array of digraphs; No frequencies, just all digraphs including duplicates
  * **/
 export const createDigraphs = ( messages ) => {
   console.debug( "creating digraphs ..." );

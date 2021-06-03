@@ -1,11 +1,11 @@
-import help from "../help.json";
+import help from "../../help.json";
 
 /**
  * @method execCommand
  * @description process and execute a bot command from a text channel. Prefix validation does not happen here, only command validation
- * * @param { Discord.Message | string } message the message that called this function. If called with a string, sets the bot's last message as the origin
- * * @param { Discord.Client } bot the discord client processing the command
- * * @returns { void }
+ * @param { Discord.Message | string } message the message that called this function. If called with a string, sets the bot's last message as the origin
+ * @param { Discord.Client } bot the discord client processing the command
+ * @returns { void }
  **/
 export const execCommand = ( message, bot ) => {
 
@@ -67,8 +67,8 @@ export const execCommand = ( message, bot ) => {
 /**
  * @method handleEvent
  * @description processes time based client events for scheduled commands
- * * @param { Discord.Client } bot the client to handle the event
- * * @returns { void }
+ * @param { Discord.Client } bot the client to handle the event
+ * @returns { void }
  **/
 export const handleEvent = ( bot ) => {
   try {

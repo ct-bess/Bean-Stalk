@@ -1,4 +1,4 @@
-import { argHandler } from "../commandUtil.js";
+import { argHandler } from "../util/commandUtil";
 
 export default {
   name: "checkem",

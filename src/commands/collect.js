@@ -1,5 +1,5 @@
-import { argHandler, coalesce } from "../commandUtil.js";
-import { createDigraphs, generateSentence } from "../digraphUtil.js";
+import { argHandler, coalesce } from "../util/commandUtil";
+import { createDigraphs, generateSentence } from "../util/digraphUtil";
 
 export default {
   name: "collect",

@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
 import { exit } from "process";
-import { writeFileSync } from "fs"
+import { writeFileSync, read, open, close } from "fs"
 import { argHandler, sendBulk } from "../util/commandUtil"
 import { loadCommands } from "../util/systemUtil";
 
@@ -77,9 +77,38 @@ export default {
         response.embed.description = `Use prefix: \`${bot.var.config.prefix}\` to run`;
         bot.commands.forEach( command => {
           response.embed.fields.push({ name: command.name, value: command.description });
-          //response += `Name: **${elem.name}**\t${elem.description}\n` 
         });
       break;
+      case "logs0":
+      case "logs1":
+        open( ".logs/stdout.log", ( error, fd ) => {
+          if( error ) console.error( error );
+          else if( fd ) {
+            read( fd, { buffer: Buffer.alloc( 256 ) }, ( error, bytesRead, buffer ) => {
+              if( error ) console.error( error );
+              else {
+                sendBulk( buffer.toString(), message, "code block" )
+                close( fd, ( error ) => { if( error ) console.error( error ) } );
+              }
+            });
+          }
+        });
+        break;
+      case "errors0":
+      case "errors1":
+        open( ".logs/stderr.log", ( error, fd ) => {
+          if( error ) console.error( error );
+          else if( fd ) {
+            read( fd, { buffer: Buffer.alloc( 256 ) }, ( error, bytesRead, buffer ) => {
+              if( error ) console.error( error );
+              else {
+                sendBulk( buffer.toString(), message, "code block" )
+                close( fd, ( error ) => { if( error ) console.error( error ) } );
+              }
+            });
+          }
+        });
+        break;
       case "channels0":
       case "channels1":
         const filter = c => c.type === "voice" || c.type === "text";
@@ -96,7 +125,6 @@ export default {
           else {
             response.embed.fields.push({ name: channel.name + ": " + channel.type, value: channel.id });
           }
-          //response += `${c.guild.name}\t${c.name}\t${c.id}\t${c.type}\n` 
         });
       break;
       case "regex0":

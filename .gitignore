@@ -9,6 +9,7 @@ lib/
 
 # Bot Generated Artifacts:
 a.out
+.logs/
 
 # Build Files:
 package-lock.json

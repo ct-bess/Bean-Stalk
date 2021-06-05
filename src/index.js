@@ -4,15 +4,20 @@ import { messageOps } from "./messageOps";
 import { execCommand, handleEvent } from "./util/clientUtil";
 import { loadCommands, validateGuild } from "./util/systemUtil";
 import Bot from "./struct/Bot";
+import Logger from "./struct/Logger";
 import "./struct/SaferMessage";
+//import "./struct/SaferTextChannel";
+
+// Awesome
+console = new Logger();
 
 const bot = new Bot();
 
 bot.on( "ready", () => {
-  console.info( "INITIATING BEAN STALK ..." );
+  console.log( "INITIATING BEAN STALK ..." );
   loadCommands( bot );
   validateGuild( bot );
-  console.info( "Start-up processes complete; Bean is good to go" );
+  console.log( "Start-up processes complete; Bean is good to go" );
 });
 
 bot.on( "message", ( message ) => {

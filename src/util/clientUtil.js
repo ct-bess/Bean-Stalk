@@ -14,6 +14,7 @@ export const execCommand = ( message, bot ) => {
   try {
 
     if( typeof( message ) !== "object" ) {
+      console.debug( "creating mock message for command execution" );
       const content = message;
       message = bot.user.lastMessage;
       message.content = content;
@@ -23,17 +24,16 @@ export const execCommand = ( message, bot ) => {
     commandArgs = message.content.toLowerCase().split( /\s+/, 2 );
     command = bot.commands.get( commandArgs[0] ) || bot.commands.find( cmd => cmd.aliases && cmd.aliases.includes( commandArgs[0] ) );
 
-    console.debug( "[ execCommand ] -", "User:", message.author.username, "Command:", commandArgs[0] );
+    console.debug( "Executing command for User:", message.author.username, "Command:", commandArgs[0] );
 
     if( !command ) {
       message.reply( "bruHh" );
-      console.info( "Unknown command" );
+      console.info( "Unknown command:", commandArgs[0] );
     }
     else {
 
       const allowedBots = bot.var.bots.includes( message.author.id );
 
-      //if( /^(?:-{1,2})?help$/.test( commandArgs[1] ) ) {
       if( commandArgs[1] === "help" ) {
         const helpEmbed = help[command.name] || {};
         helpEmbed.color = 0xffea00;
@@ -56,7 +56,7 @@ export const execCommand = ( message, bot ) => {
 
   }
   catch( error ) {
-    console.error( error );
+    console.error( "command failed:", error );
     message.reply( bot.var.emojis.lmao + " **WHO DID THIS?!?!**\n```diff\n" + error + "\n```" );
     bot.user.setStatus( "dnd" );
     // crazy idea, what if we randomly DMed the error to a random guild member?
@@ -91,7 +91,7 @@ export const handleEvent = ( bot ) => {
 
           const period = parseInt( eventObject.period ) || 0;
           const validTrigger = ( date.getDay() + 1 ) % ( period ) === 0 ? true : false;
-          console.debug( "Status:", period, validTrigger );
+          console.debug( "Period:", period, "validTrigger:", validTrigger );
 
           if( validTrigger ) {
             // haha better hope these fields exist
@@ -148,13 +148,14 @@ export const handleEvent = ( bot ) => {
               response.footer.text = "Yo this location ain't even real; So I'm droppin it here yo";
             }
 
+            console.debug( "event alertChannel set to:", alertChannel?.id, alertChannel?.name );
+
             if( !eventObject.silent ) {
 
               alertChannel.send( typeof( response ) === "object" ? { embed: response } : response ).then( message => {
                 if( !!eventObject.command ) {
                   message.content = eventObject.command;
                   if( !message.content.startsWith( bot.var.config.prefix ) ) message.content = bot.var.config.prefix + message.content;
-                  console.info( "executing event command:", eventObject.command, "with content:", message.content );
                   execCommand( message, bot );
                 }
               });
@@ -162,10 +163,10 @@ export const handleEvent = ( bot ) => {
             }
             else { // is silent
               if( !!eventObject.command ) {
+                console.debug( "creating mock message for silent event command" );
                 let message = alertChannel.lastMessage;
                 message.content = eventObject.command;
                 if( !message.content.startsWith( bot.var.config.prefix ) ) message.content = bot.var.config.prefix + message.content;
-                console.info( "executing event command:", eventObject.command, "with content:", message.content );
                 execCommand( message, bot );
               }
             }
@@ -184,6 +185,6 @@ export const handleEvent = ( bot ) => {
 
   }
   catch( error ) {
-    console.error( error );
+    console.error( "event failed:", error );
   }
 };

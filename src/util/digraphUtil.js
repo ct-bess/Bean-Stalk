@@ -36,7 +36,7 @@ export const createDigraphs = ( messages ) => {
  * **/
 export const generateSentence = ( digraphs, size ) => {
   
-  console.debug( "generating sentence ..." );
+  console.debug( "generating sentence from digraphs ..." );
 
   if( !size || size < 2 ) size = 9;
 
@@ -59,11 +59,11 @@ export const generateSentence = ( digraphs, size ) => {
     if( !!process.stdout ) {
       words = process.stdout.toString().split( "\n" );
       const chosenWord = words[ Math.floor( Math.random() * words.length ) ];
-      //console.debug( `Adding ${chosenWord} to response` );
       response += chosenWord + " ";
     }
 
   }
+
   console.debug( "result:", response );
 
   return( response );

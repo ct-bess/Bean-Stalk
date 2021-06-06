@@ -11,7 +11,7 @@ export default {
   }],
   roll( max, min, count, author ) {
     
-    console.debug( "[ entering roll() ]" );
+    console.debug( "rolling dice ..." );
 
     let d = {
       val: 0,
@@ -25,7 +25,6 @@ export default {
     }
 
     else if( !count || Math.abs( count ) === 1 || !parseInt( count ) ) {
-      console.info( "Invalid count or no count:", count );
       d.val = Math.floor( Math.random() * ( max - 0 ) ) + min;
       d.tot = d.val;
       d.rolls.push( d.val );
@@ -33,10 +32,11 @@ export default {
 
     else if( count > 0xfffff ) {
       d.val = `Chill with that ${count} rolls`;
+      console.info( "aborting dice called with count:", count );
     }
 
     else {
-      console.info( "valid count:", count );
+      console.debug( "rolling multiple dice for count:", count );
       for( let i = 0; i < Math.abs( count ); ++i ) {
         const roll = Math.floor( Math.random() * ( max - 0 ) ) + min;
         d.tot += roll;
@@ -58,7 +58,7 @@ export default {
     });
     if( this.history.length > 16 ) this.history.shift();
 
-    console.debug( "[ exiting roll() ]" );
+    console.info( "dice result:", d );
 
     return( d );
 
@@ -79,7 +79,7 @@ export default {
         break;
       case "proof":
       case "bread":
-        message.channel.send({
+        message.send({
           files: [{
             attachment: "./lib/commands/dice.js",
             name: "dice.js"
@@ -99,8 +99,8 @@ export default {
         }
     }
 
-    if( response.length > 2000 ) sendBulk( response, message, null );
-    else message.channel.send( response );
+    if( response.length > 2000 ) sendBulk( response, message );
+    else message.send( response );
 
   }
 

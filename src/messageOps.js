@@ -73,7 +73,7 @@ export const messageOps = ( message, bot ) => {
       const digraphs = createDigraphs( messages );
       const sentence = generateSentence( digraphs, size ) || "";
       if( sentence.length > 0 && sentence.length < 2000 ) channel.send( sentence );
-      else console.error( "sentence was empty or too beeg" );
+      else console.warn( "sentence was empty or too beeg:", sentence.length );
 
     });
   }
@@ -93,7 +93,7 @@ export const messageOps = ( message, bot ) => {
     message.react( "\u0036\u20E3" );
     message.react( "\u0039\u20E3", 2000 );
     const filter = ( reaction, user ) => !!reaction.emoji && user.id !== bot.user.id
-    message.awaitReactions( filter, { time: 25000 } ).then( (collected) => {
+    message.awaitReactions( filter, { time: 25000 } ).then( ( collected ) => {
       if( collected.size > 2 ) {
         message.send( ts % 2 === 0 ? "SHUCKS :sweat_drops:" : "AWESOME" ); 
       }
@@ -104,6 +104,7 @@ export const messageOps = ( message, bot ) => {
   }
   // 0x5f3759df = 99841437 in base ten, there's a slim chance a timestamp can be a multiple of this magic number
   else if( ts % 0x5f3759df === 0 ) { 
+    console.info( "IT HAPPENED!", message );
     message.react( ":pray:" );
     message.reply( "`// what the fuck?` https://github.com/id-Software/Quake-III-Arena/blob/master/code/game/q_math.c#L552" );
     message.send( ":pray: ***YOU ARE THE CHOSEN ONE*** :pray:" );

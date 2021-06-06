@@ -36,7 +36,7 @@ export const argHandler = ( message ) => {
   // this was an after thought, one day i'll make it 0, 1, 2 for cmd, sub cmd, expr
   argMap.set( -1, command );
 
-  console.info( "Parsing arguments for", command );
+  console.debug( "Parsing arguments for:", command );
 
   // Version 2: Fungal Smelter
   while( args.length > 0 && !expressionSet ) {
@@ -126,6 +126,8 @@ export const coalesce = ( name, type, bot, guild ) => {
   // if we get an ID, we simply try to resolve it
   type = ( type + "" ).toLowerCase() + (isID + 0);
 
+  console.debug( "coalescing:", name, "to", type, "isID:", isID );
+
   let base = null;
 
   switch( type ) {
@@ -162,9 +164,11 @@ export const coalesce = ( name, type, bot, guild ) => {
  * @returns { void }
  * **/
 export const sendBulk = ( response, message, format ) => {
-  console.info( "[ INFO ] sendBulk() response length: " + response.length );
+
+  console.debug( "sendBulk called for response length: " + response.length );
   let textBound = 2000, delay = 1500;
   let prefix = "", suffix = "";
+
   switch( format ) {
     case "italics":
       textBound = 1998;
@@ -193,9 +197,11 @@ export const sendBulk = ( response, message, format ) => {
     default:
       textBound = 2000;
   }
+
   if( response.length < textBound ) {
-    console.warn( "[ WARN ] sendBulk called on string < 2000" );
+    console.warn( "sendBulk called on string < 2000" );
   }
+
   for( let i = 0; i < response.length; i += textBound ) {
     const chunk = response.substring( i, i + textBound );
     delay += 1500;
@@ -203,4 +209,5 @@ export const sendBulk = ( response, message, format ) => {
       message.channel.send( prefix + chunk + suffix ) 
     }, delay );
   }
+
 };

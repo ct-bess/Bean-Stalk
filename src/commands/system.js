@@ -9,6 +9,7 @@ export default {
   description: "Bean Stalk system commands",
   aliases: [ "sys", "bean" ],
   exec( message, bot ) {
+
     const args = argHandler( message );
     const isAdmin = bot.var.admins.includes( message.author.id );
     const subcommand = ( args.get( 0 ) + "" ).toLowerCase();
@@ -36,6 +37,7 @@ export default {
         break;
       case "setprefix0":
       case "reload0":
+      case "setloglevel0":
         response = "My potions are too strong for you traveler :face_with_monocle:";
         break;
       case "reload1":
@@ -79,12 +81,22 @@ export default {
           response.embed.fields.push({ name: command.name, value: command.description });
         });
       break;
+      case "getloglevel1":
+      case "getloglevel0":
+        response = console.getLevel();
+        break;
+      case "setloglevel1":
+        response = console.setLevel( args.get( 1 ) );
+        break;
       case "logs0":
       case "logs1":
+        // ok GNU/Linux
+        response = "```\n" + execSync( "tail .logs/stdout.log" ).toString() + "\n```";
+        /*
         open( ".logs/stdout.log", ( error, fd ) => {
           if( error ) console.error( error );
           else if( fd ) {
-            read( fd, { buffer: Buffer.alloc( 256 ) }, ( error, bytesRead, buffer ) => {
+            read( fd, { buffer: Buffer.alloc( 512 ) }, ( error, bytesRead, buffer ) => {
               if( error ) console.error( error );
               else {
                 sendBulk( buffer.toString(), message, "code block" )
@@ -93,21 +105,11 @@ export default {
             });
           }
         });
+        */
         break;
       case "errors0":
       case "errors1":
-        open( ".logs/stderr.log", ( error, fd ) => {
-          if( error ) console.error( error );
-          else if( fd ) {
-            read( fd, { buffer: Buffer.alloc( 256 ) }, ( error, bytesRead, buffer ) => {
-              if( error ) console.error( error );
-              else {
-                sendBulk( buffer.toString(), message, "code block" )
-                close( fd, ( error ) => { if( error ) console.error( error ) } );
-              }
-            });
-          }
-        });
+        response = "```\n" + execSync( "tail .logs/stderr.log" ).toString() + "\n```";
         break;
       case "channels0":
       case "channels1":
@@ -184,4 +186,4 @@ export default {
     if( response.length > 2000 ) sendBulk( response, message, responseType );
     else message.send( response );
   }
-}
+};

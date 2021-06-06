@@ -69,7 +69,7 @@ export default {
       response = "no expression given to search with";
     }
 
-    if( response.length > 0 && response.length < 2000 ) message.channel.send( response );
+    if( response.length > 0 && response.length < 2000 ) message.send( response );
 
   }, // EO exec
   refresh( user ) {

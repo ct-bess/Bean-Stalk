@@ -7,13 +7,20 @@ Bean-Stalk was developed to run on a single server. Some commands may behave *st
 > For example, the connect4 command doesn't create seperate board instances per server.
 > So you could consider it a feature that you can play connect4 across different servers
 
+### Contents
+
+- [ Design ]( #Design )
+- [ Build and Run ]( #Build%20and%20Run )
+- [ Key Features ]( #Key%20Features )
+- [ Commands ]( #Commands )
+- [ MessageOps ]( #MessageOps )
 
 ## Design
 
 Bean-Stalk is designed to be agile. Commands can be added or even modified on the fly.
 Commands are also created with flexibility in mind; One command can call or change the state of another.
 
-## Build & Run
+## Build and Run
 
 1. Create the bot from Discord's developer portal & invite to your server
 
@@ -58,7 +65,7 @@ Commands are also created with flexibility in mind; One command can call or chan
 
    `[cc new ...`
 
-## Editing Commands
+## Commands
 
 Commands are defined in the `src/commands/` directory.
 They are set to a Discord Collection map with the `name` as the key.
@@ -89,7 +96,9 @@ export default {
 };
 ```
 
-## Editing Message Ops (Regex responses)
+## MessageOps
+
+AKA Regex Responses
 
 This is a cheeky function ran against all messages and can be used to unleash your inner dad jokes.
 This file is found at `src/messageOps.js`

@@ -6,18 +6,20 @@ export default {
   description: "Execute some spicy, arbitrary, uncontainiarized JavaScript",
   aliases: [ "js", "js-nl" ],
   exec( message, bot ) {
+
     const isAdmin = bot.var.admins.includes( message.author.id );
     const args = message.content.split( /\s+/, 2 );
     const code = message.content.substring( ( args[0] + "" ).length + 1 );
     const formatNewlines = args[0] === this.aliases[1]; // wow
 
     if( /require|import/.test( code ) && !isAdmin ) {
+      console.warn( "js called with external modules by non-admin:", message.author.id, message.author.username );
       message.reply( "Don't use external modules :fire:" );  
     }
     else {
 
       let delay = 1500;
-      console.info( "Starting child process with base delay:", delay, "milliseconds" );
+      console.info( "Starting node subprocess with base delay:", delay, "ms" );
       message.channel.startTyping();
 
       // RIP OS Injection (Bashdoor; CWE-78): 2020-2021 "Admins are no longer worthy"
@@ -35,7 +37,7 @@ export default {
           for( let i = 0; i < stdout.length; ++i ) {
             if( stdout[i].length > 0 ) {
               setTimeout( () => {
-                if( stdout[i].length < 2000 ) message.channel.send( stdout[i] );
+                if( stdout[i].length < 2000 ) message.send( stdout[i] );
                 else sendBulk( stdout[i], message, null );
               }, delay );
               delay += 1500;
@@ -44,7 +46,7 @@ export default {
         }
         else {
           setTimeout( () => {
-            if( stdout.length < 2000 ) message.channel.send( stdout );
+            if( stdout.length < 2000 ) message.send( stdout );
             else sendBulk( stdout, message, null );
           }, delay );
         }
@@ -55,7 +57,7 @@ export default {
         const stderr = data.toString();
         delay += 1500;
         setTimeout( () => {
-          message.channel.send( bot.var.emojis.lmao + "\n```diff\n" + stderr + "\n```" );
+          message.reply( bot.var.emojis.lmao + "\n```diff\n" + stderr + "\n```" );
         }, delay );
       });
 
@@ -63,8 +65,7 @@ export default {
         console.info( "spawn finished with exit code:", code );
       });
 
-      console.debug( "child process spawned with PID:", process.pid )
-      console.debug( "args:", process.spawnargs );
+      console.debug( "child process spawned with PID:", process.pid, "using args:", process.spawnargs )
 
       // To kill infinite loops and code that takes too long
       // we'll wait until double the delay amount
@@ -76,7 +77,7 @@ export default {
         // There is probly 2 processes? a node proc & a bash proc?
         // this hasn't killed a random process on my computer?
         //exec( `kill ${process.pid + 1}` );
-        console.info( "js subprocesses killed" );
+        console.info( "node subprocesses killed?", process.killed );
         console.info( "max delay reached:", delay, "ms" );
 
         message.channel.stopTyping();

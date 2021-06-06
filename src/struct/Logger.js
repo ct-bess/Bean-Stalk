@@ -8,7 +8,6 @@ import { createWriteStream } from "fs";
  * @property { integer } level the log level in use
  * @property { console.Console } console the console that writes the logs to a file
  * @property { console.Console } shell the console that writes logs to stdout and stderr in your shell
- * @property { array<string> } logSnapshot a snapshot of the last 3 log entries or so
  * @method getLevel returns the current log level in a readable format
  * @method log log anything to the shell; Only the shell btw
  * @method error log stderr to logs and shell
@@ -32,6 +31,7 @@ class Logger {
 
     this.level = this.levels.INFO;
 
+    // do we wana unify stdout and stderr?
     this.console = new Console({
       stdout: createWriteStream( "./.logs/stdout.log" ),
       stderr: createWriteStream( "./.logs/stderr.log" )
@@ -49,12 +49,33 @@ class Logger {
 
   }
 
-  getLevel = () => {
-    for( const level in this.levels ) {
-      if( this.level === this.levels[level] ) {
-        return( level );
+  setLevel = ( level ) => {
+
+    level = ( level + "" ).toUpperCase();
+    console.debug( "attempting to set log level to:", level );
+
+    for( const key in this.levels ) {
+      if( key == level || this.levels[key] == level ) {
+        this.level = this.levels[key];
+        console.info( "log level set to:", key );
+        return( key );
       }
     }
+
+    console.warn( "cannot set log level to:", level );
+    return( `Unknown level: ${level}` );
+
+  }
+
+  getLevel = () => {
+
+    for( const key in this.levels ) {
+      if( this.level === this.levels[key] ) {
+        return( key );
+      }
+    }
+
+    console.error( "Log level is currently set to unknown value:", this.level );
     return( `Unknown level: ${this.level}` );
   }
 

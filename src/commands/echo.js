@@ -5,15 +5,15 @@ export default {
   aliases: [ "yeet" ],
   description: "echos or yeets the given or not given text",
   exec( message, bot ) {
-    const args = argHandler( message );
 
+    const args = argHandler( message );
     let channel = null;
+
     // wow brillinat
     if( args.get( -1 ) === this.aliases[0] ) channel = bot.channels.cache.random();
     else channel = message.channel;
 
-    let delay = args.get( "delay" ) || 0;
-    delay = parseInt( delay ) * 1000;
+    const delay = ( parseInt( args.get( "delay" ) ) || 0 ) * 1000;
 
     if( args.has( "channel" ) ) {
       channel = args.get( "channel" );
@@ -53,7 +53,7 @@ export default {
         }
 
       } catch( error ) {
-        console.error( error );
+        console.error( "echo failed:", error );
       }
 
     }
@@ -63,4 +63,3 @@ export default {
 
   } // EO exec
 };
-

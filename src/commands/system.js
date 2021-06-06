@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
 import { exit } from "process";
-import { writeFileSync, read, open, close } from "fs"
+import { writeFileSync, renameSync, read, open, close } from "fs"
 import { argHandler, sendBulk } from "../util/commandUtil"
 import { loadCommands } from "../util/systemUtil";
 
@@ -61,12 +61,11 @@ export default {
         break;
       case "die1":
         console.info( "saving events ..." );
-        writeFileSync( "events.json", JSON.stringify( bot.var.events ), error => { console.error(error) });
-        console.info( "saved events" );
+        writeFileSync( "events.json", JSON.stringify( bot.var.events, null, "  " ), error => { console.error(error) });
         console.info( "saving config ..." );
-        writeFileSync( "config.json", JSON.stringify( bot.var.config ), error => { console.error(error) });
-        console.info( "saved config" );
-        //message.reply( "***CHANGE THE WORLD... MY FINAL MESSAGE... GOOD BYE...***" );
+        writeFileSync( "config.json", JSON.stringify( bot.var.config, null, "  " ), error => { console.error(error) });
+        console.info( "saving logs ..." );
+        renameSync( `${bot.var.config.logPath}/${bot.var.config.logFile}`, `${bot.var.config.logPath}/${message.createdTimestamp}-${bot.var.config.logFile}` );
         message.react( "\u0030\u20E3" );
         setTimeout( () => {
           bot.destroy();
@@ -87,11 +86,20 @@ export default {
         break;
       case "setloglevel1":
         response = console.setLevel( args.get( 1 ) );
+        bot.var.config.logLevel = response;
         break;
       case "logs0":
       case "logs1":
-        // ok GNU/Linux
-        response = "```\n" + execSync( "tail .logs/stdout.log" ).toString() + "\n```";
+        if( args.has( "full" ) ) {
+          response = {
+            files: [{
+              attachment: `${bot.var.config.logPath}/${bot.var.config.logFile}`,
+              name: bot.var.config.logFile
+            }]
+          };
+        }
+        // temp
+        else response = "```\n" + execSync( `tail -n 25 '${bot.var.config.logPath}/${bot.var.config.logFile}'` ).toString() + "\n```";
         /*
         open( ".logs/stdout.log", ( error, fd ) => {
           if( error ) console.error( error );
@@ -106,10 +114,6 @@ export default {
           }
         });
         */
-        break;
-      case "errors0":
-      case "errors1":
-        response = "```\n" + execSync( "tail .logs/stderr.log" ).toString() + "\n```";
         break;
       case "channels0":
       case "channels1":

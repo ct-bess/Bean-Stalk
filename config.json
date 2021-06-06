@@ -1,1 +1,7 @@
-{"prefix":"[","botReplyDelay":3000}
+{
+  "prefix": "[",
+  "botReplyDelay": 3000,
+  "logPath": ".logs",
+  "logFile": "session.log",
+  "logLevel": "DEBUG"
+}

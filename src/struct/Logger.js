@@ -4,11 +4,13 @@ import { createWriteStream } from "fs";
 /**
  * @class Logger
  * @description Ya'll wana learn how to override the default global console to also log to a file and possibly miss other console features??
+ * @constructor logFile, logLevel
  * @property { Object } levels the available log levels
  * @property { integer } level the log level in use
  * @property { console.Console } console the console that writes the logs to a file
  * @property { console.Console } shell the console that writes logs to stdout and stderr in your shell
  * @method getLevel returns the current log level in a readable format
+ * @method setLevel sets the log level; argument must exist as a key or value in levels property
  * @method log log anything to the shell; Only the shell btw
  * @method error log stderr to logs and shell
  * @method warn log stderr to logs and shell
@@ -18,7 +20,7 @@ import { createWriteStream } from "fs";
  * **/
 class Logger {
 
-  constructor( /* nice */ ) {
+  constructor( logFile, logLevel ) {
 
     this.levels = Object.freeze({
       OFF: 0,
@@ -29,12 +31,12 @@ class Logger {
       TRACE: 5
     });
 
-    this.level = this.levels.INFO;
+    this.level = this.levels[logLevel] || logLevel || this.levels.INFO;
+    this.logStream = createWriteStream( logFile );
 
-    // do we wana unify stdout and stderr?
     this.console = new Console({
-      stdout: createWriteStream( "./.logs/stdout.log" ),
-      stderr: createWriteStream( "./.logs/stderr.log" )
+      stdout: this.logStream,
+      stderr: this.logStream
     });
 
     // fun fact, this config is literally the default global console

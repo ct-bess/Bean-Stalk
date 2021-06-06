@@ -1,5 +1,6 @@
 import auth from "../auth.json";
 import guild from "../guild.json";
+import { logPath, logFile, logLevel } from "../config.json";
 import { messageOps } from "./messageOps";
 import { execCommand, handleEvent } from "./util/clientUtil";
 import { loadCommands, validateGuild } from "./util/systemUtil";
@@ -8,8 +9,9 @@ import Logger from "./struct/Logger";
 import "./struct/SaferMessage";
 //import "./struct/SaferTextChannel";
 
-// Awesome
-console = new Logger();
+const fullLogPath = `${logPath}/${logFile}`;
+console = new Logger( fullLogPath, logLevel );
+console.info( "Logger created with output path:", fullLogPath, "with level:", logLevel );
 
 const bot = new Bot();
 

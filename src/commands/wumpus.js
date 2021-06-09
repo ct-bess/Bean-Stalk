@@ -49,12 +49,10 @@ export default {
 
         // Scramble board
         for( let i = 0; i < board.length; ++i ) {
-          // LENGTH IS +1 BRUH (still breaks sometimes tho)
           const sel = Math.floor( Math.random() * board.length );
           if( board[i] !== 0x20 && board[i] !== 0xA && board[sel] !== 0x20 && board[sel] !== 0xA ) {
-            board[i] = board[i] ^ board[sel];
-            board[sel] = board[i] ^ board[sel];
-            board[i] = board[i] ^ board[sel];
+            // XOR swap fails sometiems, still dunno why. So we're doing JS specific swap:
+            [ board[i], board[sel] ] = [ board[sel], board[i] ];
           }
         }
 

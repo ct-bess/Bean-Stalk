@@ -10,8 +10,8 @@ Bean-Stalk was developed to run on a single server. Some commands may behave *st
 ### Contents
 
 - [ Design ]( #Design )
-- [ Build and Run ]( #Build%20and%20Run )
-- [ Key Features ]( #Key%20Features )
+- [ Build and Run ]( #Build-and-Run )
+- [ Key Features ]( #Key-Features )
 - [ Commands ]( #Commands )
 - [ MessageOps ]( #MessageOps )
 

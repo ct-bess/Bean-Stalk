@@ -15,6 +15,7 @@ export const execCommand = ( message, bot ) => {
 
     if( typeof( message ) !== "object" ) {
       console.debug( "creating mock message for command execution" );
+      // let's actually make a message here, like new Message() ya
       const content = message;
       message = bot.user.lastMessage;
       message.content = content;

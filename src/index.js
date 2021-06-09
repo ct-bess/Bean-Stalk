@@ -7,13 +7,15 @@ import { loadCommands, validateGuild } from "./util/systemUtil";
 import Bot from "./struct/Bot";
 import Logger from "./struct/Logger";
 import "./struct/SaferMessage";
-//import "./struct/SaferTextChannel";
 
 const fullLogPath = `${logPath}/${logFile}`;
 console = new Logger( fullLogPath, logLevel );
 console.info( "Logger created with output path:", fullLogPath, "with level:", logLevel );
 
-const bot = new Bot();
+const bot = new Bot({
+  disableMentions: "everyone",
+  messageEditHistoryMaxSize: 0
+});
 
 bot.on( "ready", () => {
   console.log( "INITIATING BEAN STALK ..." );
@@ -24,17 +26,18 @@ bot.on( "ready", () => {
 
 bot.on( "message", ( message ) => {
 
-  if( bot.var.messageOpsEnabled && message.author.id !== bot.user.id ) messageOps( message, bot );
 
-  if( message.channel.type === "dm" && !message.author.bot && !message.content.startsWith( bot.var.config.prefix ) ) {
+  const prefixCheck = message.content.startsWith( bot.var.config.prefix );
+  const allowedBots = bot.var.bots.includes( message.author.id );
+
+  if( bot.var.messageOpsEnabled && !prefixCheck && message.author.id !== bot.user.id ) messageOps( message, bot );
+
+  if( message.channel.type === "dm" && !message.author.bot && !prefixCheck ) {
     setTimeout( () => {
       bot.channels.resolve( bot.var.channels.commands ).send( message.content );
     }, 1000 );
     return;
   }
-
-  const prefixCheck = message.content.startsWith( bot.var.config.prefix );
-  const allowedBots = bot.var.bots.includes( message.author.id );
 
   if( !prefixCheck || ( !allowedBots && message.author.bot ) ) return;
 

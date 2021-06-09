@@ -98,6 +98,10 @@
         "value": "That's right, you use the dice size as the subcommand here. Use count to roll multiple dice at once\nCan shorthand count as expression\nDefault: count = `1`"
       },
       {
+        "name": "choose",
+        "value": "have bean randomly select 1 option from a comma or space seperated string. Note that comma's take precident in evaluation\n-quiet = only output choice, supresses normal dice roll output\n--options = overload for your options if you don't want to specify in the expression for some reason"
+      },
+      {
         "name": "history",
         "value": "Prints the last 16 rolls\nshorthand = hist"
       },

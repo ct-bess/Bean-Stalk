@@ -1,12 +1,16 @@
+import { Message } from "discord.js";
 import help from "../../help.json";
+/**
+ * @typedef {import('discord.js').Message} Message
+ * @typedef {import('../struct/Bot.js')} Bot
+ */
 
 /**
- * @method execCommand
- * @description process and execute a bot command from a text channel. Prefix validation does not happen here, only command validation
- * @param { Discord.Message | string } message the message that called this function. If called with a string, sets the bot's last message as the origin
- * @param { Discord.Client } bot the discord client processing the command
- * @returns { void }
- **/
+ * process and execute a bot command from a text channel. Prefix validation does not happen here, only command validation
+ * @param {(Message|string)} message - the message that called this function. If called with a string, sets the bot's last message as the origin
+ * @param {Bot} bot - the discord {@link Bot client} processing the command
+ * @returns {void}
+ */
 export const execCommand = ( message, bot ) => {
 
   let commandArgs = null, command = null;
@@ -14,11 +18,19 @@ export const execCommand = ( message, bot ) => {
   try {
 
     if( typeof( message ) !== "object" ) {
-      console.debug( "creating mock message for command execution" );
-      // let's actually make a message here, like new Message() ya
+      console.debug( "creating message for command execution" );
       const content = message;
-      message = bot.user.lastMessage;
-      message.content = content;
+      if( !!bot.user.lastMessage ) {
+        console.debug( "using client's last message" );
+        message = bot.user.lastMessage;
+        message.content = content;
+      }
+      else {
+        // all commands originate from a text channel
+        const channel = bot.channels.cache.find( chan => chan.type === "text" );
+        console.debug( "no previous message available from client, creating mock message at channel:", channel.id, channel.name );
+        message = new Message( bot.user, { content }, channel );
+      }
     }
 
     message.content = message.content.slice( bot.var.config.prefix.length );
@@ -66,11 +78,10 @@ export const execCommand = ( message, bot ) => {
 };
 
 /**
- * @method handleEvent
- * @description processes time based client events for scheduled commands
- * @param { Discord.Client } bot the client to handle the event
- * @returns { void }
- **/
+ * processes time based client events for scheduled commands
+ * @param {Bot} bot - the client to handle the event
+ * @returns {void}
+ */
 export const handleEvent = ( bot ) => {
   try {
     const events = bot.var.events;

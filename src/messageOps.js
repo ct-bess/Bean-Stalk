@@ -1,15 +1,18 @@
 import { createDigraphs, generateSentence } from "./util/digraphUtil";
+/**
+ * @typedef {import('discord.js').Message} Message
+ * @typedef {import('./struct/Bot.js')} Bot
+ */
 
 const sameBroRE = /i(?:'?m)?\s.*(love|just|for|really|look)\s(\w+)/i;
 const amogusRE = /amon?g.?us|sus|red|task|meet|vent|scan|trash|button|vote|imposter|O2|electrical/i;
 
 /** 
- * @method messageOps
- * @description runs a message through a gauntlet of horrible inside jokes and makes the client respond accordingly
- * @param { Discord.Message } message the message origin
- * @param { Discord.Client } bot client processing the message
- * @returns { void }
- * **/
+ * runs a message through a gauntlet of horrible inside jokes and makes the client respond accordingly
+ * @param {Message} message - the Discord.Message origin
+ * @param {Bot} bot - client processing the message
+ * @returns {void}
+ */
 export const messageOps = ( message, bot ) => {
 
   const ts = message.createdTimestamp;

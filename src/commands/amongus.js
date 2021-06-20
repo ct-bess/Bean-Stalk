@@ -107,17 +107,31 @@ export default {
     return( outcome );
 
   },
-  displayWires( player ) {
+  displayWires( player, solved ) {
 
     const inputWires = player.tasks.wires[0]?.input;
     const outputWires = player.tasks.wires[0]?.output;
     let response = "";
 
-    for( let i = 0; i < inputWires.length; ++i ) {
-      const numberEmoji = numberToEmoji( i+1 );
-      const idisplay = `:${inputWires[i]?.color}_square:`;
-      const odisplay = `:${outputWires[i]?.color}_square:`;
-      response += `${idisplay}:white_small_square::white_small_square::white_small_square::white_small_square:${odisplay}${numberEmoji}\n`;
+    if( !!solved ) {
+      // how do we do this?
+      for( const iwire of inputWires ) {
+        const owire = outputWires.find( elem => elem.color === iwire.color );
+        const rowDiff = iwire.row - owire.row;
+        // 1 array per row, and we push our colors into the rows and stair step it to create 4 entries to 'link' input to output
+        // finally, we .join("") the row and then .join("\n") each row togeater, ok?
+      }
+    }
+
+    else {
+
+      for( let i = 0; i < inputWires.length; ++i ) {
+        const numberEmoji = numberToEmoji( i+1 );
+        const idisplay = `:${inputWires[i]?.color}_square:`;
+        const odisplay = `:${outputWires[i]?.color}_square:`;
+        response += `${idisplay}:white_small_square::white_small_square::white_small_square::white_small_square:${odisplay}${numberEmoji}\n`;
+      }
+
     }
 
     return( response );
@@ -145,6 +159,7 @@ export default {
     // make sure we track the rows w.r.t output
     for( let i = 1; i < outputWires.length + 1; ++i ) {
       outputWires[i-1].row = i;
+      inputWires[i-1].row = i;
     }
 
     // build solution

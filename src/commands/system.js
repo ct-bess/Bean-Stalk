@@ -184,6 +184,11 @@ export default {
         response = response.replace( /`/g, "'" );
         response = "```\n" + response + "\n```";
       break;
+      case "sensors0":
+      case "sensors1":
+        response = execSync( "sensors" ).toString() || "exec sensors error";
+        response = "```\n" + response + "\n```";
+      break;
       default:
         response = `no such subcommand: ${subcommand} :face_with_monocle:`;
     }

@@ -1,6 +1,20 @@
 import { Collection } from "discord.js";
-
 /**
+ * @typedef {import('discord.js').Message} Message
+ * @typedef {import('discord.js').Guild} Guild
+ * @typedef {import('discord.js').Member} Member
+ * @typedef {import('discord.js').Role} Role
+ * @typedef {import('discord.js').Channel} Channel
+ * @typedef {import('../struct/Bot.js')} Bot
+ * 
+ * @typedef {*} commandArgs - the keys that are set for a command's arguments
+ * @property {-1} commandName - the command name being executed
+ * @property {0} [subcommand] - the subcommand to be executed; If any
+ * @property {string=} - flags and variables; Set with - and --
+ * @property {1} [expression] - the expression to use; If any
+ */
+
+/*
  * version 3: Name Pending
  * uses a custom split function for partial splits that keep the entire input
  * e.g.
@@ -8,26 +22,17 @@ import { Collection } from "discord.js";
  * That'll make this code much cleaner because when we hit a user's string variable, we can just split the right half by the double quote
  * To capture it, and the split by the spaces will preserve the right half too
  * Then we also wont have to join at the end for the expression
- **/
+ */
 
 /**
- * @method argHandler
- * @description returns a command input into arguments mapped to a subcommand, flags/variables, and an expression
- * @param { Discord.Message } message the message that executed the command
- * @returns { Discord.Collection } the mapped results: subcommand get(0), expression get(1), flags/variables get("x")
- **/
+ * returns a command input into arguments mapped to a subcommand, flags/variables, and an expression
+ * @see {@link commandArgs} for what the keys are set to
+ * @param {Message} message - the Discord.Message that executed the command
+ * @returns {Collection<commandArgs,string>} the mapped results: subcommand get(0), expression get(1), flags/variables get("x")
+ */
 export const argHandler = ( message ) => {
 
-  // expected format and orders:
-  // command subcommand [ flags/variables ] [ expression ]
-  // command [ flags/variables ] subcommand [ expression ]
-  // argMap usage:
-  // get( 0 ) = subcommand
-  // get( 1 ) = expression
-  // get( "x" ) = flag/variable
-
   let args = message.content.split( /\s+/ );
-  // Is it overkill to use a deescord map here?
   const argMap = new Collection();
   let subcommandSet = false, expressionSet = false;
 
@@ -112,14 +117,19 @@ export const argHandler = ( message ) => {
 };
 
 /** 
- * @method coalesce
- * @description converts a name or snowflake ID to its' corresponding discord class
- * @param { string } name the user, channel, or role name we are coalescing
- * @param { string } type what discord class type we are converting it to (member, channel, or role)
- * @param { Discord.Client } bot discord client processing this (not needed for member and role coalescing)
- * @param { Discord.Guild } guild guild origin (not needed for channel coalescing)
- * @returns { * } the discord class with respect to the input type; If null the coalescing failed
- * **/
+ * converts a name or snowflake ID to its' corresponding discord class
+ * @param {string} name - the user, channel, or role name or snowflake ID we are coalescing
+ * @param {("channel"|"member"|"role")} type - what discord class type we are converting it
+ * @param {Bot} [bot] - discord client processing this (not needed for member and role coalescing)
+ * @param {Guild} [guild] - guild origin (not needed for channel coalescing)
+ * @returns {?(Channel|Member|Role)} the Discord object with respect to the input type; If null the coalescing failed
+ * @example
+ * // convert text channel name to its' corresponding Discord.TextChannel object:
+ * const channel = coalesce( "general", "channel", bot );
+ * @example
+ * // convert a member's ID to the member object from some guild:
+ * const member = coalesce( "111111111111111111", "member", null, bot.guilds.cache.first() );
+ */
 export const coalesce = ( name, type, bot, guild ) => {
 
   const isID = /\d{18}/.test( name );
@@ -158,45 +168,46 @@ export const coalesce = ( name, type, bot, guild ) => {
 };
 
 /** 
- * @method sendBulk
- * @description partitions a large message into 2000 character pieces and sends each part every 1.5 seconds
- * @param { Discord.Message } message the message origin
- * @returns { void }
- * **/
-export const sendBulk = ( response, message, format ) => {
+ * partitions a large message into 2000 character pieces and sends each part in 1.5 second intervals
+ * @param {string} response the long string we want to send in bulk
+ * @param {Message} message the message origin
+ * @param {string} [format] optional, the markdown format to use: italics, bold, inline code, quote, quote block, code block
+ * @param {string} [codeBlockType=""] optional, the language to format the code with
+ * @returns {void}
+ * @example
+ * // send a javascript code block:
+ * sendBulk( "// some js code ...", message, "code block", "js" );
+ */
+export const sendBulk = ( response, message, format, codeBlockType = "" ) => {
 
-  console.debug( "sendBulk called for response length: " + response.length );
+  console.debug( "sendBulk called for response length: " + response?.length );
   let textBound = 2000, delay = 1500;
   let prefix = "", suffix = "";
 
   switch( format ) {
     case "italics":
-      textBound = 1998;
       prefix = "*", suffix = prefix;
       break;
     case "bold":
-      textBound = 1996;
       prefix = "**", suffix = prefix;
       break;
     case "inline code":
-      textBound = 1998;
       prefix = "`", suffix = prefix;
       break;
     case "quote":
-      textBound = 1998;
       prefix = "> ";
       break;
     case "quote block":
-      textBound = 1996;
       prefix = ">>> ";
       break;
     case "code block":
-      textBound = 1992;
-      prefix = "```\n", suffix = "\n```";
+      prefix = "```" + codeBlockType + "\n", suffix = "\n```";
       break;
     default:
       textBound = 2000;
   }
+
+  textBound = textBound - prefix.length - suffix.length;
 
   if( response.length < textBound ) {
     console.warn( "sendBulk called on string < 2000" );
@@ -206,7 +217,7 @@ export const sendBulk = ( response, message, format ) => {
     const chunk = response.substring( i, i + textBound );
     delay += 1500;
     setTimeout( () => { 
-      message.channel.send( prefix + chunk + suffix ) 
+      message.send( prefix + chunk + suffix ) 
     }, delay );
   }
 

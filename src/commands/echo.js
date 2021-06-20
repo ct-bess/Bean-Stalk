@@ -20,11 +20,14 @@ export default {
       channel = coalesce( channel, "channel", bot, null );
     }
 
-    if( !!channel ) {
+    const perm = channel.permissionsFor( bot.user.id );
+
+    if( !!channel || !perm.has( "SEND_MESSAGES" ) ) {
       try {
 
+        // disgusting
+
         let m = "", iterations = 0;
-        const perm = channel.permissionsFor( bot.user.id );
         let validChannel = channel.isText() && perm.has( "SEND_MESSAGES" );
 
         // called with no message to echo
@@ -43,6 +46,7 @@ export default {
 
         if( validChannel && m.length > 0 && m.length < 2000 ) {
           if( delay > 0 ) {
+            console.debug( "echoing/sending message after", delay, "ms" );
             setTimeout( () => { 
               // DYNAMIC GAMEPLAY
               if( !args.has( 0 ) ) m = message.channel.messages.cache.last( 2 )[0].content;

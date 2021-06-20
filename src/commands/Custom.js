@@ -1,3 +1,4 @@
+import { sendBulk } from "../util/commandUtil";
 import { execSync, spawnSync } from "child_process";
 import { writeFile } from "fs";
 import { get } from "https";
@@ -11,7 +12,10 @@ export default {
     args.shift();
     const subcommand = (args[0]+"").toLowerCase();
     let commandName = ( args[1] || "" ).toLowerCase();
+
+    // this means the filename and command name must match, or else it breaks
     const hasCommand = bot.commands.has( commandName );
+
     let lineNumber = null; //parseInt( args[2] || "" );
     let script = message.content.match( /(?<=(?:\w+\s+){3})(\d+\s+)?(.+)/ );
     console.debug( "Using:", subcommand, commandName );
@@ -45,12 +49,10 @@ export default {
       case "list1":
         cmd = "ls";
         cliargs = [ "lib/commands/.ccs", "src/commands/.ccs" ];
-        response += "```\n";
         break;
       case "show1":
         cmd = "cat";
         cliargs = [ "-n", `src/commands/.ccs/${commandName}.js` ];
-        response += "```js\n";
         break;
       case "new1":
         response = `already have *${commandName}* :sunglasses:`;
@@ -149,11 +151,7 @@ export default {
       else if( !!proc.stderr ) response += "```diff\n" + proc.stderr + "\n```"
       else if( !!proc.error ) response += `:joy: **${proc.error.name}** :joy:\n` + "```diff\n" + proc.error.message + "\n```";
 
-      // -- Very Wet Indeed -- \\
-      if( subcommand === "show" || subcommand === "list" ) {
-        response += "\n```";
-      }
-      else if( subcommand === "new" ) {
+      if( subcommand === "new" ) {
         execSync( `sed -i -E --sandbox s/template/${commandName}/g src/commands/.ccs/${commandName}.js` );
       }
       else if( subcommand === "commit" ) { //|| subcommand === "upload" ) {
@@ -166,7 +164,8 @@ export default {
     }
 
     console.debug( "Custom output:", subcommand, response );
-    if( response.length > 0 ) message.channel.send( response );
+    if( response.length > 2000 ) sendBulk( response, message, "code block", "js" );
+    else if( response.length > 0 ) message.send( response );
     else console.warn( "empty response in Custom.js exec" );
 
   }

@@ -26,7 +26,7 @@ Commands are also created with flexibility in mind; One command can call or chan
 
 2. Install the node.js version Discord.js is dependent on
 
-   You can find out [here](https://www.npmjs.com/package/discord.js).
+   You can find out [here](https://www.npmjs.com/package/discord.js)
    Installing node.js should also install `npm`
 
 3. Clone the repository and download this project's node module dependencies by running `npm i` in the project's directory
@@ -80,9 +80,9 @@ export default {
   name: "the_command_name_without_spaces",
   description: "command's description; in depth help text is defined in help.json",
   aliases: [ "shorthand_cmd_names", "no_spaces_here_too" ],
-  /** @param { Discord.Message } message the message object that triggered the command
-   *  @param { Discord.Client } bot the client handling the command
-   * **/
+  /** @param {Discord.Message} message - the message object that triggered the command
+   *  @param {Discord.Client} bot - the client handling the command
+   */
   exec( message, bot ) {
 
     // create argument map
@@ -103,11 +103,17 @@ AKA Regex Responses
 This is a cheeky function ran against all messages and can be used to unleash your inner dad jokes.
 This file is found at `src/messageOps.js`
 
+The goal is to have the bot say something amusing every once in a while.
+We don't want to spam the server with these messages.
+
 ```js
-/** @param { Discord.Message } message the message object that triggered the message op
- *  @param { Discord.Client } bot the client handling the command
- * **/
+/** @param {Discord.Message} message - the message object that triggered the message op
+ *  @param {Discord.Client} bot - the client handling the command
+ */
 export const messageOps = ( message, bot ) => {
+
+   // make sure to put something in place that prevents these from firing each time
+   if( message.createdTimestamp % 7 !== 0 ) return;
 
   if( /i('m)?\b.+(really|so|for)\b.+/i.test( message.content ) ) {
     message.reply( "yeah same bro" );

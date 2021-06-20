@@ -37,11 +37,10 @@ export default {
       }
       console.info( "using time period (milliseconds):", period, "from type:", type );
 
-      // todo: filters by variable
-      const filter = message => !!message.content;
+      let filter = () => {};
+      filter = message => !!message.content;
 
       channel.awaitMessages( filter, { time: period } ).then( collected => {
-        // todo: other collector finishing options
         let summary = "";
         let words = [];
         collected.forEach( message => {

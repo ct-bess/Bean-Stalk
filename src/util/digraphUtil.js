@@ -4,11 +4,10 @@ import { spawnSync } from "child_process";
 // I just remember rundell saying you could recite shakespear with digraph frequency
 
 /** 
- * @method createDigraphs
- * @description loops thru an array of strings and creates an array of digraphs used in each string
- * @param { array<string> } messages the messages to check
- * @returns { array<string> } the array of digraphs; No frequencies, just all digraphs including duplicates
- * **/
+ * loops thru an array of strings and creates an array of digraphs used in each string
+ * @param {Array<string>} messages - the messages to check
+ * @returns {Array<string>} the array of digraphs; No frequencies, just all digraphs including duplicates
+ */
 export const createDigraphs = ( messages ) => {
   console.debug( "creating digraphs ..." );
   const digraphs = [];
@@ -27,13 +26,12 @@ export const createDigraphs = ( messages ) => {
 };
 
 /** 
- * @method generateSentence
- * @description given a frequency analysis and a grammar, generates a silly sentence
- * * @param { array<string> } digraphs an array of digraphs
- * * @param { integer } size how many words to make the sentence
- * * @param { string } grammar the grammar to follow
- * * @returns { string } the sentence
- * **/
+ * given a frequency analysis and a grammar, generates a silly sentence
+ * @param {Array<string>} digraphs - an array of digraphs
+ * @param {number} size - how many words to make the sentence
+ * @param {string} grammar - the grammar to follow
+ * @returns {string} the sentence
+ */
 export const generateSentence = ( digraphs, size ) => {
   
   console.debug( "generating sentence from digraphs ..." );

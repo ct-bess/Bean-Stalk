@@ -55,8 +55,6 @@ class Logger {
       TRACE: 5
     });
 
-    /** @type {number} */
-    this.level = this.levels[logLevel] || this.levels.INFO;
     this.logStream = createWriteStream( logFile );
 
     this.console = new Console({
@@ -71,13 +69,19 @@ class Logger {
       stderr: process.stderr
     });
 
+    /**
+     * Tries to initialize log level to logLevel arg; Else initializes to INFO
+     * @type {number}
+     * */
+    this.level = this.setLevel( logLevel ) || this.levels.INFO;
+
     // Ok but why do the other not need to be bound???
     this.error = this.error.bind( this );
 
   }
 
   /**
-   * set the log level ya
+   * set the log level ya, if it's invalid it doesn't get set
    * @param {(string|number)} level - the log level to set to; Must exist in {@link Logger.levels} as a key or value
    * @returns {?string} the log level set; null on error
    */
@@ -89,7 +93,7 @@ class Logger {
     for( const key in this.levels ) {
       if( key == level || this.levels[key] == level ) {
         this.level = this.levels[key];
-        console.info( "log level set to:", key );
+        this.console.info( "log level set to:", key );
         return( key );
       }
     }
@@ -199,6 +203,25 @@ class Logger {
       this.console.trace( timestamp + " [TRACE]", ...arguments );
       this.shell.trace( ...arguments );
     }
+  }
+
+  /**
+   * Literally justs passes to Console.assert but adds an assert tag to logs and shell
+   * @param {any} value - the variable to check truthyness for
+   * @param {...any} - message to display on assertion failure
+   * @returns {void}
+   */
+  assert = function( value ) {
+    this.console.assert( value, "[ASSERTION]", ...arguments );
+    this.shell.assert( value, "[ASSERTION]", ...arguments );
+  }
+
+  /**
+   * Clear shell console
+   * @returns {void}
+   */
+  clear = () => {
+    this.shell.clear();
   }
 
 };

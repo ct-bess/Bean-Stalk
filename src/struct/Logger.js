@@ -43,7 +43,7 @@ class Logger {
    * @param {string} logFile - full path to log file
    * @param {string} [logLevel=3] - the log level to set; Defaults to "INFO"
    */
-  constructor( logFile, logLevel ) {
+  constructor( logFile, logLevel = 3 ) {
 
     /** @readonly */
     this.levels = Object.freeze({
@@ -69,11 +69,7 @@ class Logger {
       stderr: process.stderr
     });
 
-    /**
-     * Tries to initialize log level to logLevel arg; Else initializes to INFO
-     * @type {number}
-     * */
-    this.level = this.setLevel( logLevel ) || this.levels.INFO;
+    this.setLevel( logLevel );
 
     // Ok but why do the other not need to be bound???
     this.error = this.error.bind( this );
@@ -88,17 +84,17 @@ class Logger {
   setLevel = ( level ) => {
 
     level = ( level + "" ).toUpperCase();
-    this.console.debug( "attempting to set log level to:", level );
+    console.debug( "attempting to set log level to:", level );
 
     for( const key in this.levels ) {
       if( key == level || this.levels[key] == level ) {
         this.level = this.levels[key];
-        this.console.info( "log level set to:", key );
+        console.info( "log level set to:", key );
         return( key );
       }
     }
 
-    this.console.warn( "cannot set log level to:", level );
+    console.warn( "cannot set log level to:", level );
     return( null );
 
   }
@@ -111,13 +107,28 @@ class Logger {
 
     for( const key in this.levels ) {
       if( this.level === this.levels[key] ) {
-        this.console.info( "Current log level is:", key );
+        console.info( "Current log level is:", key );
         return( key );
       }
     }
 
-    this.console.error( "Log level is currently set to unknown value:", this.level );
+    console.error( "Log level is currently set to unknown value:", this.level );
     return( null );
+  }
+
+
+  getTimeStamp = () => {
+    return( ( new Date() ).toLocaleString( "en", {
+        //year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hourCycle: "h24"
+        //timeZoneName: "short"
+      }
+    ));
   }
 
   /**
@@ -139,7 +150,7 @@ class Logger {
    */
   error = function() {
     if( this.level >= this.levels.ERROR  ) {
-      const timestamp = ( new Date() ).toLocaleString();
+      const timestamp = this.getTimeStamp();
       this.console.error( timestamp, "[ERROR]", ...arguments );
       this.shell.error( ...arguments );
     }
@@ -154,7 +165,7 @@ class Logger {
    */
   warn = function() {
     if( this.level >= this.levels.WARN  ) {
-      const timestamp = ( new Date() ).toLocaleString();
+      const timestamp = this.getTimeStamp();
       this.console.warn( timestamp, "[WARN]", ...arguments );
       this.shell.warn( ...arguments );
     }
@@ -169,7 +180,7 @@ class Logger {
    */
   info = function() {
     if( this.level >= this.levels.INFO  ) {
-      const timestamp = ( new Date() ).toLocaleString();
+      const timestamp = this.getTimeStamp();
       this.console.info( timestamp, "[INFO]", ...arguments );
       this.shell.info( ...arguments );
     }
@@ -184,7 +195,7 @@ class Logger {
    */
   debug = function() {
     if( this.level >= this.levels.DEBUG  ) {
-      const timestamp = ( new Date() ).toLocaleString();
+      const timestamp = this.getTimeStamp();
       this.console.debug( timestamp, "[DEBUG]", ...arguments );
       this.shell.debug( ...arguments );
     }
@@ -199,7 +210,7 @@ class Logger {
    */
   trace = function() {
     if( this.level >= this.levels.TRACE  ) {
-      const timestamp = ( new Date() ).toLocaleString();
+      const timestamp = this.getTimeStamp();
       this.console.trace( timestamp + " [TRACE]", ...arguments );
       this.shell.trace( ...arguments );
     }
@@ -212,8 +223,9 @@ class Logger {
    * @returns {void}
    */
   assert = function( value ) {
-    this.console.assert( value, "[ASSERTION]", ...arguments );
-    this.shell.assert( value, "[ASSERTION]", ...arguments );
+    const timestamp = this.getTimeStamp();
+    this.console.assert( value, timestamp, "[ASSERTION]", ...arguments );
+    this.shell.assert( value, timestamp, "[ASSERTION]", ...arguments );
   }
 
   /**

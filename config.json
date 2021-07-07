@@ -3,5 +3,5 @@
   "botReplyDelay": 3000,
   "logPath": ".logs",
   "logFile": "session.log",
-  "logLevel": "INFO"
+  "logLevel": "DEBUG"
 }

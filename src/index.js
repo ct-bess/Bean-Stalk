@@ -21,7 +21,7 @@ bot.on( "ready", () => {
   console.log( "INITIATING BEAN STALK ..." );
   loadCommands( bot );
   validateGuild( bot );
-  console.log( "Start-up processes complete; Bean is good to go" );
+  console.info( "Bean-Stalk started @", (new Date()).toISOString() );
 });
 
 bot.on( "message", ( message ) => {

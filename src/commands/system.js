@@ -60,12 +60,24 @@ export default {
         response = "Only the chosen may command such an atrocity";
         break;
       case "die1":
-        console.info( "saving events ..." );
+        console.info( "saving events to: events.json ..." );
         writeFileSync( "events.json", JSON.stringify( bot.var.events, null, "  " ), error => { console.error(error) });
-        console.info( "saving config ..." );
+
+        console.info( "saving config to: config.json ..." );
         writeFileSync( "config.json", JSON.stringify( bot.var.config, null, "  " ), error => { console.error(error) });
-        console.info( "saving logs ..." );
-        renameSync( `${bot.var.config.logPath}/${bot.var.config.logFile}`, `${bot.var.config.logPath}/${message.createdTimestamp}-${bot.var.config.logFile}` );
+
+        const date = new Date( message.createdTimestamp );
+        let dateStamp = "" + date.getFullYear();
+        dateStamp += date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+        dateStamp += date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+
+        const logPath = `${bot.var.config.logPath}/${bot.var.config.logFile}`;
+        const savedLogPath = `${bot.var.config.logPath}/${dateStamp}-${bot.var.config.logFile}`;
+
+        console.info( `saving logs to: ${savedLogPath} ...` );
+        // assuming this overwrites what's already there if any
+        renameSync( logPath, savedLogPath );
+
         message.react( "\u0030\u20E3" );
         setTimeout( () => {
           bot.destroy();

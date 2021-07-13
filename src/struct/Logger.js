@@ -3,6 +3,7 @@ import { createWriteStream } from "fs";
 
 /**
  * Ya'll wana learn how to override the default global console to also log to a file and possibly miss other console features??
+ * > subclassing Console didn't work, so here we are
  * 
  * Uses traditional level heirarchy:
  * - TRACE: 5
@@ -12,7 +13,7 @@ import { createWriteStream } from "fs";
  * - ERROR: 1
  * - OFF: 0
  * @property {object} levels - the available log levels. Readonly btw
- * @property {number} level - the log level in use
+ * @property {number} level - the log level in use; Defaults to INFO
  * @property {Console} console - the console that writes the logs to a file
  * @property {Console} shell - the console that writes logs to stdout and stderr in your shell
  * @method getLevel - returns the current log level in a readable format

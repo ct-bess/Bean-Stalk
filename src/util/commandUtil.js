@@ -5,13 +5,8 @@ import { Collection } from "discord.js";
  * @typedef {import('discord.js').Member} Member
  * @typedef {import('discord.js').Role} Role
  * @typedef {import('discord.js').Channel} Channel
- * @typedef {import('../struct/Bot.js')} Bot
- * 
- * @typedef {*} commandArgs - the keys that are set for a command's arguments
- * @property {-1} commandName - the command name being executed
- * @property {0} [subcommand] - the subcommand to be executed; If any
- * @property {string=} - flags and variables; Set with - and --
- * @property {1} [expression] - the expression to use; If any
+ * @typedef {import('../struct/Bot').default} Bot
+ * @typedef {(-1|0|string|1)} commandArgs - the keys that are set for a command's arguments
  */
 
 /*
@@ -25,14 +20,43 @@ import { Collection } from "discord.js";
  */
 
 /**
- * returns a command input into arguments mapped to a subcommand, flags/variables, and an expression
+ * returns a command input into arguments mapped to a subcommand, flags/variables, and an expression.
+ * Contents are split by any number of spaces: `/\s+/`
+ * But verbose variables and the expression retain all of their spaces
+ * 
+ * | Arg Type     | Key | Value  | Notes |
+ * |------------- | --- | ------ | ----- |
+ * | Command      | -1  | String | The command's name |
+ * | Subcommand   |  0  | String | The subcommand's name |
+ * | Flag(s)      | any | true   | denoted by `-` |
+ * | Variables(s) | any | String | denoted by `--` and `=`, enclose in `"` to preserve spaces |
+ * | Expression   |  1  | String | set to remainder of the args after subcommand is set |
+ * 
  * @see {@link commandArgs} for what the keys are set to
- * @param {Message} message - the Discord.Message that executed the command
- * @returns {Collection<commandArgs,string>} the mapped results: subcommand get(0), expression get(1), flags/variables get("x")
+ * @param {(Message|String)} message - the Discord.Message that executed the command; Or the message content string
+ * @returns {Collection<commandArgs,(string|boolean)>} the mapped results: subcommand get(0), expression get(1), flags/variables get("x")
+ * @example
+ * const args = argHandler( 'commandName -flag --variable="awesome spaces" -anotherFlag --anotherVar=awesome subcommand now expression time' );
+ * console.log( args.get( -1 ) );               // expected output: "commandName"
+ * console.log( args.get( 0 ) );                // expected output: "subcommand"
+ * console.log( args.get( "flag" ) );           // expected output: true
+ * console.log( args.get( "variable" ) );       // expected output: "awesome spaces"
+ * console.log( args.has( "anotherFlag" ) );    // expected output: true
+ * console.log( args.has( "doesntHaveThis" ) ); // expected output: false
+ * console.log( args.get( "anotherVar" ) );     // expected output: "awesome"
+ * console.log( args.get( 1 ) );                // expected output: "now expression time"
  */
 export const argHandler = ( message ) => {
 
-  let args = message.content.split( /\s+/ );
+  let args = [];
+
+  if( !!message.content ) {
+    args = message.content.split( /\s+/ );
+  }
+  else {
+    args = (message + "").split( /\s+/ );
+  }
+
   const argMap = new Collection();
   let subcommandSet = false, expressionSet = false;
 
@@ -169,14 +193,16 @@ export const coalesce = ( name, type, bot, guild ) => {
 
 /** 
  * partitions a large message into 2000 character pieces and sends each part in 1.5 second intervals
- * @param {string} response the long string we want to send in bulk
- * @param {Message} message the message origin
- * @param {string} [format] optional, the markdown format to use: italics, bold, inline code, quote, quote block, code block
- * @param {string} [codeBlockType=""] optional, the language to format the code with
+ * @param {string} response - long string we want to send in bulk
+ * @param {Message} message - message origin
+ * @param {("italics"|"bold"|"inline code"|"quote"|"quote block"|"code block")} [format] - markdown text format to apply to entire response
+ * @param {string} [codeBlockType=""] - the language to format the code with
  * @returns {void}
  * @example
  * // send a javascript code block:
  * sendBulk( "// some js code ...", message, "code block", "js" );
+ * @todo add strike through text format option
+ * @todo add spoiler text format option
  */
 export const sendBulk = ( response, message, format, codeBlockType = "" ) => {
 

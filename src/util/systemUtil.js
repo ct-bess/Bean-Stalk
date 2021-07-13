@@ -10,6 +10,8 @@ import config from "../../config.json";
  * @param {Bot} bot - client to load to
  * @param {string} [singularCommand] - the name of one command to load. Defaults to all commands
  * @returns {void}
+ * @todo Run a command.has( command.name ) and if we already have a command with that name or even alias throw an error or somethin
+ * @todo edit the command requires to new Command() when we change the Commands' default export
  */
 export const loadCommands = ( bot, singularCommand ) => {
   if( !!singularCommand ) {

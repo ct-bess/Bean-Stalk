@@ -1,13 +1,31 @@
-import { argHandler } from "../util/commandUtil";
+import Command from "../struct/Command";
 
-export default {
-  name: "checkem",
-  description: "Get your message time-stamp",
-  aliases: [ "eric" ],
-  exec( message, bot ) {
-    const args = argHandler( message );
+/**
+ * This command prints your message's timestamp to the text channel
+ * The excitement of the response is dependent on how many numbers match in a row
+ * 
+ * **Options:**
+ * - `rand` flag: use 9 random numbers instead of your message's timestamp
+ * - `cheat` var: uses the supplied string as your timestamp
+ */
+class Checkem extends Command {
+
+  constructor(
+    name = "checkem",
+    description = "Get your message timestamp",
+    aliases = [ "eric" ]
+  ) {
+    super( name, description, aliases );
+  }
+
+  /**
+   * @param {import('discord.js').Message} message
+   * @param {import('../struct/Bot').default} bot
+   */
+  exec = ( message, bot ) => {
+
+    const args = this.getArgs( message );
     
-    // Use message.createdTimeStamp as a seed or somethin
     let response = "";
     if( args.has( "rand" ) || args.has( "r" ) ) {
 
@@ -37,8 +55,9 @@ export default {
     }
 
     message.channel.send( `${response} :sweat_drops: <@!${message.author.id}>` );
-    return;
 
   }
 
-};
+}
+
+export default new Checkem();

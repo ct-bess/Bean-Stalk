@@ -1,11 +1,91 @@
-import { argHandler, sendBulk } from "../util/commandUtil";
+import Command from "../struct/Command";
 
-export default {
-  name: "dice",
-  aliases: [ "d", "roll" ],
-  description: "Roll a dice",
-  history: [],
-  roll( max, min, count, author ) {
+/**
+ * This command rolls dice, perfect for virtual DnD
+ * 
+ * **Subcommands:**
+ * - `hist` and `history`: print the last 16 or so rolls
+ * - `proof` and `bread`: attach dice rolling algorithm
+ * - `(number)`: roll a dice of the specified number
+ * 
+ * **Options:**
+ * - `count` var: A number of how many dice to roll; Negative implies a *roll with disadvantage* and vise versa
+ * 
+ */
+class Dice extends Command {
+
+  constructor(
+    name = "dice",
+    description = "Roll a dice",
+    aliases = [ "d", "roll" ]
+  ) {
+    super( name, description, aliases );
+    this.history = [];
+  }
+
+  /**
+   * @param {import('discord.js').Message} message
+   * @param {import('../struct/Bot').default} bot
+   */
+  exec = ( message, bot ) => {
+
+    const args = this.getArgs( message );
+    let response = "";
+
+    // ok this looks gross
+    // also why did i choose to use this.history.value and d.val ???
+
+    switch( args.get( 0 ) ) {
+      case "hist":
+      case "history":
+        for( let i = 0; i < this.history.length; ++i ) {
+          response += `**${this.history[i].playerID}**: ${this.history[i].type}, result: **${this.history[i].value}**\n`;
+          if( this.history[i].rolls.length > 1 ) {
+            response += `total: **${this.history[i].total}**; rolled with ${this.history[i].adv ? "advantage" : "disadvantage"}\n`;
+            response += `[ ${this.history[i].rolls.join(', ')} ]\n`;
+          }
+        }
+        break;
+      case "proof":
+      case "bread":
+        response = {
+          files: [{
+            attachment: "./lib/commands/dice.js",
+            name: "dice.js"
+          }]
+        };
+        break;
+      case "choose":
+        let options = args.get( "options" ) || args.get( 1 );
+        if( /,/g.test( options ) ) {
+          options = options.split( "," );
+        }
+        else options = options.split( " " );
+        const selected = ( this.roll( options.length, 1, 1, message.author ) ).val - 1;
+        this.history[ this.history.length - 1 ].value += ` (${options[selected]})`;
+        const randEmoji = bot.emojis.cache.random();
+        if( args.has( "quiet" ) ) response = options[selected];
+        else response = `**${options[selected]}** <:${randEmoji.name}:${randEmoji.id}> <@!${message.author.id}>`;
+        break;
+      default:
+        const max = parseInt( args.get( 0 ) );
+        const count = parseInt( args.get( "count" ) || args.get( 1 ) );
+        const min = 1;
+        const roll = this.roll( max, min, count, message.author );
+        const emoji = roll.val == max ? bot.var.emojis.solaire : ( roll.val == min ? ":alien:" : ":hotsprings:" );
+        response = `**${roll.val}** ${emoji} <@!${message.author.id}>`;
+        if( Math.abs( count ) > 1 ) {
+          response += `\n${roll.adv ? "" : "*rolled with disadvantage*; "}roll sum: **${roll.tot}**\n`;
+          response += `[ ${roll.rolls.join(', ')} ]`;
+        }
+    }
+
+    if( response.length > 2000 ) super.sendBulk( response, message );
+    else message.send( response );
+
+  }
+
+  roll = ( max, min, count, author ) => {
     
     console.debug( "rolling dice ..." );
 
@@ -58,63 +138,8 @@ export default {
 
     return( d );
 
-  },
-  exec( message, bot ) {
-
-    const args = argHandler( message );
-    let response = "";
-
-    // ok this looks gross
-    // also why did i choose to use this.history.value and d.val ???
-
-    switch( args.get( 0 ) ) {
-      case "hist":
-      case "history":
-        for( let i = 0; i < this.history.length; ++i ) {
-          response += `**${this.history[i].playerID}**: ${this.history[i].type}, result: **${this.history[i].value}**\n`;
-          if( this.history[i].rolls.length > 1 ) {
-            response += `total: **${this.history[i].total}**; rolled with ${this.history[i].adv ? "advantage" : "disadvantage"}\n`;
-            response += `[ ${this.history[i].rolls.join(', ')} ]\n`;
-          }
-        }
-        break;
-      case "proof":
-      case "bread":
-        response = {
-          files: [{
-            attachment: "./lib/commands/dice.js",
-            name: "dice.js"
-          }]
-        };
-        break;
-      case "choose":
-        let options = args.get( "options" ) || args.get( 1 );
-        if( /,/g.test( options ) ) {
-          options = options.split( "," );
-        }
-        else options = options.split( " " );
-        const selected = ( this.roll( options.length, 1, 1, message.author ) ).val - 1;
-        this.history[ this.history.length - 1 ].value += ` (${options[selected]})`;
-        const randEmoji = bot.emojis.cache.random();
-        if( args.has( "quiet" ) ) response = options[selected];
-        else response = `**${options[selected]}** <:${randEmoji.name}:${randEmoji.id}> <@!${message.author.id}>`;
-        break;
-      default:
-        const max = parseInt( args.get( 0 ) );
-        const count = parseInt( args.get( "count" ) || args.get( 1 ) );
-        const min = 1;
-        const roll = this.roll( max, min, count, message.author );
-        const emoji = roll.val == max ? bot.var.emojis.solaire : ( roll.val == min ? ":alien:" : ":hotsprings:" );
-        response = `**${roll.val}** ${emoji} <@!${message.author.id}>`;
-        if( Math.abs( count ) > 1 ) {
-          response += `\n${roll.adv ? "" : "*rolled with disadvantage*; "}roll sum: **${roll.tot}**\n`;
-          response += `[ ${roll.rolls.join(', ')} ]`;
-        }
-    }
-
-    if( response.length > 2000 ) sendBulk( response, message );
-    else message.send( response );
-
   }
 
-};
+}
+
+export default new Dice();

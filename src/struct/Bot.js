@@ -12,7 +12,9 @@ import guild from "../../guild.json";
  */
 
 /**
- * A subclass of Discord.Client to include a selection of config variables
+ * A subclass of Discord.Client to include a selection of config variables.
+ * Mainly just a bunch of hardcoded IDs
+ * 
  * @extends Client
  * @see {@link Client}
  * @property {Collection<string,Command>} commands - a map of commands that the bot can execute

@@ -20,7 +20,7 @@ import {
 class Command {
 
   /**
-   * all spaces in name and aliases are replaced with underscore
+   * all spaces in name and aliases are replaced with underscore, they're also lower cased
    * @param {string} [name=""] - The command's name that triggers it
    * @param {string} [description=""] - The command's description
    * @param {Array<string>} [aliases=[]] - alternative or shorthand command names that also trigger it

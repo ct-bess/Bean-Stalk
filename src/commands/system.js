@@ -46,12 +46,12 @@ export default {
           // -- Potential OS injection here
           const fileName = args.get( 1 );
           response += execSync( `babel src/commands/${fileName}.js -o lib/commands/${fileName}.js` ).toString() || fileName + "";
-          loadCommands( bot, fileName );
+          loadCommands( bot, true, fileName );
           console.info( `Re-loaded ${fileName} command` );
         }
         else {
           response += execSync( "babel src/commands -d lib/commands" ).toString();
-          loadCommands( bot, null );
+          loadCommands( bot, true );
           console.info( "Re-loaded all commands" );
         }
         response += "\n```\n:sweat_drops: **SIX** :sweat_drops: **HOT** :sweat_drops: **RELOADS** :sweat_drops:"

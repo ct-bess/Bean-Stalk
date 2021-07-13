@@ -10,6 +10,7 @@ import Command from "../struct/Command";
  * 
  * **Options:**
  * - `count` var: A number of how many dice to roll; Negative implies a *roll with disadvantage* and vise versa
+ * - `choose` var or expr: choose from 1 of the supplied strings as the response rather than an actual dice roll
  * 
  */
 class Dice extends Command {
@@ -80,7 +81,7 @@ class Dice extends Command {
         }
     }
 
-    if( response.length > 2000 ) super.sendBulk( response, message );
+    if( response.length > 2000 ) this.sendBulk( response, message );
     else message.send( response );
 
   }

@@ -2,24 +2,53 @@ import { execSync } from "child_process";
 import events from "../../events.json";
 import config from "../../config.json";
 /**
- * @typedef {import('../struct/Bot.js')} Bot
+ * @typedef {import('../struct/Bot').default} Bot
  */
 
 /** 
  * imports all or one command module into the bot. Overwrites the require cache if the command was already imported
  * @param {Bot} bot - client to load to
- * @param {string} [singularCommand] - the name of one command to load. Defaults to all commands
+ * @param {boolean} [override] - wether to override existing commands or not. If true, rejects setting a command if the bot already has a command with that name or alias
+ * @param {string} [commandName] - the name of one command to load. Defaults to all commands
  * @returns {void}
- * @todo Run a command.has( command.name ) and if we already have a command with that name or even alias throw an error or somethin
  * @todo edit the command requires to new Command() when we change the Commands' default export
  */
-export const loadCommands = ( bot, singularCommand ) => {
-  if( !!singularCommand ) {
-    if( !!require.cache[ require.resolve( `../commands/${singularCommand}` ) ] ) {
-      delete require.cache[ require.resolve( `../commands/${singularCommand}` ) ];
+export const loadCommands = ( bot, override, commandName ) => {
+
+  console.debug( "loading commands with override:", override );
+
+  const checkAndSet = ( name ) => {
+
+    const path = `../commands/${name}`;
+
+    if( !!require.cache[ require.resolve( path ) ] ) {
+      delete require.cache[ require.resolve( path ) ];
     }
-    const command = require( `../commands/${singularCommand}` );
-    bot.commands.set( command.default.name, command.default );
+
+    const command = require( path );
+    let validCommand = !!override;
+
+    if( !validCommand ) {
+      validCommand = !bot.commands.has( command.default.name );
+      for( const alias of command.default.aliases ) {
+        if( !validCommand ) break;
+        validCommand = bot.commands.every( cmd => !cmd.aliases.includes( alias ) )
+      }
+    }
+
+    if( validCommand ) {
+      console.debug( "Setting command:", command.default.name );
+      bot.commands.set( command.default.name, command.default );
+    }
+    else {
+      console.error( "Cannot set command; Already has command name or alias included in:", command.default.name );
+      delete require.cache[ require.resolve( path ) ];
+    }
+
+  }
+
+  if( !!commandName ) {
+    checkAndSet( commandName );
   }
   else {
     // EVER HEARD OF FS.READDIRSYNC ?????????????????????????????/
@@ -29,13 +58,8 @@ export const loadCommands = ( bot, singularCommand ) => {
       ...execSync( "ls lib/commands/.ccs/ | grep \.js | sed -E \"s/^(.+)/.ccs\\/\\1/\"" ).toString().split( /\s/ ) 
     ]
     for( const file of commandFiles ) {
-      //console.info( "=> ", file );
       if( !!file ) {
-        if( !!require.cache[ require.resolve( `../commands/${file}` ) ] ) {
-          delete require.cache[ require.resolve( `../commands/${file}` ) ];
-        }
-        const command = require( `../commands/${file}` );
-        bot.commands.set( command.default.name, command.default );
+        checkAndSet( file );
       }
     }
     console.info( "Loading events & config into bot variable ..." );
@@ -43,22 +67,14 @@ export const loadCommands = ( bot, singularCommand ) => {
     bot.var.config = config;
     console.info( "done wow" );
 
-    /*
-    //if( !!require.cache[ require.resolve( "../events.json" ) ] ) {
-      //delete require.cache[ require.resolve( "../events.json" ) ];
-    //}
-    for( let event in events ) {
-      events[event].date = new Date( events[event].date );
-      //console.info( "=>", events[event].name );
-      //console.info( events[event] );
-      bot.var.events.set( events[event].name, events[event] );
-    }
-    */
   }
+
 };
 
 /** 
- * validates guild.json to prevent the client from breaking from my expertly hard coded guild variables
+ * validates guild.json to prevent the client from breaking from my expertly hard coded guild variables.
+ * It's also nice to know if we've assigned an invalid admin ID ya know
+ * 
  * @param {Bot} bot - client to validate guild.json on
  * @returns {void}
  */
@@ -75,12 +91,17 @@ export const validateGuild = ( bot ) => {
   for( const key in bot.var.channels ) {
     const chan = bot.channels.cache.has( bot.var.channels[key] );
     if( !chan ) {
-      console.warn( `Channel: ${bot.var.channels[key]} doesn't exist; Falling back to a random channel` );
-      bot.var.channels[key] = bot.channels.cache.random().id;
+      const fuzzyNameRE = new RegExp( `${key}`, "i" );
+      const candidate = bot.channels.cache.find( channel => fuzzyNameRE.test( channel?.name ) );
+      if( !!candidate ) {
+        console.warn( `Channel: ${bot.var.channels[key]} doesn't exist; Using close match: ${candidate?.name} ${candidate.id}` );
+        bot.var.channels[key] = candidate.id;
+      }
+      else {
+        console.warn( `Channel: ${bot.var.channels[key]} doesn't exist; Falling back to a random channel` );
+        bot.var.channels[key] = bot.channels.cache.random().id;
+      }
     }
-    // we can set the channels here too, but it's dependent on channel properties that can change
-    //const chan = bot.channels.cache.find( elem => elem.name === key+"" );
-    //if( !!chan ) bot.var.channels[key] = chan.id;
   }
 
   for( const key in bot.var.emojis ) {
@@ -107,23 +128,28 @@ export const validateGuild = ( bot ) => {
   // -- Guild specific variables
 
   if( !!guild ) {
+
     for( const key in bot.var.roles ) {
       const role = guild.roles.cache.has( bot.var.roles[key] );
       let r = "Another-Huge-Error-If-You-See-This";
       if( !role ) {
-        console.warn( `Role: ${bot.var.roles[key]} doesn't exist; Falling back to a random role` );
-        r = guild.roles.cache.random().id;
+        const fuzzyNameRE = new RegExp( `${key}`, "i" );
+        const candidate = guild.roles.cache.find( role => fuzzyNameRE.test( role?.name ) );
+        if( !!candidate ) {
+          console.warn( `Role: ${bot.var.roles[key]} doesn't exist; Using close match: ${candidate?.name} ${candidate.id}` );
+          r = candidate.id;
+        }
+        else {
+          console.warn( `Role: ${bot.var.roles[key]} doesn't exist; Falling back to a random role` );
+          r = guild.roles.cache.random().id;
+        }
       }
       else {
         r = bot.var.roles[key];
       }
       bot.var.roles[key] = `<@&${r}>`;
     }
-  }
 
-  // -- Search for user id dependencies
-  if( !bot.var.members["kenny"] ) {
-    bot.var.members.kenny = "no kenny"
   }
 
   console.info( "Guild validation complete" );

@@ -1,12 +1,34 @@
-import { argHandler, coalesce } from "../util/commandUtil";
+import Command from "../struct/Command";
 
-export default {
-  name: "echo",
-  aliases: [ "yeet" ],
-  description: "echos or yeets the given or not given text",
-  exec( message, bot ) {
+/**
+ * This command sends a specified message or the previous message to a text channel.
+ * Will not send a message over 2000 characters.
+ * Calling as `echo` defaults to sending the message to the current channel.
+ * Calling as `yeet` defaults to sending to a random text channel.
+ * 
+ * **Options:**
+ * - `channel` var: the text channel to send to
+ * - `delay` var: how long to wait in milliseconds before sending
+ */
+class Echo extends Command {
 
-    const args = argHandler( message );
+  constructor(
+    name = "echo",
+    description = "echos or yeets the given or not given text",
+    aliases = [ "yeet" ]
+  ) {
+    super( name, description, aliases );
+  }
+
+  /**
+   * @param {import('discord.js').Message} message
+   * @param {import('../struct/Bot').default} bot
+   */
+  exec = ( message, bot ) => {
+
+    const args = this.getArgs( message );
+
+    /** @type {import('discord.js').GuildChannel} */
     let channel = null;
 
     // wow brillinat
@@ -17,7 +39,7 @@ export default {
 
     if( args.has( "channel" ) ) {
       channel = args.get( "channel" );
-      channel = coalesce( channel, "channel", bot, null );
+      channel = this.coalesce( channel, "channel", bot, null );
     }
 
     const perm = channel.permissionsFor( bot.user.id );
@@ -30,13 +52,18 @@ export default {
         let m = "", iterations = 0;
         let validChannel = channel.isText() && perm.has( "SEND_MESSAGES" );
 
-        // called with no message to echo
-        if( !args.has( 0 ) ) m = message.channel.messages.cache.last( 2 )[0].content;
-        // STAND ASIDE AND LET A REAL ENGINEER HANDLE IT
-        else if( args.has( 0 ) && !args.has( 1 ) ) m = args.get( 0 );
-        else m = args.get( 0 ) + " " + args.get( 1 );
-        // this will attach flags and variables to the echo response
-        //else m = message.content.slice( bot.var.config.prefix.length + args.get( -1 ).length );
+        // called with no message --> pull message before command
+        if( !args.has( 0 ) ) {
+          m = message.channel.messages.cache.last( 2 )[0].content;
+        }
+
+        // STAND ASIDE AND LET A REAL ENGINEER HANDLE IT (one of the consequences of the arg system)
+        else if( args.has( 0 ) && !args.has( 1 ) ) {
+          m = args.get( 0 );
+        }
+        else {
+          m = args.get( 0 ) + " " + args.get( 1 );
+        }
 
         while( !validChannel && iterations < 69 ) {
           channel = bot.channels.cache.random();
@@ -48,22 +75,30 @@ export default {
           if( delay > 0 ) {
             console.debug( "echoing/sending message after", delay, "ms" );
             setTimeout( () => { 
+
               // DYNAMIC GAMEPLAY
-              if( !args.has( 0 ) ) m = message.channel.messages.cache.last( 2 )[0].content;
+              if( !args.has( 0 ) ) {
+                m = message.channel.messages.cache.last( 2 )[0].content;
+              }
               channel.send( m || "bruh" ) 
+
             }, delay );
           }
-          else channel.send( m );
-        }
+          else {
+            channel.send( m );
+          }
+        } // EO valid channel check
 
       } catch( error ) {
-        console.error( "echo failed:", error );
+        console.error( "echo command failed:", error );
       }
 
     }
     else {
       message.reply( "aint got no channel" );
     }
+  }
 
-  } // EO exec
-};
+}
+
+export default new Echo();

@@ -19,7 +19,7 @@ const bot = new Bot({
 
 bot.on( "ready", () => {
   console.log( "INITIATING BEAN STALK ..." );
-  loadCommands( bot );
+  loadCommands( bot, false );
   validateGuild( bot );
   console.info( "Bean-Stalk started @", (new Date()).toISOString() );
 });

@@ -2,16 +2,19 @@ import { execSync } from "child_process";
 import events from "../../events.json";
 import config from "../../config.json";
 /**
- * @typedef {import('../struct/Bot').default} Bot
+ * Various admin functions for the client to call
+ * @module systemUtil
  */
 
 /** 
  * imports all or one command module into the bot. Overwrites the require cache if the command was already imported
+ * @function loadCommands
  * @param {Bot} bot - client to load to
  * @param {boolean} [override] - wether to override existing commands or not. If true, rejects setting a command if the bot already has a command with that name or alias
  * @param {string} [commandName] - the name of one command to load. Defaults to all commands
  * @returns {void}
- * @todo edit the command requires to new Command() when we change the Commands' default export
+ * @todo 
+ * edit the command requires to new Command() when we change the Commands' default export
  */
 export const loadCommands = ( bot, override, commandName ) => {
 
@@ -74,7 +77,7 @@ export const loadCommands = ( bot, override, commandName ) => {
 /** 
  * validates guild.json to prevent the client from breaking from my expertly hard coded guild variables.
  * It's also nice to know if we've assigned an invalid admin ID ya know
- * 
+ * @function validateGuild
  * @param {Bot} bot - client to validate guild.json on
  * @returns {void}
  */
@@ -155,3 +158,7 @@ export const validateGuild = ( bot ) => {
   console.info( "Guild validation complete" );
 
 };
+
+/**
+ * @typedef {import('../struct/Bot').default} Bot
+ */

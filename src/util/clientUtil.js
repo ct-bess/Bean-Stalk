@@ -1,14 +1,15 @@
 import { Message } from "discord.js";
 import help from "../../help.json";
 /**
- * @typedef {import('discord.js').Message} Message
- * @typedef {import('../struct/Bot.js')} Bot
+ * Handy functions for our Client
+ * @module clientUtil
  */
 
 /**
  * process and execute a bot command from a text channel. Prefix validation does not happen here, only command validation
+ * @function execCommand
  * @param {(Message|string)} message - the message that called this function. If called with a string, sets the bot's last message as the origin
- * @param {Bot} bot - the discord {@link Bot client} processing the command
+ * @param {Bot} bot - the Discord Client processing the command
  * @returns {void}
  */
 export const execCommand = ( message, bot ) => {
@@ -79,7 +80,8 @@ export const execCommand = ( message, bot ) => {
 
 /**
  * processes time based client events for scheduled commands
- * @param {Bot} bot - the client to handle the event
+ * @function handleEvent
+ * @param {Bot} bot - the Discord Client to handle the event
  * @returns {void}
  */
 export const handleEvent = ( bot ) => {
@@ -200,3 +202,8 @@ export const handleEvent = ( bot ) => {
     console.error( "event failed:", error );
   }
 };
+
+/**
+ * @typedef {import('discord.js').Message} Message
+ * @typedef {import('../struct/Bot.js')} Bot
+ */

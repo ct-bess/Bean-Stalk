@@ -1,14 +1,19 @@
 import { createReadStream, appendFile, readdirSync, existsSync, unlink, rename, copyFile } from "fs";
 import { OpusEncoder } from "@discordjs/opus";
+/**
+ * A collection of audio streaming and processing utilities
+ * @module audioUtil
+ */
 
 const sourceDir = "kb/voice-receiver";
 const destDir = "kb/voice-records";
 
 /**
  * decodes an opus file to a pcm file; Then converts that pcm file to an mp3
+ * @function decoder
  * @see {@link https://discordjs.guide/voice/understanding-voice.html#understanding-voice}
  * @param {string} fileName - the base name of the file to decode (minus the file extension)
- * @param {object} message - the Discord message that called this function
+ * @param {Object} message - the Discord message that called this function
  * @param {number} ar - the sampling frequency to decode with in Hz (defaults to 48K Hz)
  * @returns {void}
  */
@@ -91,8 +96,9 @@ export const decoder = ( fileName, message, ar ) => {
 
 /**
  * saves the current opus file being streamed to
+ * @function saveRecord
  * @param {string} fileName - the name of the opus file to save
- * @param {object} message - the Discord message that called this function
+ * @param {Object} message - the Discord message that called this function
  * @returns {void}
  */
 export const saveRecord = ( fileName, message ) => {

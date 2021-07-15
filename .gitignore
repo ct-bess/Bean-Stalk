@@ -6,6 +6,7 @@ kb/
 
 # Build Artifacts:
 lib/
+doc/
 
 # Bot Generated Artifacts:
 a.out

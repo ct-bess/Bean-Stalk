@@ -1,5 +1,11 @@
 /**
+ * Text processing functions
+ * @module textUtil
+ */
+
+/**
  * converts a number to its' emoji representation if possible; N.B. This is not an EmojiResolvable that you can react with
+ * @function numberToEmoji
  * @param {number} number - the number to convert, base whatever
  * @returns {string} the emoji representation as a string, but it's base 10
  */

@@ -7,6 +7,7 @@ import Command from "../struct/Command";
  * **Options:**
  * - `rand` flag: use 9 random numbers instead of your message's timestamp
  * - `cheat` var: uses the supplied string as your timestamp
+ * @extends Command
  */
 class Checkem extends Command {
 
@@ -19,8 +20,8 @@ class Checkem extends Command {
   }
 
   /**
-   * @param {import('discord.js').Message} message
-   * @param {import('../struct/Bot').default} bot
+   * @param {Message} message
+   * @param {Bot} bot
    */
   exec = ( message, bot ) => {
 
@@ -61,3 +62,8 @@ class Checkem extends Command {
 }
 
 export default new Checkem();
+
+/**
+ * @typedef {import('discord.js').Message} Message
+ * @typedef {import('../struct/Bot').default} Bot
+ */

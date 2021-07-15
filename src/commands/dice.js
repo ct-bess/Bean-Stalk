@@ -6,87 +6,119 @@ import Command from "../struct/Command";
  * **Subcommands:**
  * - `hist` and `history`: print the last 16 or so rolls
  * - `proof` and `bread`: attach dice rolling algorithm
+ * - `choose`: choose from 1 of the supplied strings as the response rather than an actual dice roll
  * - `(number)`: roll a dice of the specified number
  * 
  * **Options:**
  * - `count` var: A number of how many dice to roll; Negative implies a *roll with disadvantage* and vise versa
- * - `choose` var or expr: choose from 1 of the supplied strings as the response rather than an actual dice roll
- * 
+ * - `options` var: options to use with `choose` subcommand
+ * - expr: options to use with `choose` subcommand
+ * @extends Command 
+ * @todo
+ * clean this shit up, like why are we doing `d.val` and `this.history.value` ??
  */
 class Dice extends Command {
 
   constructor(
     name = "dice",
     description = "Roll a dice",
-    aliases = [ "d", "roll" ]
+    aliases = [ "d", "roll" ],
   ) {
     super( name, description, aliases );
     this.history = [];
   }
 
   /**
-   * @param {import('discord.js').Message} message
-   * @param {import('../struct/Bot').default} bot
+   * Process args and executes command
+   * @method exec
+   * @memberof Dice
+   * @param {Message} message
+   * @param {Bot} bot
+   * @returns {void}
    */
   exec = ( message, bot ) => {
 
     const args = this.getArgs( message );
+    const subcommand = args.get( 0 );
     let response = "";
 
-    // ok this looks gross
-    // also why did i choose to use this.history.value and d.val ???
-
-    switch( args.get( 0 ) ) {
-      case "hist":
-      case "history":
-        for( let i = 0; i < this.history.length; ++i ) {
-          response += `**${this.history[i].playerID}**: ${this.history[i].type}, result: **${this.history[i].value}**\n`;
-          if( this.history[i].rolls.length > 1 ) {
-            response += `total: **${this.history[i].total}**; rolled with ${this.history[i].adv ? "advantage" : "disadvantage"}\n`;
-            response += `[ ${this.history[i].rolls.join(', ')} ]\n`;
-          }
-        }
-        break;
-      case "proof":
-      case "bread":
-        response = {
-          files: [{
-            attachment: "./lib/commands/dice.js",
-            name: "dice.js"
-          }]
-        };
-        break;
-      case "choose":
-        let options = args.get( "options" ) || args.get( 1 );
-        if( /,/g.test( options ) ) {
-          options = options.split( "," );
-        }
-        else options = options.split( " " );
-        const selected = ( this.roll( options.length, 1, 1, message.author ) ).val - 1;
-        this.history[ this.history.length - 1 ].value += ` (${options[selected]})`;
-        const randEmoji = bot.emojis.cache.random();
-        if( args.has( "quiet" ) ) response = options[selected];
-        else response = `**${options[selected]}** <:${randEmoji.name}:${randEmoji.id}> <@!${message.author.id}>`;
-        break;
-      default:
-        const max = parseInt( args.get( 0 ) );
-        const count = parseInt( args.get( "count" ) || args.get( 1 ) );
-        const min = 1;
-        const roll = this.roll( max, min, count, message.author );
-        const emoji = roll.val == max ? bot.var.emojis.solaire : ( roll.val == min ? ":alien:" : ":hotsprings:" );
-        response = `**${roll.val}** ${emoji} <@!${message.author.id}>`;
-        if( Math.abs( count ) > 1 ) {
-          response += `\n${roll.adv ? "" : "*rolled with disadvantage*; "}roll sum: **${roll.tot}**\n`;
-          response += `[ ${roll.rolls.join(', ')} ]`;
-        }
+    // do we want to start lower casing subcommands?
+    if( typeof( this[subcommand] ) === "function" ) {
+      response = this[subcommand]?.( args, message, bot );
+    }
+    else {
+      const max = parseInt( subcommand );
+      const count = parseInt( args.get( "count" ) || args.get( 1 ) );
+      const min = 1;
+      const roll = this.roll( max, min, count, message.author.username );
+      const emoji = roll.val == max ? bot.var.emojis.solaire : ( roll.val == min ? ":alien:" : ":hotsprings:" );
+      response = `**${roll.val}** ${emoji} <@!${message.author.id}>`;
+      if( Math.abs( count ) > 1 ) {
+        response += `\n${roll.adv ? "" : "*rolled with disadvantage*; "}roll sum: **${roll.tot}**\n`;
+        response += `[ ${roll.rolls.join(', ')} ]`;
+      }
     }
 
-    if( response.length > 2000 ) this.sendBulk( response, message );
-    else message.send( response );
+    message.send( response );
 
   }
 
-  roll = ( max, min, count, author ) => {
+  choose = ( args, message, bot ) => {
+
+    let response = "";
+    let options = args.get( "options" ) || args.get( 1 );
+
+    if( /,/g.test( options ) ) {
+      options = options.split( "," );
+    }
+    else options = options.split( " " );
+
+    const selected = ( this.roll( options.length, 1, 1, message.author.username ) ).val - 1;
+    this.history[ this.history.length - 1 ].value += ` (${options[selected]})`;
+    const randEmoji = bot.emojis.cache.random();
+
+    if( args.has( "quiet" ) ) {
+      response = options[selected];
+    }
+    else response = `**${options[selected]}** <:${randEmoji.name}:${randEmoji.id}> <@!${message.author.id}>`;
+
+    return( response );
+
+  }
+
+  // in the beginning the world was nothing more than a boundless sea, then two great titans came into existance
+  // locked in a timeless battle; history the variable vs history the function
+  hist = () => {
+    let response = "";
+    for( let i = 0; i < this.history.length; ++i ) {
+      response += `**${this.history[i].playerID}**: ${this.history[i].type}, result: **${this.history[i].value}**\n`;
+      if( this.history[i].rolls.length > 1 ) {
+        response += `total: **${this.history[i].total}**; rolled with ${this.history[i].adv ? "advantage" : "disadvantage"}\n`;
+        response += `[ ${this.history[i].rolls.join(', ')} ]\n`;
+      }
+    }
+    return( response );
+  }
+
+  // do we want to import these from a seperate file?
+  proof = () => {
+    let response = this.roll + "";
+    response = response.replaceAll( '`', '\\`' );
+    response = "```js\n" + response + "\n```"
+    return( response );
+  }
+
+  /**
+   * Dice rolling algorithm that produces our exquisite roll
+   * @method roll
+   * @memberof Dice
+   * @param {number} max - maximum dice value for roll
+   * @param {number} min - minimum dice value for roll
+   * @param {number} count - how many times to roll the dice; If negative, displays the lowest roll, if positive displays the highet roll
+   * @param {string} user - who initiated the command as plain username, no discriminator
+   * @returns {DiceRoll} Object with entire contents of the roll
+   */
+  roll = ( max, min, count, user ) => {
     
     console.debug( "rolling dice ..." );
 
@@ -126,7 +158,7 @@ class Dice extends Command {
     }
 
     this.history.push({
-      playerID: author.username,
+      playerID: user,
       type: `d${max} x${count || 1}`,
       value: d.val,
       rolls: d.rolls,
@@ -144,3 +176,16 @@ class Dice extends Command {
 }
 
 export default new Dice();
+
+/**
+ * @typedef {Object} DiceRoll
+ * @property {number} DiceRoll.val
+ * @property {number} DiceRoll.tot
+ * @property {Array<number>} DiceRoll.rolls
+ * @property {boolean} DiceRoll.adv
+ */
+
+/**
+ * @typedef {import('discord.js').Message} Message
+ * @typedef {import('../struct/Bot').default} Bot
+ */

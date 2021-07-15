@@ -9,6 +9,7 @@ import Command from "../struct/Command";
  * **Options:**
  * - `channel` var: the text channel to send to
  * - `delay` var: how long to wait in milliseconds before sending
+ * @extends Command
  */
 class Echo extends Command {
 
@@ -21,8 +22,8 @@ class Echo extends Command {
   }
 
   /**
-   * @param {import('discord.js').Message} message
-   * @param {import('../struct/Bot').default} bot
+   * @param {Message} message
+   * @param {Bot} bot
    */
   exec = ( message, bot ) => {
 
@@ -102,3 +103,8 @@ class Echo extends Command {
 }
 
 export default new Echo();
+
+/**
+ * @typedef {import('discord.js').Message} Message
+ * @typedef {import('../struct/Bot').default} Bot
+ */

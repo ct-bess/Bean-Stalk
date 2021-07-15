@@ -1,10 +1,15 @@
 import { spawnSync } from "child_process";
+/**
+ * Functions necessary for extreme digraph frequency analysis
+ * > full disclosure: I have no idea what I'm doing here
+ * > I just remember rundell saying you could recite shakespear with digraph frequency
+ * @module digraphUtil
+ */
 
-// full disclosure: I have no idea what I'm doing here
-// I just remember rundell saying you could recite shakespear with digraph frequency
 
 /** 
  * loops thru an array of strings and creates an array of digraphs used in each string
+ * @function createDigraphs
  * @param {Array<string>} messages - the messages to check
  * @returns {Array<string>} the array of digraphs; No frequencies, just all digraphs including duplicates
  */
@@ -27,9 +32,9 @@ export const createDigraphs = ( messages ) => {
 
 /** 
  * given a frequency analysis and a grammar, generates a silly sentence
+ * @function generateSentence
  * @param {Array<string>} digraphs - an array of digraphs
  * @param {number} size - how many words to make the sentence
- * @param {string} grammar - the grammar to follow
  * @returns {string} the sentence
  */
 export const generateSentence = ( digraphs, size ) => {

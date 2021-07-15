@@ -12,18 +12,8 @@ import { createWriteStream } from "fs";
  * - WARN: 2
  * - ERROR: 1
  * - OFF: 0
- * @property {object} levels - the available log levels. Readonly btw
- * @property {number} level - the log level in use; Defaults to INFO
- * @property {Console} console - the console that writes the logs to a file
- * @property {Console} shell - the console that writes logs to stdout and stderr in your shell
- * @method getLevel - returns the current log level in a readable format
- * @method setLevel - sets the log level; argument must exist as a key or value in levels property
- * @method log - log anything to the shell; Only the shell btw
- * @method error - log stderr to logs and shell
- * @method warn - log stderr to logs and shell
- * @method info - log stdout to logs and shell
- * @method debug - log stdout to logs and shell
- * @method trace - log stack trace to logs and shell
+ * @implements {Console}
+ * @property {number} level - log level in use
  * @example
  * // Create and use
  * const logger = new Logger( "mylogs.log", "INFO" );
@@ -42,11 +32,17 @@ class Logger {
 
   /**
    * @param {string} logFile - full path to log file
-   * @param {string} [logLevel=3] - the log level to set; Defaults to "INFO"
+   * @param {(string|number)} [logLevel=3] - the log level to set; Defaults to "INFO"
    */
   constructor( logFile, logLevel = 3 ) {
 
-    /** @readonly */
+    /**
+     * An object of log levels available
+     * @readonly
+     * @name levels
+     * @memberof Logger
+     * @type {Object}
+     */
     this.levels = Object.freeze({
       OFF: 0,
       ERROR: 1,
@@ -56,20 +52,44 @@ class Logger {
       TRACE: 5
     });
 
+    /** 
+     * The logger's write steam
+     * @private
+     * @memberof Logger 
+     * @type {WriteStream}
+     */
     this.logStream = createWriteStream( logFile );
 
+    /** 
+     * A Console that joins stdout and stderr into the logStream
+     * @private
+     * @memberof Logger 
+     * @type {Console}
+     */
     this.console = new Console({
       stdout: this.logStream,
       stderr: this.logStream
     });
 
-    // fun fact, this config is literally the default global console
-    // too bad we can't *just* subclass it
+    /** 
+     * A Console with the default Node.js configuration; stdout and stderr are sent to the shell/console
+     * that started the app
+     * @private
+     * @memberof Logger 
+     * @type {Console}
+     */
     this.shell = new Console({
       stdout: process.stdout,
       stderr: process.stderr
     });
 
+    /**
+     * Level in use; Must exist in [levels]{@link Logger.levels}
+     * @name level
+     * @memberof Logger
+     * @type {number}
+     */
+    this.level = null;
     this.setLevel( logLevel );
 
     // Ok but why do the other not need to be bound???
@@ -79,7 +99,9 @@ class Logger {
 
   /**
    * set the log level ya, if it's invalid it doesn't get set
-   * @param {(string|number)} level - the log level to set to; Must exist in {@link Logger.levels} as a key or value
+   * @method setLevel
+   * @memberof Logger
+   * @param {(string|number)} level - the log level to set to; Must exist in [levels]{@link Logger.levels} as a key or value
    * @returns {?string} the log level set; null on error
    */
   setLevel = ( level ) => {
@@ -101,8 +123,10 @@ class Logger {
   }
 
   /**
-   * get the log level ya
-   * @returns {?string} the current log level; null of invalid level set
+   * Gets the current log [level]{@link Logger.level} in readable format
+   * @method getLevel
+   * @memberof Logger
+   * @returns {?string} the current log [level]{@link Logger.level}; null on invalid level set
    */
   getLevel = () => {
 
@@ -118,23 +142,31 @@ class Logger {
   }
 
 
+  /**
+   * Creates a timestamp for log entry. Year and timezone are omitted.
+   * Uses 24hr cycle
+   * @private
+   * @method getTimeStamp
+   * @memberof Logger
+   * @returns {string} locale date time string in format: `Month DD HH:MM:SS`
+   */
   getTimeStamp = () => {
     return( ( new Date() ).toLocaleString( "en", {
-        //year: "numeric",
         month: "short",
         day: "2-digit",
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
         hourCycle: "h24"
-        //timeZoneName: "short"
       }
     ));
   }
 
   /**
    * log stdout to shell, nothing is written to log stream.
-   * Log happens regardless of what level is set
+   * Log happens regardless of what [level]{@link Logger.level} is set
+   * @method log
+   * @memberof Logger
    * @param {...any} - any number of args
    * @returns {void}
    */
@@ -144,9 +176,10 @@ class Logger {
 
   /**
    * log stderr to shell and log stream
-   * when log level is set to ERROR or higher
-   * @see {@link Logger.level}
-   * @param {...any}
+   * when log [level]{@link Logger.level} is set to ERROR or higher
+   * @method error
+   * @memberof Logger
+   * @param {...any} - any number of args
    * @returns {void}
    */
   error = function() {
@@ -159,9 +192,10 @@ class Logger {
 
   /**
    * log stderr to shell and log stream
-   * when log level is set to WARN or higher
-   * @see {@link Logger.level}
-   * @param {...any}
+   * when log [level]{@link Logger.level} is set to WARN or higher
+   * @method warn
+   * @memberof Logger
+   * @param {...any} - any number of args
    * @returns {void}
    */
   warn = function() {
@@ -174,9 +208,10 @@ class Logger {
 
   /**
    * log stdout to shell and log stream
-   * when log level is set to INFO or higher
-   * @see {@link Logger.level}
-   * @param {...any}
+   * when log [level]{@link Logger.level} is set to INFO or higher
+   * @method info
+   * @memberof Logger
+   * @param {...any} - any number of args
    * @returns {void}
    */
   info = function() {
@@ -189,9 +224,10 @@ class Logger {
 
   /**
    * log stdout to shell and log stream
-   * when log level is set to DEBUG or higher
-   * @see {@link Logger.level}
-   * @param {...any}
+   * when log [level]{@link Logger.level} is set to DEBUG or higher
+   * @method debug
+   * @memberof Logger
+   * @param {...any} - any number of args
    * @returns {void}
    */
   debug = function() {
@@ -204,9 +240,10 @@ class Logger {
   
   /**
    * log stack trace to shell and log stream
-   * when log level is set to TRACE or higher
-   * @see {@link Logger.level}
-   * @param {...any}
+   * when log [level]{@link Logger.level} is set to TRACE or higher
+   * @method trace
+   * @memberof Logger
+   * @param {...any} - any number of args
    * @returns {void}
    */
   trace = function() {
@@ -219,6 +256,8 @@ class Logger {
 
   /**
    * Literally justs passes to Console.assert but adds an assert tag to logs and shell
+   * @method assert
+   * @memberof Logger
    * @param {any} value - the variable to check truthyness for
    * @param {...any} - message to display on assertion failure
    * @returns {void}
@@ -230,7 +269,9 @@ class Logger {
   }
 
   /**
-   * Clear shell console
+   * Clears the shell
+   * @method clear
+   * @memberof Logger
    * @returns {void}
    */
   clear = () => {

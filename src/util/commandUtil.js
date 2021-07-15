@@ -1,40 +1,15 @@
 import { Collection } from "discord.js";
-/**
- * @typedef {import('discord.js').Message} Message
- * @typedef {import('discord.js').Guild} Guild
- * @typedef {import('discord.js').Member} Member
- * @typedef {import('discord.js').Role} Role
- * @typedef {import('discord.js').Channel} Channel
- * @typedef {import('../struct/Bot').default} Bot
- * @typedef {(-1|0|string|1)} commandArgs - the keys that are set for a command's arguments
- */
-
-/*
- * version 3: Name Pending
- * uses a custom split function for partial splits that keep the entire input
- * e.g.
- * 'My Awesome String'.split( /\s+/, 2 ) = [ 'My', 'Awesome String' ] rather than just [ 'My', 'Awesome' ]
- * That'll make this code much cleaner because when we hit a user's string variable, we can just split the right half by the double quote
- * To capture it, and the split by the spaces will preserve the right half too
- * Then we also wont have to join at the end for the expression
+/** 
+ * A collection of utility functions for the {@link Command} class
+ * @module commandUtil 
  */
 
 /**
  * returns a command input into arguments mapped to a subcommand, flags/variables, and an expression.
- * Contents are split by any number of spaces: `/\s+/`
- * But verbose variables and the expression retain all of their spaces
- * 
- * | Arg Type     | Key | Value  | Notes |
- * |------------- | --- | ------ | ----- |
- * | Command      | -1  | String | The command's name |
- * | Subcommand   |  0  | String | The subcommand's name |
- * | Flag(s)      | any | true   | denoted by `-` |
- * | Variables(s) | any | String | denoted by `--` and `=`, enclose in `"` to preserve spaces |
- * | Expression   |  1  | String | set to remainder of the args after subcommand is set |
- * 
- * @see {@link commandArgs} for what the keys are set to
- * @param {(Message|String)} message - the Discord.Message that executed the command; Or the message content string
- * @returns {Collection<commandArgs,(string|boolean)>} the mapped results: subcommand get(0), expression get(1), flags/variables get("x")
+ * Contents are split by any number of spaces, but verbose variables and the expression retain all of their spaces
+ * @function argHandler
+ * @param {(Message|string)} message - the Discord.Message that executed the command; Or the message content string
+ * @returns {Collection<commandArg,argVal>} the mapped results: subcommand get(0), expression get(1), flags/variables get("x")
  * @example
  * const args = argHandler( 'commandName -flag --variable="awesome spaces" -anotherFlag --anotherVar=awesome subcommand now expression time' );
  * console.log( args.get( -1 ) );               // expected output: "commandName"
@@ -45,6 +20,18 @@ import { Collection } from "discord.js";
  * console.log( args.has( "doesntHaveThis" ) ); // expected output: false
  * console.log( args.get( "anotherVar" ) );     // expected output: "awesome"
  * console.log( args.get( 1 ) );                // expected output: "now expression time"
+ * @todo
+ * **version 3: Name Pending**
+ * uses a custom split function for partial splits that keep the entire input
+ * e.g.
+ * 
+ * ```js
+ * 'My Awesome String'.split( /\s+/, 2 ) = [ 'My', 'Awesome String' ] rather than just [ 'My', 'Awesome' ]
+ * ```
+ * 
+ * That'll make this code much cleaner because when we hit a user's string variable, we can just split the right half by the double quote
+ * To capture it, and the split by the spaces will preserve the right half too
+ * Then we also wont have to join at the end for the expression
  */
 export const argHandler = ( message ) => {
 
@@ -142,6 +129,7 @@ export const argHandler = ( message ) => {
 
 /** 
  * converts a name or snowflake ID to its' corresponding discord class
+ * @function coalesce
  * @param {string} name - the user, channel, or role name or snowflake ID we are coalescing
  * @param {("channel"|"member"|"role")} type - what discord class type we are converting it
  * @param {Bot} [bot] - discord client processing this (not needed for member and role coalescing)
@@ -193,6 +181,7 @@ export const coalesce = ( name, type, bot, guild ) => {
 
 /** 
  * partitions a large message into 2000 character pieces and sends each part in 1.5 second intervals
+ * @function sendBulk
  * @param {string} response - long string we want to send in bulk
  * @param {Message} message - message origin
  * @param {("italics"|"bold"|"inline code"|"quote"|"quote block"|"code block")} [format] - markdown text format to apply to entire response
@@ -201,8 +190,10 @@ export const coalesce = ( name, type, bot, guild ) => {
  * @example
  * // send a javascript code block:
  * sendBulk( "// some js code ...", message, "code block", "js" );
- * @todo add strike through text format option
- * @todo add spoiler text format option
+ * @todo 
+ * add strike through text format option
+ * @todo 
+ * add spoiler text format option
  */
 export const sendBulk = ( response, message, format, codeBlockType = "" ) => {
 
@@ -248,3 +239,26 @@ export const sendBulk = ( response, message, format, codeBlockType = "" ) => {
   }
 
 };
+
+/** 
+ * The keys of an argument map created by [argHandler]{@link module:commandUtil~argHandler}
+ * - `-1` = command name
+ * - `0` = sub command name
+ * - `1` = command's expression
+ * - `string` = any other arguments supplied
+ * @typedef {(number|string)} commandArg
+ */
+
+/** 
+ * The values of an argument map created by [argHandler]{@link module:commandUtil~argHandler}
+ * @typedef {(boolean|string)} argVal
+ */
+
+/**
+ * @typedef {import('discord.js').Message} Message
+ * @typedef {import('discord.js').Guild} Guild
+ * @typedef {import('discord.js').Member} Member
+ * @typedef {import('discord.js').Role} Role
+ * @typedef {import('discord.js').Channel} Channel
+ * @typedef {import('../struct/Bot').default} Bot
+ */

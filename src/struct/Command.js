@@ -5,17 +5,11 @@ import {
  } from "../util/commandUtil";
 
 /**
- * @typedef {import('discord.js').Message} Message
- * @typedef {import('discord.js').Collection} Collection
- * @typedef {import('./Bot').default} Bot
- * @typedef {import('../util/commandUtil').commandArgs} commandArgs
- */
-
-/**
- * Base Command class for commands to inherit
- * @property {string} name - The command's name that triggers it
- * @property {string} description - The command's description
- * @property {Array<string>} aliases - alternative or shorthand command names that also trigger it
+ * Base Command class for commands to inherit.
+ * Subcommands *should* be defined as methods of inherited classes.
+ * @property {string} name - The command's name
+ * @property {string} description - A short description of the command
+ * @property {Array<string>} aliases - alternative names for the command
  */
 class Command {
 
@@ -36,26 +30,34 @@ class Command {
   }
 
   /**
-   * **This should absolutely be overridden.**
-   * Default behavior is to print the entire command to the text channel
+   * Function that executes on command.
+   * Default behavior simply tries to execute a subcommand
+   * @method exec
+   * @memberof Command
    * @param {Message} message - The Discord Message that triggered the command
    * @param {Bot} bot - the Discord Client executing the command
    * @returns {void}
    */
   exec = ( message, bot ) => {
-    let response = "";
-    for( const key in this ) {
-      response += this[key] + "\n";
+
+    const args = this.getArgs( message ); 
+    const subcommand = args.get( 0 );
+    const response = this[subcommand]?.( args, message, bot );
+
+    if( !!response && response?.length > 0 ) {
+      message.send( response );
     }
-    response = response.replaceAll( '`', '\\`' );
-    if( response.length < 1990 ) message.send( "```js\n" + response + "\n```" );
-    else this.sendBulk( response, message, "code block", "js" );
+
   }
 
   /**
-   * wrapper to {@link argHandler}
+   * wrapper to {@link commandUtil.argHandler}
+   * @method getArgs
+   * @memberof Command
    * @param {(Message|string)} message - Discord.Message or its' contents to get args from
-   * @returns {Collection<commandArgs,(string|boolean)>} arg map
+   * @returns {Collection<commandArg,argVal>} arg map
+   * @todo 
+   * consider adding different ways to get args, ie. "complex" might be calling argHandler, "simple" could be only taking an expr and/or subcommand
    */
   getArgs = ( message ) => {
     const args = argHandler( message );
@@ -63,7 +65,9 @@ class Command {
   }
 
   /**
-   * wrapper to {@link sendBulk}
+   * wrapper to {@link commandUtil.sendBulk}
+   * @method sendBulk
+   * @memberof Command
    * @param {string} response the long string we want to send in bulk
    * @param {Message} message the message origin
    * @param {string} [format] optional, the markdown format to use: italics, bold, inline code, quote, quote block, code block
@@ -75,7 +79,9 @@ class Command {
   }
 
   /**
-   * wrapper to {@link coalesce}
+   * wrapper to {@link commandUtil.coalesce}
+   * @method coalesce
+   * @memberof Command
    * @param {string} name - the user, channel, or role name or snowflake ID we are coalescing
    * @param {("channel"|"member"|"role")} type - what discord class type we are converting it
    * @param {Bot} [bot] - discord client processing this (not needed for member and role coalescing)
@@ -90,3 +96,10 @@ class Command {
 };
 
 export default Command;
+
+/**
+ * @typedef {import('discord.js').Message} Message
+ * @typedef {import('discord.js').Collection} Collection
+ * @typedef {import('./Bot').default} Bot
+ * @typedef {import('../util/commandUtil').commandArgs} commandArgs
+ */

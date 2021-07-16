@@ -1,4 +1,5 @@
 import Command from "../struct/Command";
+import * as dice from "./modules/dice";
 
 /**
  * This command rolls dice, perfect for virtual DnD
@@ -23,8 +24,9 @@ class Dice extends Command {
     name = "dice",
     description = "Roll a dice",
     aliases = [ "d", "roll" ],
+    modules = dice
   ) {
-    super( name, description, aliases );
+    super( name, description, aliases, modules );
     this.history = [];
   }
 
@@ -43,8 +45,8 @@ class Dice extends Command {
     let response = "";
 
     // do we want to start lower casing subcommands?
-    if( typeof( this[subcommand] ) === "function" ) {
-      response = this[subcommand]?.( args, message, bot );
+    if( this.modules[subcommand] ) {
+      response = this[subcommand]?.call( this, args, message, bot );
     }
     else {
       const max = parseInt( subcommand );
@@ -61,51 +63,6 @@ class Dice extends Command {
 
     message.send( response );
 
-  }
-
-  choose = ( args, message, bot ) => {
-
-    let response = "";
-    let options = args.get( "options" ) || args.get( 1 );
-
-    if( /,/g.test( options ) ) {
-      options = options.split( "," );
-    }
-    else options = options.split( " " );
-
-    const selected = ( this.roll( options.length, 1, 1, message.author.username ) ).val - 1;
-    this.history[ this.history.length - 1 ].value += ` (${options[selected]})`;
-    const randEmoji = bot.emojis.cache.random();
-
-    if( args.has( "quiet" ) ) {
-      response = options[selected];
-    }
-    else response = `**${options[selected]}** <:${randEmoji.name}:${randEmoji.id}> <@!${message.author.id}>`;
-
-    return( response );
-
-  }
-
-  // in the beginning the world was nothing more than a boundless sea, then two great titans came into existance
-  // locked in a timeless battle; history the variable vs history the function
-  hist = () => {
-    let response = "";
-    for( let i = 0; i < this.history.length; ++i ) {
-      response += `**${this.history[i].playerID}**: ${this.history[i].type}, result: **${this.history[i].value}**\n`;
-      if( this.history[i].rolls.length > 1 ) {
-        response += `total: **${this.history[i].total}**; rolled with ${this.history[i].adv ? "advantage" : "disadvantage"}\n`;
-        response += `[ ${this.history[i].rolls.join(', ')} ]\n`;
-      }
-    }
-    return( response );
-  }
-
-  // do we want to import these from a seperate file?
-  proof = () => {
-    let response = this.roll + "";
-    response = response.replaceAll( '`', '\\`' );
-    response = "```js\n" + response + "\n```"
-    return( response );
   }
 
   /**

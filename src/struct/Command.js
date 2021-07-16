@@ -10,6 +10,7 @@ import {
  * @property {string} name - The command's name
  * @property {string} description - A short description of the command
  * @property {Array<string>} aliases - alternative names for the command
+ * @property {object<string,string>} modules - subcommands/modules of command
  */
 class Command {
 
@@ -18,15 +19,29 @@ class Command {
    * @param {string} [name=""] - The command's name that triggers it
    * @param {string} [description=""] - The command's description
    * @param {Array<string>} [aliases=[]] - alternative or shorthand command names that also trigger it
+   * @param {object<string,string>} modules - all subcommands or modules that users can execute from command
    */
-  constructor( name = "", description = "", aliases = [] ) {
+  constructor( name = "", description = "", aliases = [], modules ) {
+
     this.name = name.replaceAll( " ", "_" ).toLowerCase();
     this.description = description;
     this.aliases = [];
+    this.modules = {};
+
     for( const alias of aliases ) {
       this.aliases.push( (alias + "").replaceAll( " ", "_" ).toLowerCase() );
     }
-    console.trace( "Creating Command:", this );
+
+    if( modules ) {
+      for( const key in modules ) {
+        this.modules[key] = modules[key].help;
+        this[key] = modules[key].exec;
+        this[key] = this[key].bind( this );
+      }
+    }
+
+    console.trace( "Created Command:", this );
+
   }
 
   /**
@@ -42,7 +57,7 @@ class Command {
 
     const args = this.getArgs( message ); 
     const subcommand = args.get( 0 );
-    const response = this[subcommand]?.( args, message, bot );
+    const response = this[subcommand]?.call( this, args, message, bot );
 
     if( !!response && response?.length > 0 ) {
       message.send( response );

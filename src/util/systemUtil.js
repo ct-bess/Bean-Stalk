@@ -15,6 +15,9 @@ import config from "../../config.json";
  * @returns {void}
  * @todo 
  * edit the command requires to new Command() when we change the Commands' default export
+ * @todo
+ * re require the modules too as necessary, or make a seperate thing/flag to do that.
+ * The require cache will have the modules already stored away, so they'll need to be handled somehow
  */
 export const loadCommands = ( bot, override, commandName ) => {
 

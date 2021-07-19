@@ -219,6 +219,7 @@ export const sendBulk = ( response, message, format, codeBlockType = "" ) => {
       break;
     case "code block":
       prefix = "```" + codeBlockType + "\n", suffix = "\n```";
+      response = (response + "").replaceAll( "`", "'" );
       break;
     default:
       textBound = 2000;

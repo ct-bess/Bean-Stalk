@@ -10,6 +10,8 @@ import Command from "../struct/Command";
  * - `channel` var: the text channel to send to
  * - `delay` var: how long to wait in milliseconds before sending
  * @extends Command
+ * @todo
+ * clean up the expert programming by simplifying the command
  */
 class Echo extends Command {
 

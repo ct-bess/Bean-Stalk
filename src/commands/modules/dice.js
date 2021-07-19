@@ -1,3 +1,4 @@
+import Subcommand from '../../struct/Subcommand';
 /**
  * {@link Dice} subcommands
  * @module dice
@@ -6,9 +7,11 @@
 /**
  * @name choose
  */
-export const choose = {
+export const choose = new Subcommand({
 
-  help: "here be subcommand options/help?",
+  name: "choose",
+  help: "Select 1 option form a list\n`options` or expression: comma or space seperated list of options to choose from",
+  onlyAdmins: false,
 
   /**
    * @method exec
@@ -41,14 +44,16 @@ export const choose = {
 
   } 
 
-};
+});
 
 /**
  * @name hist
  */
-export const hist = {
+export const hist = new Subcommand({
 
-  help: "here be subcommand options/help?",
+  name: "hist",
+  help: "print the last 16 rolls and their details",
+  onlyAdmins: false,
 
   /**
    * @method exec
@@ -69,14 +74,16 @@ export const hist = {
     return( response );
   } 
 
-};
+});
 
 /**
  * @name proof
  */
-export const proof = {
+export const proof = new Subcommand({
 
-  help: "here be subcommand options/help?",
+  name: "proof",
+  help: "attatch the expertly crafted dice rolling algorithm",
+  onlyAdmins: false,
 
   /**
    * @method exec
@@ -91,7 +98,7 @@ export const proof = {
     return( response );
   } 
 
-};
+});
 
 /**
  * @typedef {import('discord.js').Message} Message

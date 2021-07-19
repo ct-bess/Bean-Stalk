@@ -10,23 +10,34 @@ import {
  * @property {string} name - The command's name
  * @property {string} description - A short description of the command
  * @property {Array<string>} aliases - alternative names for the command
- * @property {object<string,string>} modules - subcommands/modules of command
+ * @property {(Subcommand|object)} modules - list of the subcommands/modules with help text of command
+ * @property {function} - any method aside from the defaults are subcommands set by constructor
  */
 class Command {
 
   /**
-   * all spaces in name and aliases are replaced with underscore, they're also lower cased
+   * all spaces in name and aliases are replaced with underscore, they're also lower cased.
+   * The standard for subcommands/modules is that they're lower cased too.
    * @param {string} [name=""] - The command's name that triggers it
    * @param {string} [description=""] - The command's description
    * @param {Array<string>} [aliases=[]] - alternative or shorthand command names that also trigger it
-   * @param {object<string,string>} modules - all subcommands or modules that users can execute from command
+   * @param {(Subcommand|object)} [modules] - all subcommands or modules that users can execute from command
    */
   constructor( name = "", description = "", aliases = [], modules ) {
+
+    if( name.length === 0 ) {
+      throw "Command name cannot be empty"
+    }
 
     this.name = name.replaceAll( " ", "_" ).toLowerCase();
     this.description = description;
     this.aliases = [];
-    this.modules = {};
+    this.modules = {
+      help: {
+        onlyAdmins: false,
+        help: "I'm doing a brother check-in. Showing support for one another.\nI need SIX men to post, not share, this message to show you are always there if someone needs to talk.\nLet's go gentlemen...."
+      }
+    };
 
     for( const alias of aliases ) {
       this.aliases.push( (alias + "").replaceAll( " ", "_" ).toLowerCase() );
@@ -34,9 +45,11 @@ class Command {
 
     if( modules ) {
       for( const key in modules ) {
-        this.modules[key] = modules[key].help;
-        this[key] = modules[key].exec;
-        this[key] = this[key].bind( this );
+        const moduleName = modules[key].name;
+        this[moduleName] = modules[key].exec;
+        this[moduleName] = this[key].bind( this );
+        delete modules[key].exec;
+        this.modules[moduleName] = modules[key];
       }
     }
 
@@ -46,7 +59,8 @@ class Command {
 
   /**
    * Function that executes on command.
-   * Default behavior simply tries to execute a subcommand
+   * Default behavior simply tries to execute a subcommand;
+   * Override this for more complex cases and cases where you don't have any subcommands
    * @method exec
    * @memberof Command
    * @param {Message} message - The Discord Message that triggered the command
@@ -56,13 +70,72 @@ class Command {
   exec = ( message, bot ) => {
 
     const args = this.getArgs( message ); 
-    const subcommand = args.get( 0 );
-    const response = this[subcommand]?.call( this, args, message, bot );
+    const subcommand = (args.get( 0 ) + "").toLowerCase();
+    const isAdmin = bot.var.admins.includes( message.author.id );
 
-    if( !!response && response?.length > 0 ) {
-      message.send( response );
+    if( this.modules[subcommand] ) {
+
+      let response = "";
+      const onlyAdmins = !!this.modules[subcommand]?.onlyAdmins;
+
+      if( !onlyAdmins || ( onlyAdmins && isAdmin ) ) {
+        response = this[subcommand]?.call( this, args, message, bot );
+      }
+      else {
+        response = ":flushed: You ain't no Bean admin :flushed:";
+        console.info( "non admin command execution attempt by:", message.author.id );
+      }
+
+      if( !!response && ( response?.length > 0 || typeof( response ) === "object" ) ) {
+        message.send( response );
+      }
+
+    }
+    else {
+      console.info( "Nothing was executed for command:", this.name );
     }
 
+  }
+
+  /**
+   * Default help subcommand.
+   * - Called alone `command help`: returns command's description
+   * - Called with an expression `command help subcommand`: returns subcommand's description if any
+   * @method help
+   * @memberof Command
+   * @param {commandArg} args
+   * @returns {string} help text for subcommand/module or command's description
+   */
+  help = ( args ) => {
+
+    const subcommand = (args.get( 1 ) + "").toLowerCase();
+    const response = this.modules[subcommand]?.help || this.description;
+    return( response );
+
+  }
+
+  /**
+   * React with success emoji to message; Default is unicode zero, :0:
+   * @method successReact
+   * @memberof Command
+   * @param {Message} message
+   * @param {EmojiResolvable} [emoji="\u0030\u20E3"]
+   * @returns {void}
+   */
+  successReact = ( message, emoji ) => {
+    message.react( emoji || "\u0030\u20E3" );
+  }
+
+  /**
+   * React with failure to message; Default is unicode one, :1:
+   * @method successReact
+   * @memberof Command
+   * @param {Message} message
+   * @param {EmojiResolvable} [emoji="\u0031\u20E3"]
+   * @returns {void}
+   */
+  failureReact = ( message, emoji ) => {
+    message.react( emoji || "\u0031\u20E3" );
   }
 
   /**

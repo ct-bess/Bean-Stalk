@@ -20,3 +20,7 @@
  * @typedef {Object} ClientOptions
  * @see {@link https://discord.js.org/#/docs/main/stable/typedef/ClientOptions}
  */
+/**
+ * @typedef {Object} EmojiResolvable
+ * @see {@link https://discord.js.org/#/docs/main/stable/typedef/EmojiResolvable}
+ */

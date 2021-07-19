@@ -48,16 +48,8 @@ export const execCommand = ( message, bot ) => {
 
       const allowedBots = bot.var.bots.includes( message.author.id );
 
-      if( commandArgs[1] === "help" ) {
-        const helpEmbed = help[command.name] || {};
-        helpEmbed.color = 0xffea00;
-        helpEmbed.title = command.name + "";
-        helpEmbed.description = command.description + "";
-        helpEmbed.footer = { text: "aliases: " + command.aliases.join(', ') };
-        message.channel.send({ embed: helpEmbed });
-      }
       // wait a fat second to execute messages from allowed bots so we don't send a billion requests
-      else if( allowedBots ) {
+      if( allowedBots ) {
         setTimeout( () => {
           command.exec( message, bot );
         }, bot.var.config.botReplyDelay );

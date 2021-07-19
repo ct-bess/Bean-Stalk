@@ -31,8 +31,9 @@ class Dice extends Command {
   }
 
   /**
-   * Process args and executes command
+   * Process args and executes command, defaults to rolling a dice
    * @method exec
+   * @override
    * @memberof Dice
    * @param {Message} message
    * @param {Bot} bot
@@ -44,9 +45,8 @@ class Dice extends Command {
     const subcommand = args.get( 0 );
     let response = "";
 
-    // do we want to start lower casing subcommands?
     if( this.modules[subcommand] ) {
-      response = this[subcommand]?.call( this, args, message, bot );
+      response = this[subcommand].call( this, args, message, bot );
     }
     else {
       const max = parseInt( subcommand );

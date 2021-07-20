@@ -130,7 +130,7 @@ export const argHandler = ( message ) => {
 /** 
  * converts a name or snowflake ID to its' corresponding discord class
  * @function coalesce
- * @param {string} name - the user, channel, or role name or snowflake ID we are coalescing
+ * @param {(string|Snowflake)} name - the user, channel, or role name or snowflake ID we are coalescing
  * @param {("channel"|"member"|"role")} type - what discord class type we are converting it
  * @param {Bot} [bot] - discord client processing this (not needed for member and role coalescing)
  * @param {Guild} [guild] - guild origin (not needed for channel coalescing)
@@ -241,6 +241,38 @@ export const sendBulk = ( response, message, format, codeBlockType = "" ) => {
 
 };
 
+/**
+ * Check if the user has the specified role.
+ * @param {Snowflake} user - the user ID to check
+ * @param {Bot} bot - our awesome Discord Client
+ * @param {(Role|"admin")} role - the role to check; "admin" is a special case, admins are defined in the [Bot]{@link Bot.var.admins} class
+ * @param {GuildResolvable} [guild] - Discord Guild to check role in; Ignored when checking for admin
+ * @returns {boolean} wether they have the role or not
+ * @todo
+ * coalesce a role name into an ID if it's not admin. Maybe users too idk
+ */
+export const hasRole = ( userID, bot, role, guild ) => {
+
+  role = (role + "").toLowerCase();
+  let hasPerm = null;
+
+  if( role === "admin" ) {
+    hasPerm = bot.var.admins.includes( userID );
+  }
+  else {
+
+    guild = bot.guilds.resolve( guild );
+
+    if( guild ) {
+      hasPerm = guild.roles.resolve( role )?.members?.has( userID );
+    }
+
+  }
+
+  return( hasPerm );
+
+};
+
 /** 
  * The keys of an argument map created by [argHandler]{@link module:commandUtil~argHandler}
  * - `-1` = command name
@@ -258,8 +290,10 @@ export const sendBulk = ( response, message, format, codeBlockType = "" ) => {
 /**
  * @typedef {import('discord.js').Message} Message
  * @typedef {import('discord.js').Guild} Guild
+ * @typedef {import('discord.js').GuildResolvable} GuildResolvable
  * @typedef {import('discord.js').Member} Member
  * @typedef {import('discord.js').Role} Role
  * @typedef {import('discord.js').Channel} Channel
+ * @typedef {import('discord.js').Snowflake} Snowflake
  * @typedef {import('../struct/Bot').default} Bot
  */

@@ -4,22 +4,19 @@ import Subcommand from '../../struct/Subcommand';
  * @module dice
  */
 
-/**
- * @name choose
- */
 export const choose = new Subcommand({
 
   name: "choose",
   help: "Select 1 option form a list\n`options` or expression: comma or space seperated list of options to choose from",
-  onlyAdmins: false,
 
   /**
-   * @method exec
-   * @memberof module:dice.choose
+   * Select a string from a comma or space seperated list of options
+   * @method module:dice~choose
+   * @memberof module:dice
    * @this Dice
-   * @param {commandArg} args
-   * @param {Message} message
-   * @param {Bot} bot
+   * @param {commandArg} args - argument map
+   * @param {Message} message - Discord Message orgin
+   * @param {Bot} bot - Discord Client
    * @returns {string} the randomly selected option
    */
   exec: function( args, message, bot ) {
@@ -46,18 +43,14 @@ export const choose = new Subcommand({
 
 });
 
-/**
- * @name hist
- */
 export const hist = new Subcommand({
 
   name: "hist",
   help: "print the last 16 rolls and their details",
-  onlyAdmins: false,
 
   /**
-   * @method exec
-   * @memberof module:dice.hist
+   * @method module:dice~hist
+   * @memberof module:dice
    * @this Dice
    * @returns {string} the last 16 rolls in [history]{@link Dice.history}
    */
@@ -83,11 +76,10 @@ export const proof = new Subcommand({
 
   name: "proof",
   help: "attatch the expertly crafted dice rolling algorithm",
-  onlyAdmins: false,
 
   /**
-   * @method exec
-   * @memberof module:dice.proof
+   * @method module:dice~proof
+   * @memberof module:dice
    * @this Dice
    * @returns {string} the extreme dice rolling algorithm
    */

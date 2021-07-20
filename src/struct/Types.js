@@ -1,26 +1,34 @@
 // This file is intentionally left blank
 
 /**
- * @typedef {Object} Collection
+ * @typedef {object} Collection
  * @see {@link https://discord.js.org/#/docs/collection/master/class/Collection}
  */
 /**
- * @typedef {Object} Client
+ * @typedef {object} Client
  * @see {@link https://discord.js.org/#/docs/main/stable/class/Client}
  */
 /**
- * @typedef {Object} Message
+ * @typedef {object} Message
  * @see {@link https://discord.js.org/#/docs/main/stable/class/Message}
  */
 /**
- * @typedef {Object} APIMessage
+ * @typedef {object} APIMessage
  * @see {@link https://discord.js.org/#/docs/main/stable/class/APIMessage}
  */
 /**
- * @typedef {Object} ClientOptions
+ * @typedef {object} ClientOptions
  * @see {@link https://discord.js.org/#/docs/main/stable/typedef/ClientOptions}
  */
 /**
- * @typedef {Object} EmojiResolvable
+ * @typedef {any} EmojiResolvable
  * @see {@link https://discord.js.org/#/docs/main/stable/typedef/EmojiResolvable}
+ */
+/**
+ * @typedef {any} GuildResolvable
+ * @see {@link https://discord.js.org/#/docs/main/stable/typedef/GuildResolvable}
+ */
+/**
+ * @typedef {string} Snowflake
+ * @see {@link https://discord.js.org/#/docs/main/stable/typedef/Snowflake}
  */

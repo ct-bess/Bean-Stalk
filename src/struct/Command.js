@@ -1,7 +1,8 @@
 import { 
   argHandler, 
   sendBulk as _sendBulk,
-  coalesce as _coalesce
+  coalesce as _coalesce,
+  hasRole as _hasRole
  } from "../util/commandUtil";
 
 /**
@@ -18,15 +19,15 @@ class Command {
   /**
    * all spaces in name and aliases are replaced with underscore, they're also lower cased.
    * The standard for subcommands/modules is that they're lower cased too.
-   * @param {string} [name=""] - The command's name that triggers it
+   * @param {string} name - The command's name that triggers it; Cannot be empty or null
    * @param {string} [description=""] - The command's description
    * @param {Array<string>} [aliases=[]] - alternative or shorthand command names that also trigger it
    * @param {(Subcommand|object)} [modules] - all subcommands or modules that users can execute from command
    */
-  constructor( name = "", description = "", aliases = [], modules ) {
+  constructor( name, description = "", aliases = [], modules ) {
 
-    if( name.length === 0 ) {
-      throw "Command name cannot be empty"
+    if( !name || name?.length === 0 ) {
+      throw "Command name cannot be empty or null"
     }
 
     this.name = name.replaceAll( " ", "_" ).toLowerCase();
@@ -71,7 +72,7 @@ class Command {
 
     const args = this.getArgs( message ); 
     const subcommand = (args.get( 0 ) + "").toLowerCase();
-    const isAdmin = bot.var.admins.includes( message.author.id );
+    const isAdmin = this.hasRole( message.author.id, bot, "admin" );
 
     if( this.modules[subcommand] ) {
 
@@ -103,7 +104,7 @@ class Command {
    * - Called with an expression `command help subcommand`: returns subcommand's description if any
    * @method help
    * @memberof Command
-   * @param {commandArg} args
+   * @param {commandArg} args - command's argument map
    * @returns {string} help text for subcommand/module or command's description
    */
   help = ( args ) => {
@@ -118,8 +119,8 @@ class Command {
    * React with success emoji to message; Default is unicode zero, :0:
    * @method successReact
    * @memberof Command
-   * @param {Message} message
-   * @param {EmojiResolvable} [emoji="\u0030\u20E3"]
+   * @param {Message} message - Discord Message orgin
+   * @param {EmojiResolvable} [emoji="\u0030\u20E3"] - An emoji Discrord.js can resolve
    * @returns {void}
    */
   successReact = ( message, emoji ) => {
@@ -130,8 +131,8 @@ class Command {
    * React with failure to message; Default is unicode one, :1:
    * @method successReact
    * @memberof Command
-   * @param {Message} message
-   * @param {EmojiResolvable} [emoji="\u0031\u20E3"]
+   * @param {Message} message - Discord Message orgin
+   * @param {EmojiResolvable} [emoji="\u0031\u20E3"] - An emoji Discord.js can resolve
    * @returns {void}
    */
   failureReact = ( message, emoji ) => {
@@ -139,7 +140,7 @@ class Command {
   }
 
   /**
-   * wrapper to {@link commandUtil.argHandler}
+   * wrapper to [argHandler]{@link module:commandUtil.argHandler}
    * @method getArgs
    * @memberof Command
    * @param {(Message|string)} message - Discord.Message or its' contents to get args from
@@ -153,13 +154,13 @@ class Command {
   }
 
   /**
-   * wrapper to {@link commandUtil.sendBulk}
+   * wrapper to [sendBulk]{@link module:commandUtil.sendBulk}
    * @method sendBulk
    * @memberof Command
-   * @param {string} response the long string we want to send in bulk
-   * @param {Message} message the message origin
-   * @param {string} [format] optional, the markdown format to use: italics, bold, inline code, quote, quote block, code block
-   * @param {string} [codeBlockType=""] optional, the language to format the code with
+   * @param {string} response - the long string we want to send in bulk
+   * @param {Message} message - the message origin
+   * @param {string} [format] - optional, the markdown format to use: italics, bold, inline code, quote, quote block, code block
+   * @param {string} [codeBlockType=""] - the language to format the code with
    * @returns {void}
    */
   sendBulk = ( response, message, format, codeBlockType ) => {
@@ -167,7 +168,7 @@ class Command {
   }
 
   /**
-   * wrapper to {@link commandUtil.coalesce}
+   * wrapper to [coalesce]{@link module:commandUtil~coalesce}
    * @method coalesce
    * @memberof Command
    * @param {string} name - the user, channel, or role name or snowflake ID we are coalescing
@@ -180,6 +181,22 @@ class Command {
     const base = _coalesce( name, type, bot, guild );
     return( base );
   }
+
+  /**
+   * wrapper to [hasRole]{@link module:commandUtil~hasRole}
+   * @method hasRole
+   * @memberof Command
+   * @param {Snowflake} user - the user ID to check
+   * @param {Bot} bot - our awesome Discord Client
+   * @param {(Role|"admin")} role - the role to check; "admin" is a special case, admins are defined in the [Bot]{@link Bot.var.admins} class
+   * @param {Guild} [guild] - Discord Guild to check role in; Ignored when checking for admin
+   * @returns {?boolean} wether they have the role/permission or not. Null on invalid role/guild
+   */
+  hasRole = ( userID, bot, role, guild ) => {
+    const hasPerm = _hasRole( userID, bot, role, guild );
+    return( hasPerm );
+  }
+
 
 };
 

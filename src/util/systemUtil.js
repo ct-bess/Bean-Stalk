@@ -25,30 +25,38 @@ export const loadCommands = ( bot, override, commandName ) => {
 
   const checkAndSet = ( name ) => {
 
-    const path = `../commands/${name}`;
+    try {
 
-    if( !!require.cache[ require.resolve( path ) ] ) {
-      delete require.cache[ require.resolve( path ) ];
-    }
+      const path = `../commands/${name}`;
 
-    const command = require( path );
-    let validCommand = !!override;
-
-    if( !validCommand ) {
-      validCommand = !bot.commands.has( command.default.name );
-      for( const alias of command.default.aliases ) {
-        if( !validCommand ) break;
-        validCommand = bot.commands.every( cmd => !cmd.aliases.includes( alias ) )
+      if( !!require.cache[ require.resolve( path ) ] ) {
+        delete require.cache[ require.resolve( path ) ];
       }
-    }
 
-    if( validCommand ) {
-      console.debug( "Setting command:", command.default.name );
-      bot.commands.set( command.default.name, command.default );
+      const command = require( path );
+      let validCommand = !!override;
+
+      if( !validCommand ) {
+        validCommand = !bot.commands.has( command.default.name );
+        for( const alias of command.default.aliases ) {
+          if( !validCommand ) break;
+          validCommand = bot.commands.every( cmd => !cmd.aliases.includes( alias ) )
+        }
+      }
+
+      if( validCommand ) {
+        console.debug( "Setting command:", command.default.name );
+        bot.commands.set( command.default.name, command.default );
+      }
+      else {
+        console.error( "Cannot set command; Already has command name or alias included in:", command.default.name );
+        delete require.cache[ require.resolve( path ) ];
+      }
+
     }
-    else {
-      console.error( "Cannot set command; Already has command name or alias included in:", command.default.name );
-      delete require.cache[ require.resolve( path ) ];
+    catch( error ) {
+      console.error( error );
+      console.error( "Check the exports for:", name, "and the path:", path );
     }
 
   }

@@ -34,6 +34,7 @@ class Dice extends Command {
    * Process args and executes command, defaults to rolling a dice
    * @method exec
    * @override
+   * @this Command
    * @memberof Dice
    * @param {Message} message
    * @param {Bot} bot

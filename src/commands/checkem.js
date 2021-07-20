@@ -20,6 +20,7 @@ class Checkem extends Command {
   }
 
   /**
+   * @this Command
    * @param {Message} message
    * @param {Bot} bot
    */

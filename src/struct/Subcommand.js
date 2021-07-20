@@ -7,9 +7,9 @@
  */
 
 /**
- * Subcommand class to set a standard for subcommands
- * to keep things from getting too unhinged.
- * @property {string} [name] - subcommand's name. It's lower cased and spaces are replaced with underscores
+ * Subcommands are Commands of Commands, usually grouped with parent commands that fit their theme.
+ * Subcommands are the 2nd argument provided, and are sometimes optional for their parent command's execution.
+ * @property {string} name - subcommand's name. It's lower cased and spaces are replaced with underscores
  * @property {string} [help] - subcommand's help text
  * @property {boolean} [onlyAdmins=false] - defines if only admins can execute this command
  * @property {function} exec - function that executes when subcommand's called
@@ -26,7 +26,7 @@ class Subcommand {
    */
   constructor( SubcommandOptions ) {
 
-    if( !SubcommandOptions.name ) {
+    if( !SubcommandOptions.name || SubcommandOptions.name?.length === 0 ) {
       throw "No subcommand name given";
     }
     if( !SubcommandOptions.exec ) {

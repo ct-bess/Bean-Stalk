@@ -24,6 +24,7 @@ class Echo extends Command {
   }
 
   /**
+   * @this Command
    * @param {Message} message
    * @param {Bot} bot
    */

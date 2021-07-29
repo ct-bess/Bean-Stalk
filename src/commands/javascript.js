@@ -11,11 +11,13 @@ import { spawn } from "child_process";
 class JavaScript extends Command {
 
   constructor(
-    name = "javascript",
-    description = "Execute some spicy, arbitrary, uncontainiarized JavaScript\nEverything after command is treated as JavaScript :tm:",
-    aliases = [ "js", "js-nl" ]
+    CommandOptions = {
+      name: "javascript",
+      description: "Execute some spicy, arbitrary, uncontainiarized JavaScript\nEverything after command is treated as JavaScript :tm:",
+      aliases: [ "js", "js-nl" ]
+    }
   ) {
-    super( name, description, aliases );
+    super( CommandOptions );
   }
 
   /**

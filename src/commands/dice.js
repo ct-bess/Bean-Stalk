@@ -21,12 +21,14 @@ import * as dice from "./modules/dice";
 class Dice extends Command {
 
   constructor(
-    name = "dice",
-    description = "Roll a dice",
-    aliases = [ "d", "roll" ],
-    modules = dice
+    CommandOptions = {
+      name: "dice",
+      description: "Roll a dice",
+      aliases: [ "d", "roll" ],
+      modules: dice
+    }
   ) {
-    super( name, description, aliases, modules );
+    super( CommandOptions );
     this.history = [];
   }
 

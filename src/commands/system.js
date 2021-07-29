@@ -5,12 +5,14 @@ import { spawn } from "child_process";
 class System extends Command {
 
   constructor(
-    name = "system",
-    description = "Exclusive Bean Stalk sytemd commands",
-    aliases = [ "bean", "systemd" ],
-    modules = system
+    CommandOptions = {
+      name: "system",
+      description: "Exclusive Bean Stalk sytemd commands",
+      aliases: [ "bean", "systemd" ],
+      modules: system
+    }
   ) {
-    super( name, description, aliases, modules );
+    super( CommandOptions );
   }
 
   spawnProcess = ( message, command, cliargs = [], callback ) => {

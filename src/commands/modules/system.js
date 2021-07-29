@@ -9,9 +9,6 @@ import Subcommand from "../../struct/Subcommand";
  * @module system
  */
 
-/**
- * @name setprefix
- */
 export const prefix = new Subcommand({
 
   name: "prefix",
@@ -31,9 +28,6 @@ export const prefix = new Subcommand({
 
 });
 
-/**
- * @name reload
- */
 export const reload = new Subcommand({
 
   name: "reload",
@@ -63,9 +57,6 @@ export const reload = new Subcommand({
 
 });
 
-/**
- * @name die
- */
 export const die = new Subcommand({
 
   name: "die",
@@ -88,12 +79,13 @@ export const die = new Subcommand({
     dateStamp += date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
     dateStamp += date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
 
-    const logPath = `${bot.var.config.logPath}/${bot.var.config.logFile}`;
+    //const logPath = `${bot.var.config.logPath}/${bot.var.config.logFile}`;
     const savedLogPath = `${bot.var.config.logPath}/${dateStamp}-${bot.var.config.logFile}`;
 
     console.info( `saving logs to: ${savedLogPath} ...` );
-    // assuming this overwrites what's already there if any
-    renameSync( logPath, savedLogPath );
+    // emit a drain if we ever go async or want to write some final logs from Logger on close emit
+    console.logStream.end( "\nEnd of session @" + ( new Date().toISOString() ) );
+    renameSync( console.logStream.path, savedLogPath );
 
     this.successReact( message );
     setTimeout( () => {
@@ -104,9 +96,6 @@ export const die = new Subcommand({
 
 });
 
-/**
- * @name commands
- */
 export const commands = new Subcommand({
 
   name: "commands",
@@ -135,9 +124,6 @@ export const commands = new Subcommand({
 
 });
 
-/**
- * @name logs
- */
 export const logs = new Subcommand({
 
   name: "logs",
@@ -176,9 +162,6 @@ export const logs = new Subcommand({
 
 });
 
-/**
- * @name channels
- */
 export const channels = new Subcommand({
 
   name: "channels",
@@ -217,9 +200,6 @@ export const channels = new Subcommand({
 
 });
 
-/**
- * @name regex
- */
 export const regex = new Subcommand({
 
   name: "regex",
@@ -239,7 +219,6 @@ export const regex = new Subcommand({
 });
 
 /**
- * @name nickname
  * @todo
  * add server variable to allow changing nickname elsewhere
  */

@@ -6,6 +6,14 @@ import {
  } from "../util/commandUtil";
 
 /**
+ * @typedef {object} CommandOptions
+ * @param {string} name - The command's name that triggers it; Cannot be empty or null
+ * @param {string} [description=""] - The command's description
+ * @param {Array<string>} [aliases=[]] - alternative or shorthand command names that also trigger it
+ * @param {(Subcommand|object)} [modules] - all subcommands or modules that users can execute from command
+ */
+
+/**
  * Base Command class for commands to inherit.
  * Subcommands *should* be defined as methods of inherited classes.
  * @property {string} name - The command's name
@@ -19,18 +27,20 @@ class Command {
   /**
    * all spaces in name and aliases are replaced with underscore, they're also lower cased.
    * The standard for subcommands/modules is that they're lower cased too.
-   * @param {string} name - The command's name that triggers it; Cannot be empty or null
-   * @param {string} [description=""] - The command's description
-   * @param {Array<string>} [aliases=[]] - alternative or shorthand command names that also trigger it
-   * @param {(Subcommand|object)} [modules] - all subcommands or modules that users can execute from command
+   * @param {CommandOptions} CommandOptions - list of options for command creation
    */
-  constructor( name, description = "", aliases = [], modules ) {
+  constructor( CommandOptions ) {
+
+    const name = CommandOptions.name;
+    const description = CommandOptions.description || "";
+    const aliases = Array.from( CommandOptions.aliases ?? [] );
+    const modules = CommandOptions.modules;
 
     if( !name || name?.length === 0 ) {
-      throw "Command name cannot be empty or null"
+      throw new Error( "Command name cannot be empty or null" );
     }
 
-    this.name = name.replaceAll( " ", "_" ).toLowerCase();
+    this.name = (name + "").replaceAll( " ", "_" ).toLowerCase();
     this.description = description;
     this.aliases = [];
     this.modules = {
@@ -45,18 +55,37 @@ class Command {
     }
 
     if( modules ) {
+
+      if( !( modules instanceof Object ) ) {
+        throw new Error( "module type must be an object" );
+      }
+
       for( const key in modules ) {
-        const moduleName = modules[key].name;
+
+        const moduleName = modules[key]?.name;
+
+        if( !moduleName || moduleName?.length === 0 ) {
+          throw new Error( "module name property cannot be empty or null" );
+        }
+        if( !modules[key]?.exec ) {
+          throw new Error( "module exec property cannot be null or undefined" );
+        }
+        if( !( modules[key]?.exec instanceof Function ) ) {
+          throw new Error( "module exec property must be a function" );
+        }
+
         this[moduleName] = modules[key].exec;
         this[moduleName] = this[key].bind( this );
         delete modules[key].exec;
         this.modules[moduleName] = modules[key];
+
       }
+
     }
 
     console.trace( "Created Command:", this );
 
-  }
+  } // EO constructor
 
   /**
    * Function that executes on command.

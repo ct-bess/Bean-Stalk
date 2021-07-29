@@ -12,11 +12,13 @@ import Command from "../struct/Command";
 class Checkem extends Command {
 
   constructor(
-    name = "checkem",
-    description = "Get your message timestamp",
-    aliases = [ "eric" ]
+    CommandOptions = {
+      name: "checkem",
+      description: "Get your message timestamp",
+      aliases: [ "eric" ]
+    }
   ) {
-    super( name, description, aliases );
+    super( CommandOptions );
   }
 
   /**

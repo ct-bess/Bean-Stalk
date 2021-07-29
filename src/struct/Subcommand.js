@@ -27,19 +27,23 @@ class Subcommand {
   constructor( SubcommandOptions ) {
 
     if( !SubcommandOptions.name || SubcommandOptions.name?.length === 0 ) {
-      throw "No subcommand name given";
+      throw new Error( "Subcommand name cannot be null or empty" );
     }
     if( !SubcommandOptions.exec ) {
-      throw "No subcommand exec function given";
+      throw new Error( "No subcommand exec function given" );
     }
-    if( typeof( SubcommandOptions.exec ) !== "function" ) {
-      throw "subcommand exec must be a function";
+    if( !( SubcommandOptions.exec instanceof Function ) ) {
+      throw new Error( "subcommand exec must be a function" );
+    }
+    if( !SubcommandOptions.help ) {
+      console.warn( "No help text supplied to subcommand:", SubcommandOptions.name );
     }
 
     this.name = ( SubcommandOptions.name + "" ).toLowerCase().replaceAll( " ", "_" );
     this.help = SubcommandOptions.help;
-    this.onlyAdmins = SubcommandOptions.onlyAdmins || false;
+    this.onlyAdmins = !!SubcommandOptions.onlyAdmins;
     this.exec = SubcommandOptions.exec;
+
   }
 
 }

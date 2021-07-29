@@ -16,11 +16,13 @@ import Command from "../struct/Command";
 class Echo extends Command {
 
   constructor(
-    name = "echo",
-    description = "echos or yeets the given or not given text",
-    aliases = [ "yeet" ]
+    CommandOptions = {
+      name: "echo",
+      description: "echos or yeets the given or not given text",
+      aliases: [ "yeet" ]
+    }
   ) {
-    super( name, description, aliases );
+    super( CommandOptions );
   }
 
   /**

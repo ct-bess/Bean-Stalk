@@ -8,9 +8,8 @@ import Bot from "./struct/Bot";
 import Logger from "./struct/Logger";
 import "./struct/SaferMessage";
 
-const fullLogPath = `${logPath}/${logFile}`;
-console = new Logger( fullLogPath, logLevel );
-console.info( "Logger created with output path:", fullLogPath, "with level:", logLevel );
+console = new Logger( `${logPath}/${logFile}`, logLevel );
+console.info( "Logger created with output path:", console.logStream.path, "with level:", console.getLevel() );
 
 const bot = new Bot({
   disableMentions: "everyone",
@@ -21,7 +20,7 @@ bot.on( "ready", () => {
   console.log( "INITIATING BEAN STALK ..." );
   loadCommands( bot, false );
   validateGuild( bot );
-  console.info( "Bean-Stalk started @", (new Date()).toISOString() );
+  console.info( "Bean-Stalk started @", ( new Date().toISOString() ) );
 });
 
 bot.on( "message", ( message ) => {

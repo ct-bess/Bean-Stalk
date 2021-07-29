@@ -36,6 +36,10 @@ class Logger {
    */
   constructor( logFile, logLevel = 3 ) {
 
+    if( !logFile || typeof( logFile ) !== "string" ) {
+      throw new Error( "log file argument supplied to Logger was null/undefined or not a string" );
+    }
+
     /**
      * An object of log levels available
      * @readonly
@@ -54,7 +58,6 @@ class Logger {
 
     /** 
      * The logger's write steam
-     * @private
      * @memberof Logger 
      * @type {WriteStream}
      */
@@ -81,6 +84,14 @@ class Logger {
     this.shell = new Console({
       stdout: process.stdout,
       stderr: process.stderr
+    });
+
+    this.logStream.on( "close", () => {
+      this.shell.info( "Log stream closed" );
+    });
+    this.logStream.on( "error", ( error ) => {
+      this.shell.error( "Log stream encountered a fatal error" );
+      this.shell.error( error.name + ":", error.message );
     });
 
     /**

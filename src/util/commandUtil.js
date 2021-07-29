@@ -247,7 +247,7 @@ export const sendBulk = ( response, message, format, codeBlockType = "" ) => {
  * @param {Bot} bot - our awesome Discord Client
  * @param {(Role|"admin")} role - the role to check; "admin" is a special case, admins are defined in the [Bot]{@link Bot.var.admins} class
  * @param {GuildResolvable} [guild] - Discord Guild to check role in; Ignored when checking for admin
- * @returns {boolean} wether they have the role or not
+ * @returns {?boolean} wether they have the role or not; Null on error
  * @todo
  * coalesce a role name into an ID if it's not admin. Maybe users too idk
  */

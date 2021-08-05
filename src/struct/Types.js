@@ -13,6 +13,10 @@
  * @see {@link https://discord.js.org/#/docs/main/stable/class/Message}
  */
 /**
+ * @typedef {object} MessageEmbed
+ * @see {@link https://discord.js.org/#/docs/main/stable/class/MessageEmbed}
+ */
+/**
  * @typedef {object} APIMessage
  * @see {@link https://discord.js.org/#/docs/main/stable/class/APIMessage}
  */

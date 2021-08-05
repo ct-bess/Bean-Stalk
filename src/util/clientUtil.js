@@ -18,19 +18,21 @@ export const execCommand = ( message, bot ) => {
 
   try {
 
-    if( typeof( message ) !== "object" ) {
+    if( !( message instanceof Message ) ) {
       console.debug( "creating message for command execution" );
-      const content = message;
+      const content = message + "";
       if( !!bot.user.lastMessage ) {
         console.debug( "using client's last message" );
         message = bot.user.lastMessage;
         message.content = content;
       }
       else {
-        // all commands originate from a text channel
+        // probably better to grab a home channel, then do this find if we cant resolve it
         const channel = bot.channels.cache.find( chan => chan.type === "text" );
-        console.debug( "no previous message available from client, creating mock message at channel:", channel.id, channel.name );
-        message = new Message( bot.user, { content }, channel );
+        console.debug( "no previous message available from client, creating an awesome message at channel:", channel.id, channel.name );
+        message = new Message( bot.user, {
+          content: content
+        }, channel );
       }
     }
 
@@ -159,21 +161,35 @@ export const handleEvent = ( bot ) => {
             if( !eventObject.silent ) {
 
               alertChannel.send( typeof( response ) === "object" ? { embed: response } : response ).then( message => {
+
                 if( !!eventObject.command ) {
+
+                  console.debug( "executing command for non silent event" );
                   message.content = eventObject.command;
-                  if( !message.content.startsWith( bot.var.config.prefix ) ) message.content = bot.var.config.prefix + message.content;
+
+                  if( !message.content.startsWith( bot.var.config.prefix ) ) {
+                     message.content = bot.var.config.prefix + message.content;
+                  }
+
                   execCommand( message, bot );
+
                 }
+
               });
 
             }
-            else { // is silent
+            else {
               if( !!eventObject.command ) {
-                console.debug( "creating mock message for silent event command" );
-                let message = alertChannel.lastMessage;
-                message.content = eventObject.command;
-                if( !message.content.startsWith( bot.var.config.prefix ) ) message.content = bot.var.config.prefix + message.content;
-                execCommand( message, bot );
+
+                console.debug( "executing silent command for event" );
+                let command = eventObject.command + "";
+
+                if( !command.startsWith( bot.var.config.prefix ) ) {
+                  command = bot.var.config.prefix + command;
+                }
+
+                execCommand( command, bot );
+
               }
             }
 

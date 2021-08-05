@@ -1,3 +1,4 @@
+import { Constants } from "discord.js";
 import { execSync } from "child_process";
 import { exit } from "process";
 import { writeFileSync, renameSync } from "fs"
@@ -262,10 +263,17 @@ export const status = new Subcommand({
   name: "status",
   help: "get and set bean's status",
   exec: function( args, message, bot ) {
+
     const status = args.get( "status" ) || args.get( 1 );
-    // not seeing a prop for user's statuses
-    const type = args.has( "type" ) ? (args.get( "type" ) + "").toUpperCase() : "PLAYING";
+    let type = ( args.has( "type" ) + "" ).toUpperCase();
+
+    if( !Constants.ActivityTypes.includes( type ) ) {
+      console.info( "specified activity type is invalid:", type );
+      type = Constants.ActivityTypes[0];
+    }
+
     bot.user.setActivity( status, { type: type } );
+
   }
 });
 

@@ -13,8 +13,6 @@ Structures.extend( "Message", ( Message ) => {
    * - Auto react delay
    * - `Message.channel.send` shorthand for consistancy with `Message.reply`
    * @extends Message
-   * @todo 
-   * Return the promise, especially on overrides
    */
   class SaferMessage extends Message {
 
@@ -30,6 +28,8 @@ Structures.extend( "Message", ( Message ) => {
      * @param {string} emoji - a resolvable emoji; Error on unresolvable
      * @param {number} [delay=1000] - how long in ms to delay the reaction
      * @returns {void}
+     * @todo
+     * maybe return the promise here too idk
      */
     react = ( emoji, delay = 1000 ) => {
       setTimeout( () => {
@@ -42,16 +42,21 @@ Structures.extend( "Message", ( Message ) => {
      * @method send
      * @memberof SaferMessage
      * @param {(string|APIMessage)} content - the content to send; Can also be an APIMessage object
-     * @returns {void}
+     * @returns {?Promise<Message>} null on a send bulk
+     * @todo
+     * maybe we want to bundle up all of the bulk send promises and return them from send bulk
+     * no idea what I would do with that tho
      */
     send = ( content ) => {
+      let response = null;
       // this can cause an infinite loop if sendBulk is bad?
       if( content?.length > 2000 ) {
         sendBulk( content, this );
       }
       else {
-        this.channel.send( content ).catch( console.error );
+        response = this.channel.send( content ).catch( console.error );
       }
+      return( response );
     }
 
     /**
@@ -60,10 +65,11 @@ Structures.extend( "Message", ( Message ) => {
      * @method reply
      * @memberof SaferMessage
      * @param {string} content - the content to send
-     * @returns {void}
+     * @returns {Promise<Message>}
      */
     reply = ( content ) => {
-      super.reply( content ).catch( console.error );
+      const response = super.reply( content ).catch( console.error );
+      return( response );
     }
 
   } // EO SaferMessage

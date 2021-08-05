@@ -15,6 +15,7 @@ import * as dice from "./modules/dice";
  * - `options` var: options to use with `choose` subcommand
  * - expr: options to use with `choose` subcommand
  * @extends Command 
+ * @see {@link module:dice} for subcommands
  * @todo
  * clean this shit up, like why are we doing `d.val` and `this.history.value` ??
  */

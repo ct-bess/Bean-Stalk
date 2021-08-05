@@ -50,11 +50,15 @@ class Command {
       }
     };
 
+    console.debug( "Creating command:", this.name );
+
     for( const alias of aliases ) {
       this.aliases.push( (alias + "").replaceAll( " ", "_" ).toLowerCase() );
     }
 
     if( modules ) {
+
+      console.debug( "processing modules for:", this.name );
 
       if( !( modules instanceof Object ) ) {
         throw new Error( "module type must be an object" );
@@ -63,6 +67,7 @@ class Command {
       for( const key in modules ) {
 
         const moduleName = modules[key]?.name;
+        console.debug( "\tprocessing module:", moduleName );
 
         if( !moduleName || moduleName?.length === 0 ) {
           throw new Error( "module name property cannot be empty or null" );
@@ -107,12 +112,13 @@ class Command {
 
       let response = "";
       const onlyAdmins = !!this.modules[subcommand]?.onlyAdmins;
+      console.debug( "Processing subcommand:", subcommand );
 
       if( !onlyAdmins || ( onlyAdmins && isAdmin ) ) {
         response = this[subcommand]?.call( this, args, message, bot );
       }
       else {
-        response = ":flushed: You ain't no Bean admin :flushed:";
+        response = ":flushed: ain't got no Bean admin rights :flushed:";
         console.info( "non admin command execution attempt by:", message.author.id );
       }
 
@@ -122,7 +128,7 @@ class Command {
 
     }
     else {
-      console.info( "Nothing was executed for command:", this.name );
+      console.info( "Nothing was executed for command:", this.name, "\n\tsubcommand not found:", subcommand );
     }
 
   }

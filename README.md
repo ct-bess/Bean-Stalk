@@ -71,29 +71,61 @@ Commands are defined in the `src/commands/` directory.
 They are set to a Discord Collection map with the `name` as the key.
 
 
-To add a new command, or edit an existing one, follow the format of this example command:
+Create commands using the Command class: `src/struct/Command.js`
+
+Create subcommands using the Subcommand class (`src/struct/Subcommand.js`) and include them in your new command.
 
 ```js
-import { argHandler } from "../util/argHandler.js";
+import Command from "../struct/Command";
+import * as myAwesomeSubcommands from "./modules/myAwesomeSubcommands";
 
-export default {
-  name: "the_command_name_without_spaces",
-  description: "command's description; in depth help text is defined in help.json",
-  aliases: [ "shorthand_cmd_names", "no_spaces_here_too" ],
-  /** @param {Discord.Message} message - the message object that triggered the command
-   *  @param {Discord.Client} bot - the client handling the command
+/**
+ * Command example
+ * @see {@link Command}
+ */
+class MyAwesomeCommand extends Command {
+
+  /**
+   * Set default CommandOptions; On command load we can update special cases if necessary
    */
-  exec( message, bot ) {
-
-    // create argument map
-    const args = argHandler( message );
-
-    // do something with the args
-    message.reply( args.random() ?? "no args :sob:" );
-
+  constructor(
+    CommandOptions = {
+      name: "MyCommand",
+      description: "My command's description given when calling *help*",
+      aliases: [ "alternative", "names", "for my command" ],
+      modules: myAwesomeSubcommands
+    }
+  ) {
+    super( CommandOptions );
+    // ... other state variables
+    // ... bind other functions here
+    this.helper = this.helper.bind( this );
   }
 
+   /**
+    * command execution function, you can override it for simple & complex cases.
+    * Default behavior executes a subcommand.
+    * @override
+    * @param {Message} message - the Discord Message
+    * @param {Bot} bot - my custom Discord Client
+    */
+   exec = ( message, bot ) => {
+      const response = this.helper();
+      message.reply( response );
+   }
+
+   /**
+    * Can also define helper functions.
+    * Manually bind them in the constructor from an import if you want them in a seperate file
+    */
+   helper = () => {
+      return( "awesome" );
+   }
+
 };
+
+/** export the object until the legacy commands have been ported over */
+export default new MyAwesomeCommand();
 ```
 
 ## MessageOps

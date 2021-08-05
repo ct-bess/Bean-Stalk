@@ -1,4 +1,4 @@
-import { Client, Collection } from "discord.js";
+import { Client, Collection, MessageEmbed, Constants } from "discord.js";
 import guild from "../../guild.json";
 
 /**
@@ -45,6 +45,44 @@ class Bot extends Client {
     };
 
   } // EO constructor
+
+  /**
+   * initialize Bean's standard embed with the proper colors and footer.
+   * @method createEmbed
+   * @memberof Bot
+   * @param {(MessageEmbed|object)} data - the data to create the embed with
+   * @returns {MessageEmbed} embed object to send in text channels
+   */
+  createEmbed = ( data = { type: "rich", color: Constants.Colors.YELLOW } ) => {
+
+    if( !( data instanceof Object ) ) {
+      console.error( "Embed data recieved was not an object, was:", typeof( data ) );
+      data = {};
+    }
+
+    const types = [ "rich", "image", "video", "gifv", "article", "link" ];
+    data.type = (data.type + "").toLowerCase();
+
+    if( !types.includes( data.type ) ) {
+      console.error( "No such embed type:", data.type, "falling back to:", types[0] );
+      data.type = types[0];
+    }
+    if( !( data.color instanceof Number ) ) {
+      console.error( "The given color:", data.color, "Is not a number, falling back to default color" );
+      data.color = Constants.Colors.YELLOW;
+    }
+    if( !data.footer ) {
+      data.footer = {
+        text: "A certified Bean-Stalk moment",
+        icon_url: this.user.displayAvatarURL()
+      }
+    }
+
+    const embed = new MessageEmbed( data );
+
+    return( embed );
+
+  }
 
 }; // EO Bat
 

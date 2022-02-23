@@ -1,4 +1,4 @@
-import { Client, Collection, MessageEmbed, Constants } from "discord.js";
+import { Client, Collection } from "discord.js";
 
 /**
  * A subclass of Discord.Client to include a selection of config variables.
@@ -22,9 +22,9 @@ class Bot extends Client {
     this.admins = ClientOptions.admins;
     this.homeGuildId = ClientOptions.homeGuildId;
 
-  } // EO constructor
+  }
 
-}; // EO Bot
+};
 
 export default Bot;
 

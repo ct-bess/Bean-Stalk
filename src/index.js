@@ -15,14 +15,20 @@ const bot = new Bot({
   admins
 });
 
+let isInitialized = false;
+
 bot.on( "ready", () => {
-  console.info( "INITIATING BEAN STALK ..." );
-  loadCommands( bot, true );
-
-  postSlashCommands( bot );
-
-  bot.user.setStatus( "idle" );
-  bot.user.setActivity( "mc server offline", { type: "WATCHING" } );
+  if( !isInitialized ) {
+    console.info( "INITIATING BEAN STALK ..." );
+    loadCommands( bot, true );
+    postSlashCommands( bot );
+    bot.user.setStatus( "idle" );
+    bot.user.setActivity( "mc server offline", { type: "WATCHING" } );
+    isInitialized = true;
+  }
+  else {
+    console.info( "Bean Stalk has restarted" );
+  }
 });
 
 bot.on( "interactionCreate", ( interaction ) => {
@@ -50,12 +56,24 @@ bot.on( "channelCreate", ( channel ) => {
   if( channel.type === "dm" ) channel.send( "Hey scuse me big guy. I heard some noises goin on in here, couple minutes ago" );
   else if( channel.isText() ) {
     channel.send( "Nice place" );
-    channel.setTopic( ":sweat_drops:" );
   }
 });
 
 bot.on( "rateLimit", ( rateLimitInfo ) => {
   console.warn( "Bean Throttle:", rateLimitInfo );
+});
+
+bot.on( "error", ( error ) => {
+  // do we need to re-login?
+  bot.login( token );
+  bot.user.setStatus( "dnd" );
+  const channel = bot.guilds.resolve( homeGuildId )?.channels.cache.find( channel => /^b[o0]t/i.test( channel?.name ) );
+  if( !!channel ) {
+    channel.send( "`" + error.name + ": " + error.message + "`" ).catch( console.error );
+  }
+  else {
+    console.info( "no guild channel found to post error to" );
+  }
 });
 
 process.on( "SIGTERM", () => {

@@ -1,0 +1,25 @@
+import Command from "../struct/Command";
+import CommandOptions from "../../slashCommands/bean.json";
+import { execSync } from "child_process";
+
+/**
+ * very safe bean system commands
+ */
+class Bean extends Command {
+
+  constructor() {
+    super( CommandOptions );
+  }
+
+  status = () => {
+    return( "```\n" + execSync( "systemctl status bean" ).toString() + "\n```" );
+  }
+
+  logs = ( interaction ) => {
+    const lines = parseInt( interaction.options.getNumber( "lines" ) ) || 15;
+    return( "```\n" + execSync( `journalctl -n ${lines} --no-pager -u bean` ).toString() + "\n```" );
+  }
+
+};
+
+export default new Bean();

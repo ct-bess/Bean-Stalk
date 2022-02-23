@@ -1,0 +1,27 @@
+{
+  "name": "bean",
+  "description": "bean stalk system commands",
+  "type": "SUB_COMMAND_GROUP",
+  "options":
+  [
+    {
+      "name": "logs",
+      "description": "fetch awesome logs",
+      "type": "SUB_COMMAND",
+      "options":
+      [
+        {
+          "name": "lines",
+          "description": "how many lines to fetch (defaults to 15)",
+          "type": "NUMBER",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "status",
+      "description": "get bean's awesome systemd status",
+      "type": "SUB_COMMAND"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 # Bot Secrets:
+secrets.json
 auth.json
 events.json
 guild.json
@@ -22,3 +23,4 @@ src/commands/.ccs/decom/
 temp.js
 test.js
 *.awk
+*.zip

@@ -1,87 +1,45 @@
 import Command from "../struct/Command";
-import * as dice from "./modules/dice";
+import CommandOptions from "../../slashCommands/dice.json";
 
 /**
- * This command rolls dice, perfect for virtual DnD
- * 
- * **Subcommands:**
- * - `hist` and `history`: print the last 16 or so rolls
- * - `proof` and `bread`: attach dice rolling algorithm
- * - `choose`: choose from 1 of the supplied strings as the response rather than an actual dice roll
- * - `(number)`: roll a dice of the specified number
- * 
- * **Options:**
- * - `count` var: A number of how many dice to roll; Negative implies a *roll with disadvantage* and vise versa
- * - `options` var: options to use with `choose` subcommand
- * - expr: options to use with `choose` subcommand
- * @extends Command 
- * @see {@link module:dice} for subcommands
- * @todo
- * clean this shit up, like why are we doing `d.val` and `this.history.value` ??
+ * awesome dice
  */
 class Dice extends Command {
 
-  constructor(
-    CommandOptions = {
-      name: "dice",
-      description: "Roll a dice",
-      aliases: [ "d", "roll" ],
-      modules: dice
-    }
-  ) {
+  constructor() {
     super( CommandOptions );
     this.history = [];
   }
 
   /**
-   * Process args and executes command, defaults to rolling a dice
-   * @method exec
-   * @override
-   * @this Command
-   * @memberof Dice
-   * @param {Message} message
-   * @param {Bot} bot
-   * @returns {void}
+   * fetch the history
    */
-  exec = ( message, bot ) => {
-
-    const args = this.getArgs( message );
-    const subcommand = args.get( 0 );
+  get_history = () => {
     let response = "";
-
-    if( this.modules[subcommand] ) {
-      response = this[subcommand].call( this, args, message, bot );
-    }
-    else {
-      const max = parseInt( subcommand );
-      const count = parseInt( args.get( "count" ) || args.get( 1 ) );
-      const min = 1;
-      const roll = this.roll( max, min, count, message.author.username );
-      const emoji = roll.val == max ? bot.var.emojis.solaire : ( roll.val == min ? ":alien:" : ":hotsprings:" );
-      response = `**${roll.val}** ${emoji} <@!${message.author.id}>`;
-      if( Math.abs( count ) > 1 ) {
-        response += `\n${roll.adv ? "" : "*rolled with disadvantage*; "}roll sum: **${roll.tot}**\n`;
-        response += `[ ${roll.rolls.join(', ')} ]`;
+    if( this.history.length > 0 ) {
+      for( const roll of this.history ) {
+        response += `${roll.user}: **${roll.value}** from ${roll.type}\n`;
+        if( roll.rolls.length > 1 ) {
+          response += `\ttotal: ${roll.total}\n\trolls: ${roll.rolls.join(', ')}\n`;
+        }
       }
     }
-
-    message.send( response );
-
+    else {
+      response = "ain't got no rolls :flushed:";
+    }
+    return( response );
   }
 
   /**
-   * Dice rolling algorithm that produces our exquisite roll
-   * @method roll
-   * @memberof Dice
-   * @param {number} max - maximum dice value for roll
-   * @param {number} min - minimum dice value for roll
-   * @param {number} count - how many times to roll the dice; If negative, displays the lowest roll, if positive displays the highet roll
-   * @param {string} user - who initiated the command as plain username, no discriminator
-   * @returns {DiceRoll} Object with entire contents of the roll
+   * roll the dice with a given count and/or size
+   * @param {CommandInteraction} interaction - The command interaction
    */
-  roll = ( max, min, count, user ) => {
-    
-    console.debug( "rolling dice ..." );
+  dice = ( interaction ) => {
+
+    let count = parseInt( interaction.options.getString( "count" ) ) || 1;
+    let max = parseInt( interaction.options.getString( "size" ) ) || 20;
+    max = Math.abs( max );
+    const min = 1;
 
     let d = {
       val: 0,
@@ -89,12 +47,15 @@ class Dice extends Command {
       rolls: [],
       adv: count > 0
     };
+
+    count = Math.abs( count );
+
     if( max == 0 || min == 0 ) {
       console.info( "Invalid max for roll:", max, "Or min:", min );
       d.val = "bruH";
     }
 
-    else if( !count || Math.abs( count ) === 1 || !parseInt( count ) ) {
+    else if( count === 1 ) {
       d.val = Math.floor( Math.random() * ( max - 0 ) ) + min;
       d.tot = d.val;
       d.rolls.push( d.val );
@@ -119,34 +80,34 @@ class Dice extends Command {
     }
 
     this.history.push({
-      playerID: user,
-      type: `d${max} x${count || 1}`,
+      user: interaction.user.username,
+      type: `d${max} x ` + ( d.adv ? "+" : "-" ) + count,
       value: d.val,
       rolls: d.rolls,
-      total: d.tot,
-      adv: d.adv
+      total: d.tot
     });
     if( this.history.length > 16 ) this.history.shift();
 
     console.info( "dice result:", d );
 
-    return( d );
+    let response = "";
+
+    const emoji = d.val == max ? ":flushed:" : ( d.val == min ? ":alien:" : ":hotsprings:" );
+    response = `**${d.val}** ${emoji}`;
+
+    if( count > 1 ) {
+      response += `\nsum: **${d.tot}**`;
+      response += "\n[ " + d.rolls.join(', ') + " ]";
+    }
+
+    return( response );
 
   }
 
-}
+};
 
 export default new Dice();
 
 /**
- * @typedef {Object} DiceRoll
- * @property {number} DiceRoll.val
- * @property {number} DiceRoll.tot
- * @property {Array<number>} DiceRoll.rolls
- * @property {boolean} DiceRoll.adv
- */
-
-/**
- * @typedef {import('discord.js').Message} Message
- * @typedef {import('../struct/Bot').default} Bot
+ * @typedef {import('discord.js').CommandInteraction} CommandInteraction
  */

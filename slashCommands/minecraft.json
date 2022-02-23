@@ -1,0 +1,65 @@
+{
+  "name": "minecraft",
+  "description": "minecraft system commands",
+  "type": "SUB_COMMAND_GROUP",
+  "options":
+  [
+    {
+      "name": "ip",
+      "description": "show server's ip address",
+      "type": "SUB_COMMAND"
+    },
+    {
+      "name": "start",
+      "description": "start server",
+      "type": "SUB_COMMAND"
+    },
+    {
+      "name": "stop",
+      "description": "stop server",
+      "type": "SUB_COMMAND"
+    },
+    {
+      "name": "whitelist",
+      "description": "add user to whitelist",
+      "type": "SUB_COMMAND",
+      "options":
+      [
+        {
+          "name": "username",
+          "description": "minecraft username",
+          "required": true,
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "say",
+      "description": "broadcast a message to the server",
+      "type": "SUB_COMMAND",
+      "options":
+      [
+        {
+          "name": "message",
+          "description": "message to broadcast",
+          "required": true,
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "logs",
+      "description": "get log entries",
+      "type": "SUB_COMMAND",
+      "options":
+      [
+        {
+          "name": "lines",
+          "description": "number of lines to retrieve",
+          "required": false,
+          "type": "NUMBER"
+        }
+      ]
+    }
+  ]
+}

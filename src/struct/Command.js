@@ -45,22 +45,15 @@ class Command {
     // Default to base if no subcommand
     const command = interaction.options.getSubcommand() || this.name;
 
-    console.info( "executing:", interaction.commandName, command );
-    let response = "";
+    console.info( "executing:", interaction.commandName, "subcommand:", command );
 
-    if( this[command] ) {
-      response = this[command].call( this, interaction );
-    }
-    else {
-      console.info( "no response returned" );
+    if( !this[command] ) {
+      console.warn( "no function to execute" );
+      return;
     }
 
-    if( typeof( response ) === "string" ) {
-      interaction.reply( response + "" ).catch( console.error );
-    }
-    else if( response instanceof Object ) {
-      interaction.reply( response ).catch( console.error );
-    }
+    const response = this[command].call( this, interaction );
+    interaction.reply( response ).catch( console.error );
 
   }
 

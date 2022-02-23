@@ -34,7 +34,7 @@ class Dice extends Command {
    * roll the dice with a given count and/or size
    * @param {CommandInteraction} interaction - The command interaction
    */
-  dice = ( interaction ) => {
+  roll = ( interaction ) => {
 
     let count = parseInt( interaction.options.getString( "count" ) ) || 1;
     let max = parseInt( interaction.options.getString( "size" ) ) || 20;

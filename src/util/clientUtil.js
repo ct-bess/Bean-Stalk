@@ -27,7 +27,7 @@ export const postSlashCommands = ( bot, command ) => {
 
   for( const fileName of slashCommandFiles ) {
 
-    const path = `slashCommands/${fileName}`;
+    const path = `../../slashCommands/${fileName}`;
     if( !!require.cache[ require.resolve( path ) ] ) {
       delete require.cache[ require.resolve( path ) ];
     }
@@ -36,8 +36,11 @@ export const postSlashCommands = ( bot, command ) => {
     const commandName = fileName.substring( 0, fileName.length - 5 );
 
     if( bot.commands.has( commandName ) ) {
-      const guild = bot.guilds.resolve( bot.commands.get( commandName ).guild );
-      guild.commands.create( slashCommand );
+      if( !!bot.commands.get( commandName ).guild ) {
+        const guild = bot.guilds.resolve( bot.commands.get( commandName ).guild );
+        guild.commands.create( slashCommand );
+        //bot.application.commands.create( slashCommand, bot.commands.get( commandName ).guild );
+      }
     }
     else {
       bot.application.commands.create( slashCommand );

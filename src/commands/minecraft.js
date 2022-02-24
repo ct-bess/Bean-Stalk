@@ -52,7 +52,7 @@ class Minecraft extends Command {
       response = "chill out brother. server's already on or is in the process of stopping";
     }
 
-    return( response );
+    return({ type: "reply", payload: response });
 
   }
 
@@ -96,7 +96,7 @@ class Minecraft extends Command {
       response = "nope";
     }
 
-    return( response );
+    return({ type: "reply", payload: response });
   }
 
   /**
@@ -116,7 +116,7 @@ class Minecraft extends Command {
     else {
       console.info( "cannot add an empty/null username" );
     }
-    return( response );
+    return({ type: "reply", payload: response });
   }
 
   /**
@@ -136,7 +136,8 @@ class Minecraft extends Command {
       response = execSync( "tail /home/bessellc/mc-server/logs/latest.log" ).toString();
     }
 
-    return( "```\n" + response + "\n```" );
+    response = "```\n" + response + "\n```";
+    return({ type: "reply", payload: response });
   }
 
   /**
@@ -151,7 +152,7 @@ class Minecraft extends Command {
       return({ content: "said: " + message, ephemeral: true });
     }
     else {
-      return({ content: "server offline bruh", ephemeral: true });
+      return({ type: "reply", payload: { content: "server offline bruh", ephemeral: true } });
     }
   }
 
@@ -159,7 +160,7 @@ class Minecraft extends Command {
    * fetch server ip address
    */
   ip = () => {
-    return({ content: `here you go king: **${minecraftIP}**`, ephemeral: true });
+    return({ type: "reply", payload: { content: `here you go king: **${minecraftIP}**`, ephemeral: true } });
   }
 
 };

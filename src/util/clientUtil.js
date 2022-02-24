@@ -36,12 +36,26 @@ export const postSlashCommands = ( bot, command ) => {
     const commandName = fileName.substring( 0, fileName.length - 5 );
 
     if( bot.commands.has( commandName ) ) {
-      if( !!bot.commands.get( commandName ).guild ) {
-        const guild = bot.guilds.resolve( bot.commands.get( commandName ).guild );
-        guild.commands.create( slashCommand );
-        //bot.application.commands.create( slashCommand, bot.commands.get( commandName ).guild );
+
+      // string or array of guild ids
+      const guildId = bot.commands.get( commandName ).guild;
+      if( !!guildId ) {
+
+        if( guildId instanceof Array ) {
+          for( const g of guildId ) {
+            const guild = bot.guilds.resolve( g );
+            guild.commands.create( slashCommand );
+          }
+        }
+        else if( typeof( guildId ) === "string" ) {
+          const guild = bot.guilds.resolve( guildId );
+          guild.commands.create( slashCommand );
+        }
+
       }
     }
+    // this means any server the bot's apart of can execute
+    // note that app wide commands can take hours to appear
     else {
       bot.application.commands.create( slashCommand );
     }

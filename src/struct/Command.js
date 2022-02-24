@@ -1,3 +1,5 @@
+import { MessageActionRow, MessageSelectMenu } from "discord.js";
+
 /**
  * Base Command class for commands to inherit.
  * the command data is from the slash command context
@@ -43,9 +45,9 @@ class Command {
   exec = ( interaction ) => {
 
     // Default to base if no subcommand
-    const command = interaction.options.getSubcommand() || this.name;
+    const command = interaction.options?.getSubcommand() || this.name;
 
-    console.info( "executing:", interaction.commandName, "subcommand:", command );
+    console.info( "executing:", interaction.commandName, "-", command );
 
     if( !this[command] ) {
       console.warn( "no function to execute" );
@@ -53,7 +55,37 @@ class Command {
     }
 
     const response = this[command].call( this, interaction );
-    interaction.reply( response ).catch( console.error );
+    interaction[response.type]( response.payload )?.catch( console.error );
+
+  }
+
+  /**
+   * select menus can have 1 to 25 options
+   */
+  buildSelectMenu = ( selectData ) => {
+
+    const components = [];
+
+    if( selectData.options.length <= 25 ) {
+      components.push( new MessageSelectMenu( selectData ) );
+    }
+    else {
+
+      while( selectData.options.length > 25 ) {
+        const elements = selectData.options.splice( 0, 25 );
+        const data = Object.create( selectData );
+        data.options = elements;
+        components.push( new MessageSelectMenu( data ) );
+      }
+
+      // finally, push remaining options
+      if( selectData.options.length > 0 ) {
+        components.push( new MessageSelectMenu( selectData ) );
+      }
+
+    }
+
+    return( new MessageActionRow().addComponents( ...components ) );
 
   }
 

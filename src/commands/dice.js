@@ -27,7 +27,7 @@ class Dice extends Command {
     else {
       response = "ain't got no rolls :flushed:";
     }
-    return( response );
+    return({ type: "reply", payload: response });
   }
 
   /**
@@ -100,7 +100,7 @@ class Dice extends Command {
       response += "\n[ " + d.rolls.join(', ') + " ]";
     }
 
-    return( response );
+    return({ type: "reply", payload: response });
 
   }
 

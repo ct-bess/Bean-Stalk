@@ -12,12 +12,14 @@ class Bean extends Command {
   }
 
   status = () => {
-    return( "```\n" + execSync( "systemctl status bean" ).toString() + "\n```" );
+    const response = "```\n" + execSync( "systemctl status bean" ).toString() + "\n```";
+    return({ type: "reply", payload: response });
   }
 
   logs = ( interaction ) => {
     const lines = parseInt( interaction.options.getNumber( "lines" ) ) || 15;
-    return( "```\n" + execSync( `journalctl -n ${lines} --no-pager -u bean` ).toString() + "\n```" );
+    const response = "```\n" + execSync( `journalctl -n ${lines} --no-pager -u bean` ).toString() + "\n```";
+    return({ type: "reply", payload: response });
   }
 
 };

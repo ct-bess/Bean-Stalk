@@ -3,7 +3,7 @@ secrets.json
 auth.json
 events.json
 guild.json
-kb/
+kb/radiant
 
 # Build Artifacts:
 lib/

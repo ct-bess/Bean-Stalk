@@ -33,9 +33,18 @@ bot.on( "ready", () => {
 
 bot.on( "interactionCreate", ( interaction ) => {
 
-  if( !interaction.isCommand() ) return;
+  let commandName = null;
 
-  const commandName = interaction.commandName;
+  if( interaction.isCommand() ) {
+    commandName = interaction.commandName;
+  }
+  else if( interaction.isSelectMenu() ) {
+    commandName = interaction.customId?.split( "-" )[0];
+  }
+  else {
+    console.info( "Unknown interaction:", interaction.type.toString() );
+    return;
+  }
 
   if( bot.commands.has( commandName ) ) {
     const command = bot.commands.get( commandName );

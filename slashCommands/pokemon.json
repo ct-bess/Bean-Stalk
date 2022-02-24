@@ -1,0 +1,14 @@
+{
+  "name": "pokemon",
+  "description": "this is epic",
+  "type": "SUB_COMMAND_GROUP",
+  "options":
+  [
+    {
+      "name": "spawn",
+      "description": "generate a random encounter based on biome selection",
+      "type": "SUB_COMMAND"
+    }
+  ]
+}
+

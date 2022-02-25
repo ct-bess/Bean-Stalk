@@ -12,7 +12,7 @@ const getInteraction = ( customId, selected ) => {
   });
 }
 
-describe( "pokemon selectors populates properly", () => {
+describe( "selector generation", () => {
 
   it( "biome selector is generated", () => {
     const response = Pokemon.spawn();
@@ -36,6 +36,75 @@ describe( "pokemon selectors populates properly", () => {
     const response = Pokemon.pokemon( getInteraction( "pokemon-habitatSelector", [ "Woodlands" ] ) );
     console.log( response );
     expect( response ).toBeTruthy();
+  });
+
+});
+
+/** 
+ * these will have to be tweaked if we add weights
+ */
+describe( "biome & habitat data", () => {
+
+  it( "biome data does not contain duplicate entries", () => {
+
+    let result = false;
+
+    // disguesting
+    for( const biome in biomes ) {
+      let duplicated = [];
+      const biomeArray = biomes[biome];
+      for( const habitat of biomeArray ) {
+        let firstOccurance = true;
+        biomeArray.forEach( h => {
+          if( h === habitat && firstOccurance ) { 
+            firstOccurance = false;
+          }
+          else if( h === habitat && !firstOccurance ) {
+            duplicated.push( h );
+          }
+        });
+      }
+      if( duplicated.length > 0 ) {
+        console.error( "Biome:", biome, "contains duplicates:", duplicated );
+        result = false;
+      }
+      else {
+        result = true;
+      }
+      expect( result ).toBe( true );
+    }
+
+  });
+
+  it( "habitat data does not contain duplicate entries", () => {
+
+    let result = false;
+
+    // disguesting
+    for( const habitat in habitats ) {
+      let duplicated = [];
+      const habitatArray = habitats[habitat];
+      for( const pokemon of habitatArray ) {
+        let firstOccurance = true;
+        habitatArray.forEach( p => {
+          if( p === pokemon && firstOccurance ) { 
+            firstOccurance = false;
+          }
+          else if( p === pokemon && !firstOccurance ) {
+            duplicated.push( p );
+          }
+        });
+      }
+      if( duplicated.length > 0 ) {
+        console.error( "Habitat:", habitat, "contains duplicates:", duplicated );
+        result = false;
+      }
+      else {
+        result = true;
+      }
+      expect( result ).toBe( true );
+    }
+
   });
 
 });

@@ -55,37 +55,56 @@ class Command {
     }
 
     const response = this[command].call( this, interaction );
+    console.debug( response );
     interaction[response.type]( response.payload )?.catch( console.error );
 
   }
 
   /**
-   * select menus can have 1 to 25 options
+   * Builds select menus awesome
+   * select menus can have 1 to 25 options, no duplicate options, and only 1 select menu per action row
+   * @param {MessageSelectMenuOptions} selectData
+   * @returns {array<MessageActionRow>}
    */
   buildSelectMenu = ( selectData ) => {
 
-    const components = [];
+    const actionRows = [];
 
     if( selectData.options.length <= 25 ) {
-      components.push( new MessageSelectMenu( selectData ) );
+      actionRows.push( new MessageActionRow().addComponents(
+        new MessageSelectMenu( selectData )
+      ));
     }
     else {
+
+      let i = 0;
 
       while( selectData.options.length > 25 ) {
         const elements = selectData.options.splice( 0, 25 );
         const data = Object.create( selectData );
         data.options = elements;
-        components.push( new MessageSelectMenu( data ) );
+        data.customId = selectData.customId + i;
+        actionRows.push( new MessageActionRow().addComponents(
+          new MessageSelectMenu( data )
+        ));
+        ++i;
       }
 
       // finally, push remaining options
       if( selectData.options.length > 0 ) {
-        components.push( new MessageSelectMenu( selectData ) );
+        selectData.customId = selectData.customId + i;
+        actionRows.push( new MessageActionRow().addComponents(
+          new MessageSelectMenu( selectData )
+        ));
       }
 
     }
 
-    return( new MessageActionRow().addComponents( ...components ) );
+    if( actionRows.length > 5 ) {
+      console.info( "action rows exceeds the max of 5; action row length:", actionRows.length );
+    }
+
+    return( actionRows );
 
   }
 
@@ -97,6 +116,7 @@ export default Command;
  * @typedef {import('discord.js').Message} Message
  * @typedef {import('discord.js').Collection} Collection
  * @typedef {import('discord.js').CommandInteraction} CommandInteraction
+ * @typedef {import('discord.js').MessageSelectMenuOptions} MessageSelectMenuOptions
  * @typedef {import('./Bot').default} Bot
  * @typedef {import('../util/commandUtil').commandArgs} commandArgs
  */

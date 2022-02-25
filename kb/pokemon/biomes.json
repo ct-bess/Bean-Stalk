@@ -48,7 +48,6 @@
 		"Near Ponds",
 		"Lakes Around Lily Pads",
 		"Temperate Lakes",
-		"Tropical Rivers",
 		"Polar Beaches"
 	],
 	"Forest Biomes": [
@@ -75,9 +74,7 @@
 		"Forests Near Water",
 		"Temperate Jungles",
 		"Dark Woodlands",
-		"Damp Forest Floors",
-		"Damp Forests",
-		"Tropical Jungles"
+		"Damp Forest Floors"
 	],
 	"Extreme Heat Biomes": [
 		"Volcanoes",
@@ -242,7 +239,6 @@
 		"Sinnoh Mountains",
 		"Polar Sinnoh Seas",
 		"Sinnoh Forests",
-		"Sinnoh Mountains",
 		"Kalos Forests",
 		"Kalos Ponds",
 		"Kalos Grasslands",

@@ -1,6 +1,6 @@
 import Command from "../struct/Command";
 import CommandOptions from "../../slashCommands/pokemon.json";
-import { edGuild } from "../../secrets.json";
+import { edGuild, testGuild } from "../../secrets.json";
 import biomes from "../../kb/pokemon/biomes.json";
 import habitats from "../../kb/pokemon/habitats.json";
 
@@ -11,7 +11,7 @@ class Pokemon extends Command {
 
   constructor() {
     super( CommandOptions );
-    this.guild = edGuild;
+    this.guild = [ edGuild, testGuild ];
   }
   
   /**
@@ -23,7 +23,9 @@ class Pokemon extends Command {
 
     if( interaction.isSelectMenu() ) {
 
-      if( interaction.customId === `${this.name}-biomeSelector` ) {
+      console.debug( "menu selector:", interaction.customId );
+
+      if( /biomeSelector/i.test( interaction.customId ) ) {
         const selected = interaction.values[0];
         console.debug( "biome selector vaue:", selected );
         const habitat = biomes[selected];
@@ -49,9 +51,7 @@ class Pokemon extends Command {
           type: "update",
           payload: { 
             content: `Habitates of: *${selected}*`,
-            components: [
-              this.buildSelectMenu( selectData )
-            ]
+            components: this.buildSelectMenu( selectData )
           }
         };
 
@@ -59,7 +59,7 @@ class Pokemon extends Command {
 
       } // EO biome selector callback
 
-      if( interaction.customId === `${this.name}-habitatSelector` ) {
+      if( /habitatSelector/i.test( interaction.customId ) ) {
 
         const selected = interaction.values[0];
 
@@ -67,12 +67,12 @@ class Pokemon extends Command {
         const pokemons = habitats[selected];
         console.debug( "total number of possible encounters:", pokemons.length );
         const sel = Math.floor( Math.random() * pokemons.length );
-        const isShiny = Math.floor( Math.random() * 8193 ) === 1;
+        const isShiny = ( Math.floor( Math.random() * 8192 ) + 1 ) === 1;
         console.debug( "selected:", sel, "=", pokemons[sel] );
         return({ 
           type: "update", 
           payload: { 
-            content: `random encounter: **${pokemons[sel]}**` + isShiny ? ":sparkles: (shiny)" : "",
+            content: `random encounter: **${pokemons[sel]}** ${isShiny ? ":sparkles:" : ""} from *${selected}*`,
             components: []
           }
         });
@@ -108,9 +108,7 @@ class Pokemon extends Command {
       type: "reply",
       payload: { 
         content: "Biomes:",
-        components: [
-          this.buildSelectMenu( selectData )
-        ]
+        components: this.buildSelectMenu( selectData )
       }
     };
 

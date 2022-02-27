@@ -1,5 +1,7 @@
 import Command from "../struct/Command";
 import CommandOptions from "../../slashCommands/pokemon.json";
+import Response from "../struct/Response";
+import { interactionMethods } from "../util/constants";
 import { edGuild, testGuild } from "../../secrets.json";
 import biomes from "../../kb/pokemon/biomes.json";
 import habitats from "../../kb/pokemon/habitats.json";
@@ -13,11 +15,11 @@ class Pokemon extends Command {
     super( CommandOptions );
     this.guild = [ edGuild, testGuild ];
   }
-  
+
   /**
    * Handles select menu updates
    * @todo this looks disgusting
-   * @param {SelectMenuInteraction} interaction - The interaction
+   * @param {SelectMenuInteraction|ButtonInteraction} interaction - The interaction
    */
   pokemon = ( interaction ) => {
 
@@ -47,15 +49,13 @@ class Pokemon extends Command {
           });
         }
 
-        const response = {
-          type: "update",
-          payload: { 
-            content: `Habitates of: *${selected}*`,
-            components: this.buildSelectMenu( selectData )
-          }
-        };
-
-        return( response );
+        return(
+          new Response( interactionMethods.UPDATE, {
+              content: `Habitates of: *${selected}*`,
+              components: this.buildSelectMenu( selectData )
+            }
+          )
+        );
 
       } // EO biome selector callback
 
@@ -68,14 +68,18 @@ class Pokemon extends Command {
         console.debug( "total number of possible encounters:", pokemons.length );
         const sel = Math.floor( Math.random() * pokemons.length );
         const isShiny = ( Math.floor( Math.random() * 8192 ) + 1 ) === 1;
-        console.debug( "selected:", sel, "=", pokemons[sel] );
-        return({ 
-          type: "update", 
-          payload: { 
-            content: `random encounter: **${pokemons[sel]}** ${isShiny ? ":sparkles:" : ""} from *${selected}*`,
-            components: []
-          }
-        });
+        const pokemon = ( pokemons[sel] + "" ).trim();
+
+        console.debug( "selected:", sel, "=", pokemon );
+
+        // if shiny, add a mf like button
+        return(
+          new Response( interactionMethods.UPDATE, { 
+              content: `random encounter: **${pokemon}**${isShiny ? " :sparkles:" : ""} from *${selected}*`,
+              components: []
+            }
+          )
+        );
 
       } // EO habitat selector callback
 
@@ -104,15 +108,26 @@ class Pokemon extends Command {
       });
     }
 
-    const response = {
-      type: "reply",
-      payload: { 
-        content: "Biomes:",
-        components: this.buildSelectMenu( selectData )
-      }
-    };
+    return(
+      new Response( interactionMethods.REPLY, {
+          content: "Biomes:",
+          components: this.buildSelectMenu( selectData )
+        }
+      )
+    );
 
-    return( response );
+  }
+
+  /**
+   * get help text for the given item, monster, move, or ability
+   * @param {CommandInteraction} interaction - The command interaction
+   */
+  help = ( interaction ) => {
+
+    const pokemon = interaction.options.getString( "pokemon" );
+    const item = interaction.options.getString( "item" );
+    const move = interaction.options.getString( "move" );
+    const ability = interaction.options.getString( "ability" );
 
   }
 
@@ -123,4 +138,5 @@ export default new Pokemon();
 /**
  * @typedef {import('discord.js').CommandInteraction} CommandInteraction
  * @typedef {import('discord.js').SelectMenuInteraction} SelectMenuInteraction
+ * @typedef {import('discord.js').ButtonInteraction} ButtonInteraction
  */

@@ -21,7 +21,7 @@ bot.on( "ready", () => {
   if( !isInitialized ) {
     console.info( "INITIATING BEAN STALK ..." );
     loadCommands( bot, true );
-    postSlashCommands( bot );
+    //postSlashCommands( bot );
     bot.user.setStatus( "idle" );
     bot.user.setActivity( "mc server offline", { type: "WATCHING" } );
     isInitialized = true;
@@ -38,7 +38,7 @@ bot.on( "interactionCreate", ( interaction ) => {
   if( interaction.isCommand() ) {
     commandName = interaction.commandName;
   }
-  else if( interaction.isSelectMenu() ) {
+  else if( interaction.isSelectMenu() || interaction.isButton() ) {
     commandName = interaction.customId?.split( "-" )[0];
   }
   else {
@@ -74,15 +74,8 @@ bot.on( "rateLimit", ( rateLimitInfo ) => {
 
 bot.on( "error", ( error ) => {
   // do we need to re-login?
-  bot.login( token );
-  bot.user.setStatus( "dnd" );
-  const channel = bot.guilds.resolve( homeGuildId )?.channels.cache.find( channel => /^b[o0]t/i.test( channel?.name ) );
-  if( !!channel ) {
-    channel.send( "`" + error.name + ": " + error.message + "`" ).catch( console.error );
-  }
-  else {
-    console.info( "no guild channel found to post error to" );
-  }
+  //bot.login( token );
+  bot.postError( error );
 });
 
 process.on( "SIGTERM", () => {

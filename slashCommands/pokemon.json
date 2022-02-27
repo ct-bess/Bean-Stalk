@@ -8,6 +8,11 @@
       "name": "spawn",
       "description": "generate a random encounter based on biome selection",
       "type": "SUB_COMMAND"
+    },
+    {
+      "name": "help",
+      "description": "get help text/stats for a pokemon, item, move, or ability",
+      "type": "SUB_COMMAND"
     }
   ]
 }

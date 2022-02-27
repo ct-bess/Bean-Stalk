@@ -27,7 +27,7 @@ class Dice extends Command {
     else {
       response = "ain't got no rolls :flushed:";
     }
-    return({ type: "reply", payload: response });
+    return({ method: "reply", payload: response });
   }
 
   /**
@@ -93,14 +93,14 @@ class Dice extends Command {
     let response = "";
 
     const emoji = d.val == max ? ":flushed:" : ( d.val == min ? ":alien:" : ":hotsprings:" );
-    response = `**${d.val}** ${emoji}`;
+    response = `**${d.val}** ${emoji} ${this.history[ this.history.length - 1 ]}`;
 
     if( count > 1 ) {
       response += `\nsum: **${d.tot}**`;
       response += "\n[ " + d.rolls.join(', ') + " ]";
     }
 
-    return({ type: "reply", payload: response });
+    return({ method: "reply", payload: response });
 
   }
 

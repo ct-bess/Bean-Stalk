@@ -19,6 +19,20 @@
       ]
     },
     {
+      "name": "post_command",
+      "description": "post a slash command",
+      "type": "SUB_COMMAND",
+      "options":
+      [
+        {
+          "name": "command",
+          "description": "command name to post",
+          "type": "STRING",
+          "required": false
+        }
+      ]
+    },
+    {
       "name": "status",
       "description": "get bean's awesome systemd status",
       "type": "SUB_COMMAND"

@@ -1,0 +1,6 @@
+{
+  "headers": [ "No.", "Type 1", "Type 2", "Base HP", "Strength", "Max Strength", "Dexterity", "Max Dexterity", "Vitality", "Max Vitality", "Special", "Max Special", "Insight", "Max Insight", "Ability 1", "Ability 2", "Hidden Ability", "Event Abilities", "Unevolved", "Form", "Recommended Rank", "Gender" ],
+  "monsters": {
+    "Wheepsel": [ "#999", "Grass", null, 5, 2, 5, 4, 7, 1, 5, 4, 8, 3, 4, "Overgrowth", null, null, null, true ]
+  }
+}

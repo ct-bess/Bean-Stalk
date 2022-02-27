@@ -26,6 +26,12 @@ describe( "selector generation", () => {
     expect( response ).toBeTruthy();
   });
 
+  it( "biome selection returns multiple habitat selectors for large biome (>25)", () => {
+    const response = Pokemon.pokemon( getInteraction( "pokemon-biomeSelector", [ "Field Biomes" ] ) );
+    console.log( response );
+    expect( response.payload.components.length > 1 ).toBe( true );
+  });
+
   it( "habitat selection returns random encounter", () => {
     const response = Pokemon.pokemon( getInteraction( "pokemon-habitatSelector", [ "Tide Pools" ] ) );
     console.log( response );
@@ -65,7 +71,7 @@ describe( "biome & habitat data", () => {
         });
       }
       if( duplicated.length > 0 ) {
-        console.error( "Biome:", biome, "contains duplicates:", duplicated );
+        console.warn( "Biome:", biome, "contains duplicates:", duplicated );
         result = false;
       }
       else {
@@ -96,7 +102,7 @@ describe( "biome & habitat data", () => {
         });
       }
       if( duplicated.length > 0 ) {
-        console.error( "Habitat:", habitat, "contains duplicates:", duplicated );
+        console.warn( "Habitat:", habitat, "contains duplicates:", duplicated );
         result = false;
       }
       else {

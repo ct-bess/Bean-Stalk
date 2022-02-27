@@ -47,16 +47,25 @@ class Command {
     // Default to base if no subcommand
     const command = interaction.options?.getSubcommand() || this.name;
 
-    console.info( "executing:", interaction.commandName, "-", command );
-
     if( !this[command] ) {
       console.warn( "no function to execute" );
       return;
     }
 
     const response = this[command].call( this, interaction );
-    console.debug( response );
-    interaction[response.type]( response.payload )?.catch( console.error );
+
+    if( !interaction[response.method] ) {
+      const error = { name: `No such method: ${response.method}`, message: "No method for interaction: " + interaction.prototype }
+      console.error( error );
+      interaction.client.postError( error );
+      return;
+    }
+
+    interaction[response.method]( response.payload )?.catch( error => {
+      console.error( error );
+      console.error( "Error on command execution:", command, response );
+      interaction.client.postError( error );
+    });
 
   }
 

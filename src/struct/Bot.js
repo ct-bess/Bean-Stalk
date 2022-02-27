@@ -1,4 +1,5 @@
 import { Client, Collection } from "discord.js";
+import { homeGuildId } from "../../secrets.json";
 
 /**
  * A subclass of Discord.Client to include a selection of config variables.
@@ -22,6 +23,19 @@ class Bot extends Client {
     this.admins = ClientOptions.admins;
     this.homeGuildId = ClientOptions.homeGuildId;
 
+  }
+
+  /**
+   * incredible
+   */
+  postError = ( error ) => {
+    const channel = this.guilds.resolve( homeGuildId )?.channels.cache.find( channel => /^b[o0]t/i.test( channel?.name ) );
+    if( !!channel ) {
+      channel.send( "damn,,,this hits hard,... `" + error.name +  "`\n```\n" + error.message + "\n```" ).catch( console.error );
+    }
+    else {
+      console.info( "no guild channel found to post error to" );
+    }
   }
 
 };

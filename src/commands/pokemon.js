@@ -127,10 +127,8 @@ class Pokemon extends Command {
   help = ( interaction ) => {
 
     const name = interaction.options.getString( "name" )?.toLowerCase();
-    //const item = interaction.options.getString( "item" );
-    //const move = interaction.options.getString( "move" );
-    //const ability = interaction.options.getString( "ability" );
-    const response = new Response( Constants.interactionMethods.REPLY );
+    const response = new Response();
+    response.method = Constants.interactionMethods.REPLY;
 
     /* yep ype yep
     [ $1 "No.", 
@@ -152,23 +150,30 @@ class Pokemon extends Command {
       let p = stats.monsters[name];
 
       if( p[0] instanceof Array ) {
-        const form = interaction.options.getString( "form" )?.toLowerCase();
-        p = p.find( elem => ( elem[19] + "" ).toLowerCase() === form ) ?? p[0];
+        const form = interaction.options.getString( "form" )?.toLowerCase() || null;
+        p = p.find( elem => elem[19] === form || ( elem[19] + "" ).toLowerCase() === form ) ?? p[0];
       }
 
       const embed = new MessageEmbed();
       embed.setTitle( name + ( !!p[19] ? "(" + p[19] + ") " : " " ) + "No. " + p[0] );
-      embed.addField( "Type", p[1] + " " + ( p[2] ?? "" ), true );
-      embed.addField( "Stats", `Base HP: ${p[3]}\nStr: ${p[4]}/${p[5]}\nDex: ${p[6]}/${p[7]}\nVit: ${p[8]}/${p[9]}\nSpec: ${p[10]}/${p[11]}\nIns: ${p[12]}/${p[13]}` );
-      embed.addField( "Abilities", p[14] + ( !!p[15] ? ", or " + p[15] : "", true ) )
-      embed.addField( "Hidden/Event Abilities", ( p[16] ?? "n" ) + ( p[17] ?? "a", true ) );
-      embed.addField( "Recommended Rank:", p[20], true );
-      embed.addField( "Gender:", p[21], true );
-      response.payload.embeds = embed;
+      embed.addField( "Type:", p[1] + " " + ( p[2] ?? "" ), true );
+      embed.addField( "Abilities:", ( p[14] + ( !!p[15] ? ", *or* " + p[15] : "") ) )
+      embed.addField( "Stats:", `Base HP: \`${p[3]}\`\nStr: \`${p[4]}/${p[5]}\`\nDex: \`${p[6]}/${p[7]}\`\nVit: \`${p[8]}/${p[9]}\`\nSpec: \`${p[10]}/${p[11]}\`\nIns: \`${p[12]}/${p[13]}\`` );
+      
+      if( !!p[16] ) {
+        embed.addField( "Hidden Ability:", p[16] ?? "n/a" );
+      }
+      if( !!p[17] ) {
+        embed.addField( "Event Ability:", p[17] ?? "n/a" );
+      }
+
+      embed.addField( "Recommended Rank:", p[20] ?? "n/a", true );
+      embed.addField( "Gender:", p[21] ?? "n/a", true );
+      response.payload.embeds = [embed];
 
     }
     else {
-      response.payload.content = `feature incomplete: *${name}*`;
+      response.payload.content = `feature incomplete or help data not found: *${name}* :sob:`;
       response.payload.ephemeral = true;
     }
 

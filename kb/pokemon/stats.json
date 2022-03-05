@@ -1,14 +1,14 @@
 {
   "headers": [ "No.", "Type 1", "Type 2", "Base HP", "Strength", "Max Strength", "Dexterity", "Max Dexterity", "Vitality", "Max Vitality", "Special", "Max Special", "Insight", "Max Insight", "Ability 1", "Ability 2", "Hidden Ability", "Event Abilities", "Unevolved", "Form", "Recommended Rank", "Gender" ],
   "monsters": {
-    "wheepsel": [ "999", "Grass", null, 5, 2, 5, 4, 7, 1, 5, 4, 8, 3, 4, "Overgrowth", null, null, null, true, null, "starter", "gender" ],
-    "punchguy": [ "999", "Fighting", null, 5, 2, 5, 4, 7, 1, 5, 4, 8, 3, 4, "Keen Eye", null, null, null, true, null, "starter", "gender" ],
+    "wheepsel": [ "999", "Grass", null, 5, 2, 5, 4, 7, 1, 5, 4, 8, 3, 4, "Overgrowth", null, null, "awesome event ability", true, null, "starter", "gender" ],
+    "punchguy": [ "999", "Fighting", null, 5, 2, 5, 4, 7, 1, 5, 4, 8, 3, 4, "Keen Eye", "another ability", "awesome hidden ability", null, true, null, "starter", "gender" ],
     "growlith": [
       [ "999", "Fire", null, 5, 2, 5, 4, 7, 1, 5, 4, 8, 3, 4, "Blaze", null, null, null, true, "Borellian", "starter", "gender" ],
       [ "999", "Fire", null, 5, 2, 5, 4, 7, 1, 5, 4, 8, 3, 4, "Blaze", null, null, null, true, null, "starter", "gender" ]
     ],
     "totadyle": [
-      [ "999", "Water", "Poison", 5, 2, 5, 4, 7, 1, 5, 4, 8, 3, 4, "Torrent", null, null, null, true, "Borellian", "starter", "gender" ],
+      [ "999", "Water", "Poison", 5, 2, 5, 4, 7, 1, 5, 4, 8, 3, 4, "Torrent", "something poison something", null, null, true, "Borellian", "starter", "gender" ],
       [ "999", "Water", null, 5, 2, 5, 4, 7, 1, 5, 4, 8, 3, 4, "Torrent", null, null, null, true, null, "starter", "gender" ]
     ]
   }

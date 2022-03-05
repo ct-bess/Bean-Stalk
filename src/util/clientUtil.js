@@ -5,6 +5,7 @@ import { readdirSync } from "fs";
  * @module clientUtil
  * @todo make this a class with static methods
  * @todo create something to clean up old/unused slash commands
+ * @todo make a slashcommand validation thing
  */
 
 /**

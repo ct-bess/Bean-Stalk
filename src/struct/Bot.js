@@ -27,11 +27,13 @@ class Bot extends Client {
 
   /**
    * incredible
+   * @param {Error} error
    */
   postError = ( error ) => {
     const channel = this.guilds.resolve( homeGuildId )?.channels.cache.find( channel => /^b[o0]t/i.test( channel?.name ) );
     if( !!channel ) {
       channel.send( "damn,,,this hits hard,... `" + error.name +  "`\n```\n" + error.message + "\n```" ).catch( console.error );
+      // we can also post the stack trace with: error.stack
     }
     else {
       console.info( "no guild channel found to post error to" );

@@ -1,4 +1,5 @@
 import { MessageActionRow, MessageSelectMenu } from "discord.js";
+import InternalServerError from "./InternalServerError";
 
 /**
  * Base Command class for commands to inherit.
@@ -47,7 +48,7 @@ class Command {
     // Default to base if no subcommand
     const command = interaction.options?.getSubcommand() || this.name;
 
-    if( !this[command] ) {
+    if( !command || !this[command] ) {
       console.warn( "no function to execute for:", command, interaction );
       return;
     }
@@ -55,17 +56,12 @@ class Command {
     /** @type {Response} */
     const response = this[command].call( this, interaction );
 
-    if( !interaction[response.method] ) {
-      const error = { name: `No such method: ${response.method}`, message: "No method for interaction: " + interaction.prototype }
-      console.error( error );
-      interaction.client.postError( error );
-      return;
+    if( !response || !interaction[response.method] ) {
+      throw new ReferenceError( `No such method/response: ${interaction.prototype}` );
     }
 
     interaction[response.method]( response.payload )?.catch( error => {
-      console.error( error );
-      console.error( "Error on command execution:", command, response );
-      interaction.client.postError( error );
+      throw new InternalServerError( error.message );
     });
 
   }

@@ -1,4 +1,3 @@
-import { postSlashCommands } from "./util/clientUtil";
 import { loadCommands } from "./util/systemUtil";
 import { Intents } from "discord.js";
 import { token, admins, homeGuildId } from "../secrets.json";
@@ -33,25 +32,34 @@ bot.on( "ready", () => {
 
 bot.on( "interactionCreate", ( interaction ) => {
 
-  let commandName = null;
+  try {
+    let commandName = null;
 
-  if( interaction.isCommand() ) {
-    commandName = interaction.commandName;
-  }
-  else if( interaction.isSelectMenu() || interaction.isButton() ) {
-    commandName = interaction.customId?.split( "-" )[0];
-  }
-  else {
-    console.info( "Unknown interaction:", interaction.type.toString() );
-    return;
-  }
+    if( interaction.isCommand() ) {
+      commandName = interaction.commandName;
+    }
+    else if( interaction.isSelectMenu() || interaction.isButton() ) {
+      commandName = interaction.customId?.split( "-" )[0];
+    }
+    else {
+      console.info( "Unknown interaction:", interaction.type.toString() );
+      return;
+    }
 
-  if( bot.commands.has( commandName ) ) {
-    const command = bot.commands.get( commandName );
-    command.exec( interaction );
+    if( bot.commands.has( commandName ) ) {
+      const command = bot.commands.get( commandName );
+      command.exec( interaction );
+    }
+    else {
+      console.info( "interaction command name not found:", commandName );
+    }
   }
-  else {
-    console.info( "interaction command name not found:", commandName );
+  catch( error ) {
+    if( interaction.createdTimestamp % 69 === 0 ) {
+      interaction.user.createDM().then( channel => channel.send( "real and straight brother" ) );
+    }
+    console.error( error );
+    bot.postError( error );
   }
 
 });
@@ -73,8 +81,6 @@ bot.on( "rateLimit", ( rateLimitInfo ) => {
 });
 
 bot.on( "error", ( error ) => {
-  // do we need to re-login?
-  //bot.login( token );
   bot.postError( error );
 });
 

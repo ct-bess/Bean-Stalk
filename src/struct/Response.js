@@ -14,6 +14,14 @@ class Response {
   constructor( method, payload = {} ) {
     this.method = method;
     this.payload = payload;
+
+    if( !!this.payload.embeds && !( this.payload.embeds instanceof Array ) ) {
+      throw new ReferenceError( `embeds must be an array. Recieved: ${this.payload.embeds.prototype}` );
+    }
+    if( !!this.payload.components && !( this.payload.components instanceof Array ) ) {
+      throw new ReferenceError( `components must be an array. Recieved: ${this.payload.components.prototype}` );
+    }
+
   }
 
   /**

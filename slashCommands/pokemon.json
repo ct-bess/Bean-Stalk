@@ -22,8 +22,17 @@
           "required": true,
           "choices":
           [
-            "stats", "item", "move", "ability"
+            { "name": "stats", "value": "stats" },
+            { "name": "item", "value": "item" },
+            { "name": "move", "value": "move" },
+            { "name": "ability", "value": "ability" }
           ]
+        },
+        {
+          "name": "name",
+          "description": "what to get help on",
+          "type": "STRING",
+          "required": true
         },
         {
           "name": "form",
@@ -32,7 +41,9 @@
           "required": false,
           "choices":
           [
-            "borellian", "alolan", "omega"
+            { "name": "borellian", "value": "borellian" },
+            { "name": "alolan", "value": "alolan" },
+            { "name": "omega", "value": "omega" }
           ]
         }
       ]

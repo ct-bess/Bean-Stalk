@@ -126,7 +126,7 @@ class Pokemon extends Command {
    */
   help = ( interaction ) => {
 
-    const pokemon = interaction.options.getString( "pokemon" )?.toLowerCase();
+    const name = interaction.options.getString( "name" )?.toLowerCase();
     //const item = interaction.options.getString( "item" );
     //const move = interaction.options.getString( "move" );
     //const ability = interaction.options.getString( "ability" );
@@ -147,9 +147,9 @@ class Pokemon extends Command {
     $21 "Recommended Rank",
     $22 "Gender" ],
     */
-    if( !!stats.monsters[pokemon] ) {
+    if( !!stats.monsters[name] ) {
 
-      let p = stats.monsters[pokemon];
+      let p = stats.monsters[name];
 
       if( p[0] instanceof Array ) {
         const form = interaction.options.getString( "form" )?.toLowerCase();
@@ -157,7 +157,7 @@ class Pokemon extends Command {
       }
 
       const embed = new MessageEmbed();
-      embed.setTitle( pokemon + ( !!p[19] ? "(" + p[19] + ") " : " " ) + "No. " + p[0] );
+      embed.setTitle( name + ( !!p[19] ? "(" + p[19] + ") " : " " ) + "No. " + p[0] );
       embed.addField( "Type", p[1] + " " + ( p[2] ?? "" ), true );
       embed.addField( "Stats", `Base HP: ${p[3]}\nStr: ${p[4]}/${p[5]}\nDex: ${p[6]}/${p[7]}\nVit: ${p[8]}/${p[9]}\nSpec: ${p[10]}/${p[11]}\nIns: ${p[12]}/${p[13]}` );
       embed.addField( "Abilities", p[14] + ( !!p[15] ? ", or " + p[15] : "", true ) )
@@ -168,8 +168,7 @@ class Pokemon extends Command {
 
     }
     else {
-      console.info( "stats missing for:", pokemon );
-      response.payload.content = `stats for *${pokemon}* does not exist in Bean's data`;
+      response.payload.content = `feature incomplete: *${name}*`;
       response.payload.ephemeral = true;
     }
 

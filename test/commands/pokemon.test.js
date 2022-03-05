@@ -6,13 +6,27 @@ const getInteraction = ( customId, selected ) => {
   return({
     customId,
     values: selected,
-    isSelectMenu: function(){
+    isSelectMenu: function() {
       return true;
+    },
+    options: {
+      getString: function( string ) {
+        return "wheepsel";
+      }
     }
   });
 }
+describe( "src/commands/pokemon.js => help()", () => {
 
-describe( "selector generation", () => {
+  it( "stat embed is generated", () => {
+    const response = Pokemon.help( getInteraction() );
+    console.log( response );
+    expect( response ).toBeTruthy();
+  });
+
+});
+
+describe( "src/commands/pokemon.js => spawn()", () => {
 
   it( "biome selector is generated", () => {
     const response = Pokemon.spawn();
@@ -49,7 +63,7 @@ describe( "selector generation", () => {
 /** 
  * these will have to be tweaked if we add weights
  */
-describe( "biome & habitat data", () => {
+describe( "kb/pokemon/", () => {
 
   it( "biome data does not contain duplicate entries", () => {
 

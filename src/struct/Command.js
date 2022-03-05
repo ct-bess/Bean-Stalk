@@ -48,10 +48,11 @@ class Command {
     const command = interaction.options?.getSubcommand() || this.name;
 
     if( !this[command] ) {
-      console.warn( "no function to execute" );
+      console.warn( "no function to execute for:", command, interaction );
       return;
     }
 
+    /** @type {Response} */
     const response = this[command].call( this, interaction );
 
     if( !interaction[response.method] ) {
@@ -127,5 +128,5 @@ export default Command;
  * @typedef {import('discord.js').CommandInteraction} CommandInteraction
  * @typedef {import('discord.js').MessageSelectMenuOptions} MessageSelectMenuOptions
  * @typedef {import('./Bot').default} Bot
- * @typedef {import('../util/commandUtil').commandArgs} commandArgs
+ * @typedef {import('./Response').default} Response
  */

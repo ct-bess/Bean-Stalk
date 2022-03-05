@@ -14,7 +14,7 @@ const createDiceInteraction = ( size, count ) => {
   });
 }
 
-describe( "dice roll yeilds a result", () => {
+describe( "src/commands/dice.js => roll()", () => {
   it( "rolls default properly", () => {
     const response = Dice.roll( createDiceInteraction() );
     expect( response ).toBeTruthy();
@@ -47,6 +47,9 @@ describe( "dice roll yeilds a result", () => {
     const response = Dice.roll( createDiceInteraction( "5", Number.MAX_SAFE_INTEGER ) );
     expect( response ).toBeTruthy();
   });
+});
+
+describe( "src/commands/dice.js => get_history()", () => {
   it( "displays the history", () => {
     const response = Dice.get_history();
     console.log( response );

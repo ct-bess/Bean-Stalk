@@ -2,12 +2,13 @@ import Command from "../struct/Command";
 import CommandOptions from "../../slashCommands/bean.json";
 import { postSlashCommands } from "../util/clientUtil";
 import Response from "../struct/Response";
-import { interactionMethods } from "../util/constants"
+import Constants from "../util/constants"
 import { execSync } from "child_process";
 import { testGuild } from "../../secrets.json";
 
 /**
  * very safe bean system commands
+ * @todo reload command
  */
 class Bean extends Command {
 
@@ -24,9 +25,9 @@ class Bean extends Command {
       if( /postCommand/i.test( interaction.customId ) ) {
         const selected = interaction.values[0] + "";
         postSlashCommands( interaction.client, selected );
-        return( new Response( interactionMethods.UPDATE, {
+        return( new Response( Constants.interactionMethods.UPDATE, {
             // this is safe
-            content: interaction.message.content + ` ${selected}`
+            content: interaction.message.content + ` ${selected},`
           })
         );
       }
@@ -45,14 +46,14 @@ class Bean extends Command {
   }
 
   /**
-   * post slash command
+   * post slash command. if no command is specified provides a dropdown of available commands to post
    * @param {CommandInteraction} interaction - The command interaction
    */
   post_command = ( interaction ) => {
 
     const commandName = interaction.options.getString( "command" );
     let response = new Response();
-    response.method = interactionMethods.REPLY;
+    response.method = Constants.interactionMethods.REPLY;
 
     if( !!commandName && interaction.client.commands.has( commandName ) ) {
       postSlashCommands( interaction.client, commandName );
@@ -71,7 +72,7 @@ class Bean extends Command {
         maxValues: 1
       };
 
-      response.payload = { content: "Select a command:", components: this.buildSelectMenu( selectData ), ephemeral: true }
+      response.payload = { content: "Select a command, posted:", components: this.buildSelectMenu( selectData ), ephemeral: true }
     }
 
     return( response );

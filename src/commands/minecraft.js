@@ -7,6 +7,7 @@ import { homeGuildId } from "../../secrets.json";
 /**
  * This command is dependent on a minecraft server being registered with the host's systemd
  * and opening up a stdin path to execute in game console commands
+ * @todo dynamically determine how much RAM to allocate in mc args ie. it shouldn't break if we run on a micro vs. medium instance size
  */
 class Minecraft extends Command {
 

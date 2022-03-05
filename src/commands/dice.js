@@ -93,7 +93,7 @@ class Dice extends Command {
     let response = "";
 
     const emoji = d.val == max ? ":flushed:" : ( d.val == min ? ":alien:" : ":hotsprings:" );
-    response = `**${d.val}** ${emoji} ${this.history[ this.history.length - 1 ]}`;
+    response = `**${d.val}** ${emoji} ${this.history[ this.history.length - 1 ].type}`;
 
     if( count > 1 ) {
       response += `\nsum: **${d.tot}**`;

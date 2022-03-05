@@ -3,6 +3,7 @@ import { readdirSync } from "fs";
 /**
  * Handy functions for our Client
  * @module clientUtil
+ * @todo make this a class with static methods
  * @todo create something to clean up old/unused slash commands
  */
 

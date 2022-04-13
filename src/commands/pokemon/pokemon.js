@@ -1,11 +1,11 @@
-import Command from "../struct/Command";
-import CommandOptions from "../../slashCommands/pokemon.json";
-import Response from "../struct/Response";
-import Constants from "../util/constants";
-import { edGuild, testGuild } from "../../secrets.json";
-import biomes from "../../kb/pokemon/biomes.json";
-import habitats from "../../kb/pokemon/habitats.json";
-import stats from "../../kb/pokemon/stats.json";
+import Command from "../../struct/Command";
+import CommandOptions from "./options.json";
+import Response from "../../struct/Response";
+import Constants from "../../util/constants";
+import { edGuild, testGuild } from "../../../secrets.json";
+import biomes from "../../../kb/pokemon/biomes.json";
+import habitats from "../../../kb/pokemon/habitats.json";
+import stats from "../../../kb/pokemon/stats.json";
 import { MessageEmbed } from "discord.js";
 
 /**
@@ -155,7 +155,7 @@ class Pokemon extends Command {
       }
 
       const embed = new MessageEmbed();
-      embed.setTitle( name + ( !!p[19] ? "(" + p[19] + ") " : " " ) + "No. " + p[0] );
+      embed.setTitle( name + ( !!p[19] ? " (" + p[19] + ") " : " " ) + "No. " + p[0] );
       embed.addField( "Type:", p[1] + " " + ( p[2] ?? "" ), true );
       embed.addField( "Abilities:", ( p[14] + ( !!p[15] ? ", *or* " + p[15] : "") ) )
       embed.addField( "Stats:", `Base HP: \`${p[3]}\`\nStr: \`${p[4]}/${p[5]}\`\nDex: \`${p[6]}/${p[7]}\`\nVit: \`${p[8]}/${p[9]}\`\nSpec: \`${p[10]}/${p[11]}\`\nIns: \`${p[12]}/${p[13]}\`` );

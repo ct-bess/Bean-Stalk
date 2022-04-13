@@ -4,7 +4,7 @@
   "description": "Personal Discord Bot",
   "main": "index.js",
   "scripts": {
-    "build": "babel src -d lib",
+    "build": "babel src -d lib --copy-files",
     "start": "node lib/index.js",
     "build-start": "npm run build && npm run start",
     "test": "jest",

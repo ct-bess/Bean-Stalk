@@ -33,9 +33,28 @@
       ]
     },
     {
+      "name": "prune_commands",
+      "description": "delete unused interactions",
+      "type": "SUB_COMMAND"
+    },
+    {
       "name": "status",
       "description": "get bean's awesome systemd status",
-      "type": "SUB_COMMAND"
+      "type": "SUB_COMMAND",
+      "options":
+      [
+        {
+          "name": "status",
+          "description": "what kind of status",
+          "type": "STRING",
+          "required": false,
+          "choices":
+          [
+            { "name": "specs", "value": "specs" },
+            { "name": "service", "value": "service" }
+          ]
+        }
+      ]
     }
   ]
 }

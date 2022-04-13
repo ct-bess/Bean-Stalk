@@ -1,4 +1,5 @@
 import { readdirSync } from "fs";
+import InternalError from "../struct/InternalError.js";
 
 /**
  * Handy functions for our Client
@@ -20,24 +21,23 @@ export const postSlashCommands = ( bot, command ) => {
   let slashCommandFiles = [];
 
   if( !command ) {
-    slashCommandFiles = readdirSync( "slashCommands" ).filter( file => file.endsWith( ".json" ) );
+    slashCommandFiles = readdirSync( "src/commands" ).map( elem => elem += "/options.json" );
   }
   else {
-    // check that this exists
-    slashCommandFiles.push( command + ".json" );
+    slashCommandFiles.push( command + "/options.json" );
   }
 
-  for( const fileName of slashCommandFiles ) {
+  for( const file of slashCommandFiles ) {
 
-    const path = `../../slashCommands/${fileName}`;
+    const path = `../commands/${file}`;
     if( !!require.cache[ require.resolve( path ) ] ) {
       delete require.cache[ require.resolve( path ) ];
     }
 
     const slashCommand = require( path );
-    const commandName = fileName.substring( 0, fileName.length - 5 );
+    const commandName = slashCommand.name;
 
-    if( bot.commands.has( commandName ) ) {
+    if( !!commandName && bot.commands.has( commandName ) ) {
 
       // string or array of guild ids
       const guildId = bot.commands.get( commandName ).guild;
@@ -55,11 +55,15 @@ export const postSlashCommands = ( bot, command ) => {
         }
 
       }
+      else {
+        // this means any server the bot's apart of can execute
+        // note that app wide commands can take hours to appear
+        bot.application.commands.create( slashCommand );
+      }
+
     }
-    // this means any server the bot's apart of can execute
-    // note that app wide commands can take hours to appear
     else {
-      bot.application.commands.create( slashCommand );
+      throw new InternalError( `Command not found: ${commandName}` );
     }
 
   }

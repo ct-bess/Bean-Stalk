@@ -1,5 +1,5 @@
-import Command from "../struct/Command";
-import CommandOptions from "../../slashCommands/dice.json";
+import Command from "../../struct/Command";
+import CommandOptions from "./options.json";
 
 /**
  * awesome dice

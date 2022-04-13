@@ -1,8 +1,10 @@
 #!/bin/bash
 
+# very clean, nothing could go wrong
+MEMORY=`free -h --si | awk 'NR == 2 { printf( "%s", $4 ) }'`
 MCDIR=$1
 MCJAR=minecraft.jar
-MCARG="-Xms2G -Xmx2G"
+MCARG="-Xms$MEMORY -Xmx$MEMORY"
 
 { coproc JAVA (/usr/bin/java -server ${MCARG} -jar ${MCJAR} nogui) 1>&3; } 3>&1
 echo ${JAVA_PID} > ${MCDIR}/server.pid

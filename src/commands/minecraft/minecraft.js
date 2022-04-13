@@ -1,13 +1,11 @@
-import Command from "../struct/Command";
+import Command from "../../struct/Command";
 import { exec, execSync } from "child_process";
-import { minecraftIP } from "../../secrets.json";
-import CommandOptions from "../../slashCommands/minecraft.json";
-import { homeGuildId } from "../../secrets.json";
+import { minecraftIP, homeGuildId } from "../../../secrets.json";
+import CommandOptions from "./options.json";
 
 /**
  * This command is dependent on a minecraft server being registered with the host's systemd
  * and opening up a stdin path to execute in game console commands
- * @todo dynamically determine how much RAM to allocate in mc args ie. it shouldn't break if we run on a micro vs. medium instance size
  */
 class Minecraft extends Command {
 

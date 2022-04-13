@@ -1,10 +1,10 @@
-import Command from "../struct/Command";
-import CommandOptions from "../../slashCommands/bean.json";
-import { postSlashCommands } from "../util/clientUtil";
-import Response from "../struct/Response";
-import Constants from "../util/constants"
+import Command from "../../struct/Command";
+import CommandOptions from "./options.json";
+import { postSlashCommands } from "../../util/clientUtil";
+import Response from "../../struct/Response";
+import Constants from "../../util/constants"
 import { execSync } from "child_process";
-import { testGuild } from "../../secrets.json";
+import { testGuild } from "../../../secrets.json";
 
 /**
  * very safe bean system commands
@@ -26,17 +26,30 @@ class Bean extends Command {
         const selected = interaction.values[0] + "";
         postSlashCommands( interaction.client, selected );
         return( new Response( Constants.interactionMethods.UPDATE, {
-            // this is safe
-            content: interaction.message.content + ` ${selected},`
+            content: `Posted: **${selected}** ...`
           })
         );
       }
     }
   }
 
-  status = () => {
-    const response = "```\n" + execSync( "systemctl status bean" ).toString() + "\n```";
-    return({ method: "reply", payload: response });
+  status = ( interaction ) => {
+
+    const status = interaction.options.getString( "status" )?.toLowerCase();
+    let response = "";
+
+    switch( status ) {
+      case "service":
+      response = "```\n" + execSync( "systemctl status bean" ).toString() + "\n```";
+        break;
+      case "specs":
+      default:
+        response = "```js\n" + execSync( "screenfetch -N" ).toString() + "\n```";
+        break;
+    }
+
+    return( new Response( Constants.interactionMethods.REPLY, response ) );
+
   }
 
   logs = ( interaction ) => {
@@ -72,8 +85,41 @@ class Bean extends Command {
         maxValues: 1
       };
 
-      response.payload = { content: "Select a command, posted:", components: this.buildSelectMenu( selectData ), ephemeral: true }
+      response.payload = { content: "Select a command ... ", components: this.buildSelectMenu( selectData ), ephemeral: true }
     }
+
+    return( response );
+
+  }
+
+  /**
+   * search for unused interactions and delete them
+   * @param {CommandInteraction} interaction - The command interaction
+   */
+  prune_commands = ( interaction ) => {
+
+    /** @type {Bot} */
+    const bot = interaction.client;
+
+    const response = bot.application.commands.fetch().then( commands => {
+
+      const pruned = [];
+      console.debug( "fetched:", commands.size, "commands for pruning ..." );
+
+      commands.forEach( command => {
+        console.debug( "processing command:", command.name );
+
+        if( !bot.commands.has( command.name ) ) {
+          console.info( "pruning:", command.name );
+          bot.application.commands.delete( command.id );
+          pruned.push( command.name );
+        }
+      });
+
+      const content = pruned.length > 0 ? "Pruned: " + pruned.join( ", " ) : "No commands were pruned";
+      return( new Response( Constants.interactionMethods.REPLY, content ) );
+
+    }).catch( console.error );
 
     return( response );
 
@@ -84,6 +130,7 @@ class Bean extends Command {
 export default new Bean();
 
 /**
+ * @typedef {import('../../struct/Bot').default} Bot
  * @typedef {import('discord.js').CommandInteraction} CommandInteraction
  * @typedef {import('discord.js').SelectMenuInteraction} SelectMenuInteraction
  */

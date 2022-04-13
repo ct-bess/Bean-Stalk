@@ -16,9 +16,12 @@ export const loadCommands = ( bot, override, commandName ) => {
 
   console.debug( "loading commands with override:", override );
 
+  /**
+   * @param {string} name - directory name, which is the command name
+   */
   const checkAndSet = ( name ) => {
 
-    const path = `../commands/${name}`;
+    const path = `../commands/${name}/${name}.js`;
 
     try {
 
@@ -54,11 +57,11 @@ export const loadCommands = ( bot, override, commandName ) => {
     checkAndSet( commandName );
   }
   else {
-    const commandFiles = readdirSync( "lib/commands" ).filter( file => file.endsWith( ".js" ) );
+    const commandDirectories = readdirSync( "lib/commands" );
 
-    for( const file of commandFiles ) {
-      if( !!file ) {
-        checkAndSet( file );
+    for( const dir of commandDirectories ) {
+      if( !!dir ) {
+        checkAndSet( dir );
       }
     }
 

@@ -1,5 +1,5 @@
 import { MessageActionRow, MessageSelectMenu } from "discord.js";
-import InternalServerError from "./InternalServerError";
+import InternalError from "./InternalError";
 
 /**
  * Base Command class for commands to inherit.
@@ -47,23 +47,38 @@ class Command {
 
     // Default to base if no subcommand
     const command = interaction.options?.getSubcommand() || this.name;
+    console.debug( "executing:", command );
 
     if( !command || !this[command] ) {
       console.warn( "no function to execute for:", command, interaction );
       return;
     }
 
-    /** @type {Response} */
+    /** @type {Response|Promise<Response>} */
     const response = this[command].call( this, interaction );
 
+    if( response instanceof Promise ) {
+      response.then( res => { this.respond( interaction, res ) });
+    }
+    else {
+      this.respond( interaction, response )
+    }
+
+  }
+
+  /**
+   * absolutely brilliant responding method
+   * @param {CommandInteraction} interaction
+   * @param {Response|{}} response
+   */
+  respond = ( interaction, response ) => {
     if( !response || !interaction[response.method] ) {
-      throw new ReferenceError( `No such method/response: ${interaction.prototype}` );
+      throw new ReferenceError( `No such method/response: ${response?.method} ${interaction.prototype}` );
     }
 
     interaction[response.method]( response.payload )?.catch( error => {
-      throw new InternalServerError( error.message );
+      throw new InternalError( error.message );
     });
-
   }
 
   /**

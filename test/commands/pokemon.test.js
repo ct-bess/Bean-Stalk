@@ -1,4 +1,4 @@
-import Pokemon from "../../src/commands/pokemon.js";
+import Pokemon from "../../src/commands/pokemon/pokemon.js";
 import biomes from "../../kb/pokemon/biomes.json";
 import habitats from "../../kb/pokemon/habitats.json";
 
@@ -16,6 +16,7 @@ const getInteraction = ( customId, selected ) => {
     }
   });
 }
+
 describe( "src/commands/pokemon.js => help()", () => {
 
   it( "stat embed is generated", () => {

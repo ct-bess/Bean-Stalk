@@ -1,4 +1,4 @@
-import Dice from "../../src/commands/dice.js";
+import Dice from "../../src/commands/dice/dice.js";
 
 const createDiceInteraction = ( size, count ) => {
   return({

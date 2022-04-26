@@ -21,7 +21,7 @@ class Pokemon extends Command {
   /**
    * Handles select menu updates
    * @todo this looks disgusting
-   * @param {SelectMenuInteraction|ButtonInteraction} interaction - The interaction
+   * @param {SelectMenuInteraction|ButtonInteraction} interaction
    */
   pokemon = ( interaction ) => {
 

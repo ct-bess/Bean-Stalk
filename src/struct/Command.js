@@ -72,13 +72,18 @@ class Command {
    * @param {Response|{}} response
    */
   respond = ( interaction, response ) => {
-    if( !response || !interaction[response.method] ) {
-      throw new ReferenceError( `No such method/response: ${response?.method} ${interaction.prototype}` );
+
+    if( !response ) {
+      return;
+    }
+    else if( !interaction[response.method] ) {
+      throw new ReferenceError( `No such response: ${response?.method} ${interaction.prototype}` );
     }
 
     interaction[response.method]( response.payload )?.catch( error => {
       throw new InternalError( error.message );
     });
+
   }
 
   /**

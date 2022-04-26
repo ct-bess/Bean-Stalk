@@ -34,7 +34,7 @@ class Bot extends Client {
     const channel = guild?.channels.cache.find( channel => /^b[o0]t/i.test( channel?.name ) );
     if( !!guild && !!channel ) {
       channel.send( "damn,,,this hits hard,... `" + error.name +  "`\n```\n" + error.message + "\n```" ).catch( console.error );
-      if( Math.floor( Math.random() * 420 ) === 69 ) {
+      if( Math.floor( Math.random() * 50 ) === 25 ) {
         guild.members.cache.random().createDM().then( dmChannel => { dmChannel.send( "hey scuse me,,," ) } ).catch( console.error );
       }
     }

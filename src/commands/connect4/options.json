@@ -1,0 +1,50 @@
+{
+  "name": "connect4",
+  "description": "play a fantastic game of connect4",
+  "type": "SUB_COMMAND_GROUP",
+  "options":
+  [
+    {
+      "name": "join",
+      "description": "join the game",
+      "type": "SUB_COMMAND",
+      "options":
+      [
+        {
+          "name": "emoji",
+          "description": "specify an emoji to use as your marker (press TAB after typing it in)",
+          "type": "STRING",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "new",
+      "description": "create a new game (no custom board size, maybe ever)",
+      "type": "SUB_COMMAND",
+      "options":
+      [
+        {
+          "name": "override",
+          "description": "trigger a hard reset of the board and players",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "kick",
+      "description": "remove a user from the game (this is so sad)",
+      "type": "SUB_COMMAND",
+      "options":
+      [
+        {
+          "name": "who",
+          "description": "literally who?",
+          "type": "USER",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

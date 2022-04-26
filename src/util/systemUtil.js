@@ -1,4 +1,4 @@
-import { readdirSync } from "fs";
+import { readdirSync, existsSync } from "fs";
 /**
  * Governs various file sytem functions
  * @module systemUtil
@@ -22,6 +22,11 @@ export const loadCommands = ( bot, override, commandName ) => {
   const checkAndSet = ( name ) => {
 
     const path = `../commands/${name}/${name}.js`;
+
+    if( !existsSync( `lib/commands/${name}/${name}.js` ) ) {
+      console.info( `Skipping loading of lib/commands${name}/${name}.js ...` );
+      return;
+    }
 
     try {
 

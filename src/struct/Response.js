@@ -1,4 +1,5 @@
 import { CommandInteraction as interaction } from "discord.js";
+
 /**
  * standard bean stalk response object
  * @property {string} method - interaction method to invoke
@@ -25,7 +26,7 @@ class Response {
   }
 
   /**
-   * Returns the intended response
+   * Returns the intended response if you care
    */
   get response() {
     return( [ interaction[this.method], payload ] );

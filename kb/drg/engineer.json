@@ -1,0 +1,377 @@
+{
+  "primary": [
+    {
+      "name": "\"Warthog\" Auto 210",
+      "upgrades": {
+        "t1": [
+          "Supercharged Feed Mechanism",
+          "Overstuffed Magazine"
+        ],
+        "t2": [
+          "Expanded Ammo Bags",
+          "Loaded Shells",
+          "Choke"
+        ],
+        "t3": [
+          "Recoil Dampener",
+          "Quickfire Ejector",
+          "High Capacity Magazine"
+        ],
+        "t4": [
+          "Tungsten Coated Buckshot",
+          "Bigger Pellets"
+        ],
+        "t5": [
+          "Turret Whip",
+          "Miner Adjustments"
+        ],
+        "oc": [
+          {
+            "name": "Stunner",
+            "type": "Clean"
+          },
+          {
+            "name": "Light-Weight Magazines",
+            "type": "Clean"
+          },
+          {
+            "name": "Magnetic Pellet Alignment",
+            "type": "Balanced"
+          },
+          {
+            "name": "Cycle Overload",
+            "type": "Unstable"
+          },
+          {
+            "name": "Mini Shells",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "\"Stubby\" Voltaic SMG",
+      "upgrades": {
+        "t1": [
+          "Increased Caliber Rounds",
+          "Upgraded Capacitors",
+          "Expanded Ammo Bags"
+        ],
+        "t2": [
+          "High Capacity Magazine",
+          "Recoil Dampener",
+          "Improved Gas System"
+        ],
+        "t3": [
+          "High Velocity Rounds",
+          "Expanded Ammo Bags"
+        ],
+        "t4": [
+          "Hollow-Point Bullets",
+          "Conductive Bullets"
+        ],
+        "t5": [
+          "Magazine Capacity Tweak",
+          "Electric Arc"
+        ],
+        "oc": [
+          {
+            "name": "Super-Slim Rounds",
+            "type": "Clean"
+          },
+          {
+            "name": "Well Oiled Machine",
+            "type": "Clean"
+          },
+          {
+            "name": "EM Refire Booster",
+            "type": "Balanced"
+          },
+          {
+            "name": "Light-Weight Rounds",
+            "type": "Balanced"
+          },
+          {
+            "name": "Turret Arc",
+            "type": "Unstable"
+          },
+          {
+            "name": "Turret EM Discharge",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LOK-1 Smart Rifle",
+      "upgrades": {
+        "t1": [
+          "Increased Caliber Rounds",
+          "Expanded Ammo Bags"
+        ],
+        "t2": [
+          "Macro Lens",
+          "CCD Array Add-On",
+          "Zoom Lens"
+        ],
+        "t3": [
+          "Electro-Chemical Rounds",
+          "SMRT Targeting Software:tm:",
+          "Super Blowthrough Rounds"
+        ],
+        "t4": [
+          "Shutter Speed Sensor",
+          "Aperture Extension"
+        ],
+        "t5": [
+          "Electric Generator Mod",
+          "Unstable Lock Mechanism",
+          "Fear Frequency"
+        ],
+        "oc": [
+          {
+            "name": "Armor Break Module",
+            "type": "Clean"
+          },
+          {
+            "name": "Eraser",
+            "type": "Clean"
+          },
+          {
+            "name": "Seeker Rounds",
+            "type": "Balanced"
+          },
+          {
+            "name": "Explosive Chemical Rounds",
+            "type": "Balanced"
+          },
+          {
+            "name": "Executioner",
+            "type": "Unstable"
+          },
+          {
+            "name": "Neuro-Lasso",
+            "type": "Unstable"
+          }
+        ]
+      }
+    }
+  ],
+  "secondary": [
+    {
+      "name": "Deepcore 40MM PGL",
+      "upgrades": {
+        "t1": [
+          "Fragmentary Shell",
+          "Extra Ammo",
+          "HE Compound"
+        ],
+        "t2": [
+          "Expanded Ammo Bags",
+          "Larger Payload"
+        ],
+        "t3": [
+          "Incendiary Compound",
+          "Pressure Wave",
+          "High Velocity Grenades"
+        ],
+        "t4": [
+          "Homebrew Explosive",
+          "Nails + Tape",
+          "Concussive Blast"
+        ],
+        "t5": [
+          "Proximity Trigger",
+          "Spiky Grenade",
+          "Disabled Inertia Inhibitor"
+        ],
+        "oc": [
+          {
+            "name": "Clean Sweep",
+            "type": "Clean"
+          },
+          {
+            "name": "Pack Rat",
+            "type": "Clean"
+          },
+          {
+            "name": "Compact Rounds",
+            "type": "Balanced"
+          },
+          {
+            "name": "RJ250 Compound",
+            "type": "Balanced"
+          },
+          {
+            "name": "Fat Boy",
+            "type": "Unstable"
+          },
+          {
+            "name": "Hyper Propellant",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Breach Cutter",
+      "upgrades": {
+        "t1": [
+          "Prolonged Power Generation",
+          "High Capacity Magazine"
+        ],
+        "t2": [
+          "Expanded Ammo Bags",
+          "Condensed Plasma",
+          "Loosened Node Cohesion"
+        ],
+        "t3": [
+          "Quick Deploy",
+          "Improved Case Ejector"
+        ],
+        "t4": [
+          "Armor Breaking",
+          "Distruption Frequency Tuning"
+        ],
+        "t5": [
+          "Explosive Goodbye",
+          "Plasma Trail",
+          "Triple Split Line"
+        ],
+        "oc": [
+          {
+            "name": "Light-Weight Cases",
+            "type": "Clean"
+          },
+          {
+            "name": "Roll Control",
+            "type": "Clean"
+          },
+          {
+            "name": "Stronger Plasma Current",
+            "type": "Clean"
+          },
+          {
+            "name": "Return to Sender",
+            "type": "Balanced"
+          },
+          {
+            "name": "High Voltage Crossover",
+            "type": "Balanced"
+          },
+          {
+            "name": "Spinning Death",
+            "type": "Unstable"
+          },
+          {
+            "name": "Inferno",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shard Diffractor",
+      "upgrades": {
+        "t1": [
+          "Impact Splash",
+          "Increased Energy Density",
+          "Larger Battery"
+        ],
+        "t2": [
+          "Soft Tissue Disruption",
+          "Particle Spattering"
+        ],
+        "t3": [
+          "Aluminum Foil DIY",
+          "Open Structure Battery"
+        ],
+        "t4": [
+          "High-Intensity Heating",
+          "Nitrogen Vaporizer"
+        ],
+        "t5": [
+          "Hydrogen Rupturing",
+          "Bio-Mass Converter",
+          "Dazzler Module"
+        ],
+        "oc": [
+          {
+            "name": "Efficiency Tweaks",
+            "type": "Clean"
+          },
+          {
+            "name": "Automated Beam Controller",
+            "type": "Balanced"
+          },
+          {
+            "name": "Feedback Loop",
+            "type": "Balanced"
+          },
+          {
+            "name": "Volatile Impact Reactor",
+            "type": "Balanced"
+          },
+          {
+            "name": "Endothermic Explosion",
+            "type": "Unstable"
+          },
+          {
+            "name": "Overdrive Booster",
+            "type": "Unstable"
+          }
+        ]
+      }
+    }
+  ],
+  "traversal": [
+    {
+      "name": "Platform (pancake) Gun",
+      "upgrades": {
+        "t1": [
+          "Supercharged Feed Mechanism",
+          "Expanded Ammo Bags",
+          "High Capacity Magazine"
+        ],
+        "t2": [
+          "Plastcrete MKII"
+        ],
+        "t3": [
+          "Expanded Ammo Bags",
+          "Repellant Additive",
+          "Disabled Inertia Inhibitor"
+        ]
+      }
+    }
+  ],
+  "support": [
+    {
+      "name": "LMG Gun Platform",
+      "upgrades": {
+        "t1": [
+          "Gemini System",
+          "LMG MKII"
+        ],
+        "t2": [
+          "Expanded Ammo Bags",
+          "Quick Deploy",
+          "Widemouth Refill Port"
+        ],
+        "t3": [
+          "Penetrating Rounds",
+          "Stun",
+          "Expanded Ammo Capacity"
+        ],
+        "t4": [
+          "Defender System",
+          "Hawkeye System"
+        ]
+      }
+    }
+  ],
+  "throwable": [
+    "Lure",
+    "Plasma Burster",
+    "Proximity Mine"
+  ]
+}

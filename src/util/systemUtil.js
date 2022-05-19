@@ -17,6 +17,7 @@ export const loadCommands = ( bot, override, commandName ) => {
   console.debug( "loading commands with override:", override );
 
   /**
+   * note: require = relative to this file, fs = relative to node app dir
    * @param {string} name - directory name, which is the command name
    */
   const checkAndSet = ( name ) => {
@@ -53,7 +54,6 @@ export const loadCommands = ( bot, override, commandName ) => {
     }
     catch( error ) {
       console.error( error );
-      console.error( "Check the exports for:", name, "and the path:", path );
     }
 
   }

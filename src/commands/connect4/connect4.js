@@ -125,6 +125,7 @@ class Connect4 extends Command {
 
       const marker = interaction.options.getString( "emoji" ) || this.defaults.markers.players[ Math.floor( Math.random() * this.defaults.markers.players.length ) ];
 
+      // maybe also test w/delimiter
       if( /[\[\]\\\^\$\?\.\*\+\{\}\)\(]+/g.test( marker ) ) {
         response.payload.content = `Try again without regex reserved characters ${Constants.emoji.TRIUMPH}`;
         return( response );
@@ -154,13 +155,13 @@ class Connect4 extends Command {
   }
 
   /**
-   * - note: by kicking a player, the turn order display is now out of sync. do we want to fix??
+   * - note: by kicking a player, the turn order display is now out of sync, until the next person plays. do we want to fix??
    * - note: anyone can do this
    * @param {CommandInteraction} interaction
    * */
   kick = ( interaction ) => {
     const response = new Response( Constants.interactionMethods.REPLY );
-    const playerToKick = interaction.options?.getUser( "who" );
+    const playerToKick = interaction.options?.getUser( "who" )?.id;
     if( !playerToKick || !this.state.players.has( playerToKick ) ) {
       response.payload = {
         ephemeral: true,
@@ -174,7 +175,7 @@ class Connect4 extends Command {
       this.state.players.delete( playerToKick );
 
       // TRUST ME
-      this.state.players.forEach( p => { 
+      this.state.players.forEach( p => {
         if( decomTurn > 0 && p.turnOrder === decomTurn ) {
           p.hasTurn = true;
         }

@@ -53,13 +53,22 @@ class Constants {
   });
 
   static styles = Object.freeze({
-    PRIMARY: "PRIMARY"
+    PRIMARY: "PRIMARY",
+    SECONDARY: "SECONDARY"
   });
 
   static limits = Object.freeze({
+    /** 2000 */
     MESSAGE_CONTENT: 2000,
+    /** 25 */
     SELECT_MENU_OPTIONS: 25,
+    /** 5 */
     ACTION_ROW_COMPONENTS: 5
+  });
+
+  static time = Object.freeze({
+    /** in ms */
+    ONE_MINUTE: 60000
   });
 
 }

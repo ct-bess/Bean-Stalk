@@ -10,7 +10,7 @@ import { checkWin } from "./checkWin";
  */
 export const place = function( interaction ) {
 
-  const response = new Response( Constants.interactionMethods.UPDATE, { components: this.state.actionRows } );
+  const response = new Response( Constants.interactionMethods.UPDATE );
   const player = this.state.players.get( interaction.user.id );
 
   if( !player ) {
@@ -46,12 +46,19 @@ export const place = function( interaction ) {
     this.state.inProgress = false;
   }
   else {
-    const currTurn = player.turnOrder % this.state.players.size;
-    const nextPlayer = this.state.players.find( p => p.turnOrder === currTurn + 1 ) || 1;
+    const currTurn = ( player.turnOrder % this.state.players.size ) + 1;
+    const nextPlayerId = this.state.players.findKey( p => p.turnOrder === currTurn );
+    const nextPlayer = this.state.players.get( nextPlayerId );
+
+    if( !nextPlayer ) {
+      throw new InternalError( `next connect4 player not found for user Id: ${nextPlayerId}` );
+    }
+
     player.hasTurn = false;
     nextPlayer.hasTurn = true;
-    const players = this.state.players.map( p => p.hasTurn ? `${p.marker}**${p.name}**` : p.marker + p.name );
-    response.payload.content = this.state.board + "\n" + players.join( "," );
+
+    const players = this.state.players.map( p => p.hasTurn ? `${p.marker} <@!${nextPlayerId}>` : p.marker + " " + p.name );
+    response.payload.content = this.state.board + "\n" + players.join( ", " );
   }
 
   return( response );

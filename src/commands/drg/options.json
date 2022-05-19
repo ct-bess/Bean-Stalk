@@ -1,0 +1,29 @@
+{
+  "name": "drg",
+  "description": "incredible Deep Rock Galactic :tm: Commands",
+  "type": "SUB_COMMAND_GROUP",
+  "options":
+  [
+    {
+      "name": "build",
+      "description": "get a random build/loadout",
+      "type": "SUB_COMMAND",
+      "options":
+      [
+        {
+          "name": "class",
+          "description": "defaults to a random class",
+          "type": "STRING",
+          "required": false,
+          "choices":
+          [
+            { "name": "driller", "value": "driller" },
+            { "name": "engineer", "value": "engineer" },
+            { "name": "scout", "value": "scout" },
+            { "name": "gunner", "value": "gunner" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -23,7 +23,7 @@ const getInteraction = ( params ) => {
       getUser: function( string ) {
         switch( string ) {
           case "who":
-            return params?.userId;
+            return({ id: params?.userId });
           default:
             return null;
         }
@@ -148,8 +148,9 @@ describe( "src/commands/connect4/connect4.js => connect4()", () => {
     Connect4.connect4( getInteraction({ customId: `${Connect4.name}-place-2`, userId: "1", component: { label: "2" } }));
     Connect4.connect4( getInteraction({ customId: `${Connect4.name}-place-1`, userId: "2", component: { label: "1" } }));
     Connect4.connect4( getInteraction({ customId: `${Connect4.name}-place-1`, userId: "1", component: { label: "1" } }));
-    Connect4.connect4( getInteraction({ customId: `${Connect4.name}-place-4`, userId: "2", component: { label: "4" } }));
+    const r = Connect4.connect4( getInteraction({ customId: `${Connect4.name}-place-4`, userId: "2", component: { label: "4" } }));
     expect( Connect4.state.inProgress ).toBe( true );
+    console.log( r );
     Connect4.connect4( getInteraction({ customId: `${Connect4.name}-place-1`, userId: "1", component: { label: "1" } }));
     console.log( Connect4.state.board );
     expect( Connect4.state.inProgress ).toBe( false );

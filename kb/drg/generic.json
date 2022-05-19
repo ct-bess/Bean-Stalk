@@ -1,0 +1,60 @@
+{
+  "armor": {
+    "upgrades": {
+      "t1": [
+        "Improved Generator",
+        "Boosted Converter",
+        "Bigger Mineral Bag"
+      ],
+      "t2": [
+        "Overcharger",
+        "Healthy"
+      ],
+      "t3": [
+        "Lightweight Baby!",
+        "WWOOOOOOOOOOOOOOOO!!",
+        "AAAAAaaAAAAAAHhhh!",
+        "YAAAHHHHH BABAAAEY!",
+        "Liight ... Weaaeight!",
+        "YEP YEP YEP!",
+        "WoohHOOOOOwoo!",
+        "Lightweight!",
+        "HAAAAAP.. HAP. HAPPP!",
+        "Yeah Buddy!"
+      ],
+      "t4": [
+        "Shockwave",
+        "Static Discharge",
+        "Breathing Room"
+      ]
+    }
+  },
+  "perks": {
+    "passive": [
+      "Friendly",
+      "Second Wind",
+      "Thorns",
+      "Veteran Depositer",
+      "Resupplier",
+      "Sweet Tooth",
+      "Elemental Insulation",
+      "Unstoppable",
+      "Strong Arm",
+      "Vampire",
+      "Deep Pockets",
+      "Born Ready",
+      "It's a Bug Thing"
+    ],
+    "active": [
+      "Field Medic",
+      "Heightened Senses",
+      "See You In Hell",
+      "Iron Will",
+      "Hover Boots",
+      "Berzerker",
+      "Dash",
+      "Beast Master",
+      "Shield Link"
+    ]
+  }
+}

@@ -1,0 +1,386 @@
+{
+  "primary": [
+    {
+      "name": "\"Lead Storm\" Powered Minigun",
+      "upgrades": {
+        "t1": [
+          "Magnetic Refrigeration",
+          "Improved Motor",
+          "Improved Platform Stability"
+        ],
+        "t2": [
+          "Oversized Drum",
+          "High Velocity Rounds"
+        ],
+        "t3": [
+          "Hardened Rounds",
+          "Improved Stun",
+          "Blowthrough Rounds"
+        ],
+        "t4": [
+          "Variable Chamber Pressure",
+          "Lighter Barrel Assembly",
+          "Magnetic Bearings"
+        ],
+        "t5": [
+          "Aggressive Venting",
+          "Cold As The Grave",
+          "Hot Bullets"
+        ],
+        "oc": [
+          {
+            "name": "A Little More Oomph!",
+            "type": "Clean"
+          },
+          {
+            "name": "Thinned Drum Walls",
+            "type": "Clean"
+          },
+          {
+            "name": "Burning Hell",
+            "type": "Balanced"
+          },
+          {
+            "name": "Compact Feed Mechanism",
+            "type": "Balanced"
+          },
+          {
+            "name": "Exhaust Vectoring",
+            "type": "Balanced"
+          },
+          {
+            "name": "Bullet Hell",
+            "type": "Unstable"
+          },
+          {
+            "name": "Lead Storm",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "\"Thunderhead\" Heavy Autocannon",
+      "upgrades": {
+        "t1": [
+          "Increased Caliber Rounds",
+          "High Capacity Magazine",
+          "Expanded Ammo Bags"
+        ],
+        "t2": [
+          "Tighter Barrel Alignment",
+          "Improved Gas System",
+          "Lighter Barrel Assembly"
+        ],
+        "t3": [
+          "Supercharged Feed Mechanism",
+          "Loaded Rounds",
+          "High Velocity Rounds"
+        ],
+        "t4": [
+          "Hardened Rounds",
+          "Shrapnel Rounds"
+        ],
+        "t5": [
+          "Feedback Loop",
+          "Suppressive Fire",
+          "Damage Resistance At Full RoF"
+        ],
+        "oc": [
+          {
+            "name": "Composite Drums",
+            "type": "Clean"
+          },
+          {
+            "name": "Splintering Shells",
+            "type": "Clean"
+          },
+          {
+            "name": "Carpet Bomber",
+            "type": "Balanced"
+          },
+          {
+            "name": "Combat Mobility",
+            "type": "Balanced"
+          },
+          {
+            "name": "Big Bertha",
+            "type": "Unstable"
+          },
+          {
+            "name": "Neurotoxin Payload",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "\"Hurricane\" Guided Rocket System",
+      "upgrades": {
+        "t1": [
+          "Missile Belts",
+          "Pressurized Gas Cylinder",
+          "Increased Blast Radius"
+        ],
+        "t2": [
+          "Bigger Jet Engine",
+          "Anti-Tank Missiles"
+        ],
+        "t3": [
+          "Nano Missiles",
+          "Improved Feed Mechanism"
+        ],
+        "t4": [
+          "Shrapnel Load",
+          "Zip Fuel"
+        ],
+        "t5": [
+          "Napalm-Infused Rounds",
+          "Uncontrolled Decompression",
+          "Nitroglycerine Compound"
+        ],
+        "oc": [
+          {
+            "name": "Manual Guidance Cutoff",
+            "type": "Clean"
+          },
+          {
+            "name": "Overtuned Feed Mechanism",
+            "type": "Clean"
+          },
+          {
+            "name": "Fragmentation Missiles",
+            "type": "Clean"
+          },
+          {
+            "name": "Plasma Burster Missiles",
+            "type": "Balanced"
+          },
+          {
+            "name": "Minelayer System",
+            "type": "Balanced"
+          },
+          {
+            "name": "Jet Fuel Homebrew",
+            "type": "Unstable"
+          },
+          {
+            "name": "Salvo Module",
+            "type": "Unstable"
+          }
+        ]
+      }
+    }
+  ],
+  "secondary": [
+    {
+      "name": "\"Bulldog\" Heavy Revolver",
+      "upgrades": {
+        "t1": [
+          "Quickfire Ejector",
+          "Perfect Weight Balance"
+        ],
+        "t2": [
+          "Increased Caliber Rounds",
+          "Floating Barrel",
+          "Expanded Ammo Bags"
+        ],
+        "t3": [
+          "Super Blowthrough Rounds",
+          "Explosive Rounds",
+          "Hollow-Point Bullets"
+        ],
+        "t4": [
+          "Expanded Ammo Bags",
+          "High Velocity Rounds"
+        ],
+        "t5": [
+          "Dead-Eye",
+          "Neurotoxin Coating"
+        ],
+        "oc": [
+          {
+            "name": "Chain Hit",
+            "type": "Clean"
+          },
+          {
+            "name": "Homebrew Powder",
+            "type": "Balanced"
+          },
+          {
+            "name": "Volatile Bullets",
+            "type": "Balanced"
+          },
+          {
+            "name": "Six Shooter",
+            "type": "Balanced"
+          },
+          {
+            "name": "Elephant Rounds",
+            "type": "Unstable"
+          },
+          {
+            "name": "Magic Bullets",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BRT7 Burst Fire Gun",
+      "upgrades": {
+        "t1": [
+          "High Velocity Rounds",
+          "Floating Barrel",
+          "Blowthrough Rounds"
+        ],
+        "t2": [
+          "Recoil Dampener",
+          "Quickfire Ejector",
+          "Disabled Safety"
+        ],
+        "t3": [
+          "High Capacity Magazine",
+          "Increased Caliber Rounds"
+        ],
+        "t4": [
+          "Hardened Rounds",
+          "Expanded Ammo Bags",
+          "Hollow-Point Bullets"
+        ],
+        "t5": [
+          "Burst Stun",
+          "Longer Burst"
+        ],
+        "oc": [
+          {
+            "name": "Composite Casings",
+            "type": "Clean"
+          },
+          {
+            "name": "Full Chamber Seal",
+            "type": "Clean"
+          },
+          {
+            "name": "Compact Mags",
+            "type": "Balanced"
+          },
+          {
+            "name": "Experimental Rounds",
+            "type": "Balanced"
+          },
+          {
+            "name": "Electro Minelets",
+            "type": "Unstable"
+          },
+          {
+            "name": "Micro Flechettes",
+            "type": "Unstable"
+          },
+          {
+            "name": "Lead Spray",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Armskore Coil Gun",
+      "upgrades": {
+        "t1": [
+          "Extra Coil",
+          "Larger Battery",
+          "Optimized Magnetic Circuit"
+        ],
+        "t2": [
+          "Overcharger",
+          "Controlled Magnetic Flow",
+          "Improved Feeding System"
+        ],
+        "t3": [
+          "Concussive Shockwave",
+          "Fear Trajectory"
+        ],
+        "t4": [
+          "Defence Enhancement",
+          "Shockwave"
+        ],
+        "t5": [
+          "Necro-Thermal Catalyst",
+          "Dilated Injector System",
+          "Electric Trail"
+        ],
+        "oc": [
+          {
+            "name": "Ultra-Magnetic Coils",
+            "type": "Clean"
+          },
+          {
+            "name": "Backfeeding Module",
+            "type": "Balanced"
+          },
+          {
+            "name": "Re-Atomizer",
+            "type": "Balanced"
+          },
+          {
+            "name": "The Mole",
+            "type": "Balanced"
+          },
+          {
+            "name": "Hellfire",
+            "type": "Unstable"
+          },
+          {
+            "name": "Triple-Tech Chambers",
+            "type": "Unstable"
+          }
+        ]
+      }
+    }
+  ],
+  "traversal": [
+    {
+      "name": "Zipline (mobility scooter) Launcher",
+      "upgrades": {
+        "t1": [
+          "Expanded Ammo Bags",
+          "Upgraded Connection Joint",
+          "Reinforced Anchor"
+        ],
+        "t2": [
+          "Reinforced Cable"
+        ],
+        "t3": [
+          "Disconnection Protection",
+          "Increased Motor Traction"
+        ]
+      }
+    }
+  ],
+  "support": [
+    {
+      "name": "Shield (blue sheild) Generator",
+      "upgrades": {
+        "t1": [
+          "Streamlined Integrity Check",
+          "Improved Projector"
+        ],
+        "t2": [
+          "Fast Charging Capacitors",
+          "Larger Capacitors"
+        ],
+        "t3": [
+          "Supercharged Coils",
+          "Lasting Effect",
+          "Improved Efficiency"
+        ]
+      }
+    }
+  ],
+  "throwable": [
+    "Sticky Grenade",
+    "Incindiary Grenade",
+    "Cluster Grenade"
+  ]
+}

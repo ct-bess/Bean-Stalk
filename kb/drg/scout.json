@@ -1,0 +1,376 @@
+{
+  "primary": [
+    {
+      "name": "Geepcore GK2",
+      "upgrades": {
+        "t1": [
+          "Gyro Stabilisation",
+          "Supercharged Feed Mechanism"
+        ],
+        "t2": [
+          "Increased Caliber Rounds",
+          "Expanded Ammo Bags"
+        ],
+        "t3": [
+          "Floating Barrel",
+          "Improved Propellant",
+          "High Capacity Magazine"
+        ],
+        "t4": [
+          "Hollow-Point Bullets",
+          "Hardened Rounds",
+          "Improved Gas System"
+        ],
+        "t5": [
+          "Battle Frenzy",
+          "Battle Cool",
+          "Stun"
+        ],
+        "oc": [
+          {
+            "name": "Compact Ammo",
+            "type": "Clean"
+          },
+          {
+            "name": "Gas Rerouting",
+            "type": "Clean"
+          },
+          {
+            "name": "Homebrew Powder",
+            "type": "Clean"
+          },
+          {
+            "name": "Overclocked Firing Mechanism",
+            "type": "Balanced"
+          },
+          {
+            "name": "Bullets of Mercy",
+            "type": "Balanced"
+          },
+          {
+            "name": "AI Stability Engine",
+            "type": "Unstable"
+          },
+          {
+            "name": "Electrifying Reload",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "M1000 Classic",
+      "upgrades": {
+        "t1": [
+          "Expanded Ammo Bags",
+          "Increased Caliber Rounds"
+        ],
+        "t2": [
+          "Fast-Charging Coils",
+          "Better Weight Balance",
+          "Hardened Rounds"
+        ],
+        "t3": [
+          "Killer Focus",
+          "Extended Clip"
+        ],
+        "t4": [
+          "Super Blowthrough Rounds",
+          "Hollow-Point Bullets"
+        ],
+        "t5": [
+          "Hitting Where it Hurts",
+          "Precision Terror",
+          "Killing Machine"
+        ],
+        "oc": [
+          {
+            "name": "Hoverclock",
+            "type": "Clean"
+          },
+          {
+            "name": "Minimal Clips",
+            "type": "Clean"
+          },
+          {
+            "name": "Active Stability System",
+            "type": "Balanced"
+          },
+          {
+            "name": "Hipster",
+            "type": "Balanced"
+          },
+          {
+            "name": "Electrocuting Focus Shots",
+            "type": "Unstable"
+          },
+          {
+            "name": "Supercooling Chamber",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DRAK-25 Plasma Carbine",
+      "upgrades": {
+        "t1": [
+          "High-Volume Plasma Feed",
+          "Improved Thermals",
+          "Stronger Particle Accelerator"
+        ],
+        "t2": [
+          "Larger Battery",
+          "Increased Particle Density"
+        ],
+        "t3": [
+          "Custom Coil Alignment",
+          "Gen 2 Cooling System",
+          "Hot Feet"
+        ],
+        "t4": [
+          "Overcharged PCF",
+          "Plasma Splash",
+          "Destructive Resonance Amp"
+        ],
+        "t5": [
+          "Manual Heat Dump",
+          "Thermal Feedback Loop"
+        ],
+        "oc": [
+          {
+            "name": "Thermal Liquid Coolant",
+            "type": "Clean"
+          },
+          {
+            "name": "Aggressive Venting",
+            "type": "Clean"
+          },
+          {
+            "name": "Rewiring Mod",
+            "type": "Balanced"
+          },
+          {
+            "name": "Overtuned Particle Accelerator",
+            "type": "Unstable"
+          },
+          {
+            "name": "Shield Battery Booster",
+            "type": "Unstable"
+          },
+          {
+            "name": "Thermal Exhaust Feedback",
+            "type": "Unstable"
+          }
+        ]
+      }
+    }
+  ],
+  "secondary": [
+    {
+      "name": "Jury-Rigged Boomstick",
+      "upgrades": {
+        "t1": [
+          "Expanded Ammo Bags",
+          "Double-Sized Buckshot"
+        ],
+        "t2": [
+          "Double Trigger",
+          "Quickfire Ejector"
+        ],
+        "t3": [
+          "Improved Stun",
+          "Expanded Ammo Bags",
+          "High Capacity Shells"
+        ],
+        "t4": [
+          "Super Blowthrough Rounds",
+          "Tungsten Coated Buckshot",
+          "Improved Blast Wave"
+        ],
+        "t5": [
+          "Auto Reload",
+          "Fear The Boomstick",
+          "White Phosphorous Shells"
+        ],
+        "oc": [
+          {
+            "name": "Compact Shells",
+            "type": "Clean"
+          },
+          {
+            "name": "Double Barrel",
+            "type": "Clean"
+          },
+          {
+            "name": "Special Powder",
+            "type": "Clean"
+          },
+          {
+            "name": "Stuffed Shells",
+            "type": "Clean"
+          },
+          {
+            "name": "Shaped Shells",
+            "type": "Balanced"
+          },
+          {
+            "name": "Jumbo Shells",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Zhukov NUK17",
+      "upgrades": {
+        "t1": [
+          "Expanded Ammo Bags",
+          "High Velocity Rounds"
+        ],
+        "t2": [
+          "High Capacity Magazine",
+          "Supercharged Feed Mechanism",
+          "Quickfire Ejector"
+        ],
+        "t3": [
+          "Increased Caliber Rounds",
+          "Better Weight Balance"
+        ],
+        "t4": [
+          "Blowthrough Rounds",
+          "Hollow-Point Bullets",
+          "Expanded Ammo Bags"
+        ],
+        "t5": [
+          "Conductive Bullets",
+          "Get In, Get Out"
+        ],
+        "oc": [
+          {
+            "name": "Minimal Magazines",
+            "type": "Clean"
+          },
+          {
+            "name": "Custom Casings",
+            "type": "Balanced"
+          },
+          {
+            "name": "Cryo Minelets",
+            "type": "Unstable"
+          },
+          {
+            "name": "Embedded Detonators",
+            "type": "Unstable"
+          },
+          {
+            "name": "Gas Recycling",
+            "type": "Unstable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Nishanka Boltshark X-80",
+      "upgrades": {
+        "t1": [
+          "Special Bolt: Pheromone Dart",
+          "Special Bolt: Chemical Explosion",
+          "Special Bolt: Taser"
+        ],
+        "t2": [
+          "Broadhead Bolts",
+          "Increased Quiver Capacity",
+          "Expanded Special Quiver"
+        ],
+        "t3": [
+          "Stabilizing Arm Brace",
+          "Reinforced String"
+        ],
+        "t4": [
+          "Battle Frenzy",
+          "Radio Transmitter Module"
+        ],
+        "t5": [
+          "Potent Special Bolts",
+          "Magnetic Shafts",
+          "Banshee Module"
+        ],
+        "oc": [
+          {
+            "name": "Quick Fire",
+            "type": "Clean"
+          },
+          {
+            "name": "The Specialist",
+            "type": "Clean"
+          },
+          {
+            "name": "Cryo Bolt",
+            "type": "Balanced"
+          },
+          {
+            "name": "Fire Bolt",
+            "type": "Balanced"
+          },
+          {
+            "name": "Bodkin Points",
+            "type": "Unstable"
+          },
+          {
+            "name": "Trifork Volley",
+            "type": "Unstable"
+          }
+        ]
+      }
+    }
+  ],
+  "traversal": [
+    {
+      "name": "Grappling Hook",
+      "upgrades": {
+        "t1": [
+          "Improved Recharger",
+          "Longer Cable"
+        ],
+        "t2": [
+          "Greater Cable Stretch"
+        ],
+        "t3": [
+          "High Velocity Ejection System",
+          "Overcharged Winch"
+        ],
+        "t4": [
+          "Safety First",
+          "Momentum",
+          "Bypassed Integrity Check"
+        ]
+      }
+    }
+  ],
+  "support": [
+    {
+      "name": "Flare Gun",
+      "upgrades": {
+        "t1": [
+          "Expanded Ammo Bags",
+          "Thicker Core"
+        ],
+        "t2": [
+          "Supercharged Feed Mechanism",
+          "High Capacity Magazine"
+        ],
+        "t3": [
+          "Auto Reload",
+          "Expanded Ammo Bags",
+          "Magnesium Core"
+        ]
+      }
+    }
+  ],
+  "throwable": [
+    "IFG",
+    "Cryo Grenade",
+    "Pheromone Canester"
+  ]
+}

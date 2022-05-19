@@ -1,12 +1,25 @@
 /**
- * for big brain errors
+ * for incredible big brain errors
  */
 class InternalError extends Error {
 
-  name = "InternalError";
+  name = "InternalError"
 
-  constructor( message, options, fileName, lineNumber ) {
-    super( message, options, fileName, lineNumber );
+  constructor( params ) {
+
+    if( params ) {
+      super( ...params );
+    }
+    else {
+      super();
+    }
+
+    if( Error.captureStackTrace ) {
+      Error.captureStackTrace( this, InternalError );
+    }
+
+    this.name = "InternalError";
+
   }
 
 }

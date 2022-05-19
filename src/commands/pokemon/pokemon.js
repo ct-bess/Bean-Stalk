@@ -7,6 +7,7 @@ import biomes from "../../../kb/pokemon/biomes.json";
 import habitats from "../../../kb/pokemon/habitats.json";
 import stats from "../../../kb/pokemon/stats.json";
 import { MessageEmbed } from "discord.js";
+import ComponentUtil from "../../util/componentUtil";
 
 /**
  * commands to support edward's amazing pokemon dnd
@@ -54,7 +55,7 @@ class Pokemon extends Command {
         return(
           new Response( Constants.interactionMethods.UPDATE, {
               content: `Habitates of: *${selected}*`,
-              components: this.buildSelectMenu( selectData )
+              components: ComponentUtil.buildSelectMenus( selectData )
             }
           )
         );
@@ -113,7 +114,7 @@ class Pokemon extends Command {
     return(
       new Response( Constants.interactionMethods.REPLY, {
           content: "Biomes:",
-          components: this.buildSelectMenu( selectData )
+          components: ComponentUtil.buildSelectMenus( selectData )
         }
       )
     );

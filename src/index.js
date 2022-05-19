@@ -14,20 +14,13 @@ const bot = new Bot({
   admins
 });
 
-let isInitialized = false;
-
 bot.on( "ready", () => {
-  if( !isInitialized ) {
-    console.info( "INITIATING BEAN STALK ..." );
-    loadCommands( bot, true );
-    //postSlashCommands( bot );
-    bot.user.setStatus( "idle" );
-    bot.user.setActivity( "mc server offline", { type: "WATCHING" } );
-    isInitialized = true;
-  }
-  else {
-    console.info( "Bean Stalk has restarted" );
-  }
+
+  console.info( "INITIATING BEAN STALK ..." );
+  loadCommands( bot, true );
+  bot.user.setStatus( "idle" );
+  bot.user.setActivity( "mc server sleep", { type: "WATCHING" } );
+
 });
 
 bot.on( "interactionCreate", ( interaction ) => {
@@ -66,7 +59,9 @@ bot.on( "interactionCreate", ( interaction ) => {
 
 bot.on( "messageDelete", ( message ) => {
   console.info( "message deleted, oh nonono!", message.author.username, message.content );
-  if( !message.author.bot && message.content.length > 0 ) message.channel.send( message.content );
+  if( !message.author.bot && message.content.length > 0 ) {
+    message.channel.send( message.content );
+  }
 });
 
 bot.on( "channelCreate", ( channel ) => {

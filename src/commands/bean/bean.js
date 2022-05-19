@@ -5,6 +5,7 @@ import Response from "../../struct/Response";
 import Constants from "../../util/constants"
 import { execSync } from "child_process";
 import { testGuild } from "../../../secrets.json";
+import ComponentUtil from "../../util/componentUtil";
 
 /**
  * very safe bean system commands
@@ -85,7 +86,7 @@ class Bean extends Command {
         maxValues: 1
       };
 
-      response.payload = { content: "Select a command ... ", components: this.buildSelectMenu( selectData ), ephemeral: true }
+      response.payload = { content: "Select a command ... ", components: ComponentUtil.buildSelectMenus( selectData ), ephemeral: true }
     }
 
     return( response );

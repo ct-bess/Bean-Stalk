@@ -1,6 +1,7 @@
 # Bean-Stalk :seedling:
 
 A personal Discord bot using [Discord.js](https://discord.js.org) and questionable programming practices (proceed with caution).
+Utilizes Discord Slash Commands :tm: and event based commands to do very incredible things.
 
 ### Contents
 
@@ -15,7 +16,6 @@ Files:
 - `src/index.js` is the driver; Contains the event listeners
 - `src/struct/` contains the important classes
 - `src/commands/` contains command classes
-- `slashCommands/` contains each command's respective command options
 - `kb/` contains data and system admin scripts
 - `secrets.json` a very important file
 
@@ -30,12 +30,10 @@ Files:
 
 3. Clone the repository and download this project's node module dependencies by running `npm i` in the project's directory
 
-4. Obtain `secrets.json` by some means
+4. Obtain `secrets.json` by incredible means
 
 5. Build the bot with `npm run build` then start him with `npm run start`
 
-**Note:** the minecraft commands will fail if you don't register a minecraft service in systemd
+## Commands
 
-## Key Features
-
-- Spin-up an awesome minecraft server
+S

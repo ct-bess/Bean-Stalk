@@ -49,6 +49,16 @@ class Connect4 extends Command {
   connect4 = ( interaction ) => {
 
     let response = null;
+
+    // what could go wrong?
+    if( !this.state.board ) {
+      this.state.board = interaction.fetchReply( ( message ) => {
+        this.state.board = message.content;
+        this.connect4( interaction );
+      });
+      return;
+    }
+
     if( interaction.isButton() ) {
 
       if( /place/i.test( interaction.customId ) ) {
@@ -63,6 +73,7 @@ class Connect4 extends Command {
     }
 
     return( response );
+
   }
 
   /** @param {CommandInteraction} interaction */

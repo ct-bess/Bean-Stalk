@@ -51,6 +51,7 @@ class Drg extends Command {
     const passivePerks = [ ...generic.perks.passive ];
     const selectedPassivePerks = [
       passivePerks.splice( Math.floor( Math.random() * passivePerks.length ), 1 ),
+      passivePerks.splice( Math.floor( Math.random() * passivePerks.length ), 1 ),
       passivePerks.splice( Math.floor( Math.random() * passivePerks.length ), 1 )
     ];
 
@@ -60,9 +61,10 @@ class Drg extends Command {
       activePerks.splice( Math.floor( Math.random() * activePerks.length ), 1 )
     ];
 
+    // color code based on class
     const embed = new MessageEmbed({
-      title: `${interaction.user.username}: ${className}`,
-      description: ``,
+      title: `${interaction.member.nickname}`,
+      description: `${className}`,
       fields: [
         {
           name: `Primary: ${selectedPrimary.name} (${primaryUpgrades.shorthand})`,

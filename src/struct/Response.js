@@ -27,6 +27,7 @@ class Response {
 
   /**
    * Returns the intended response if you care
+   * in this weird array format
    */
   get response() {
     return( [ interaction[this.method], payload ] );

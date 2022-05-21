@@ -3,8 +3,8 @@ import Drg from "../../src/commands/drg/drg";
 /** mock interaction */
 const getInteraction = ( params ) => {
   return({
-    user: {
-      username: ""
+    member: {
+      nickname: ""
     },
     reply: function() {},
     options: {

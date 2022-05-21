@@ -42,6 +42,8 @@ class Drg extends Command {
     const selectedSecondary = dwarf.secondary[ Math.floor( Math.random() * dwarf.secondary.length ) ];
     const secondaryUpgrades = selectUpgrades( selectedSecondary.upgrades );
 
+    const pickaxeUpgrades = selectUpgrades( generic.pickaxe.upgrades );
+    const supportUpgrades = selectUpgrades( dwarf.support[0].upgrades );
     const traversalUpgrades = selectUpgrades( dwarf.traversal[0].upgrades );
 
     const selectedThrowable = dwarf.throwable[ Math.floor( Math.random() * dwarf.throwable.length ) ];
@@ -73,6 +75,14 @@ class Drg extends Command {
         {
           name: `Secondary: ${selectedSecondary.name} (${secondaryUpgrades.shorthand})`,
           value: secondaryUpgrades.upgrades.join( "\n" )
+        },
+        {
+          name: `Pickaxe: (${pickaxeUpgrades.shorthand})`,
+          value: pickaxeUpgrades.upgrades.join( "\n" )
+        },
+        {
+          name: `Support: ${dwarf.support[0].name} (${supportUpgrades.shorthand})`,
+          value: supportUpgrades.upgrades.join( "\n" )
         },
         {
           name: `Traversal: ${dwarf.traversal[0].name} (${traversalUpgrades.shorthand})`,

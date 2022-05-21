@@ -29,6 +29,18 @@
       ]
     }
   },
+  "pickaxe": {
+    "upgrades": {
+      "t1": [
+        "Power Attack"
+      ],
+      "t2": [
+        "Serrated Edge",
+        "Shockwave",
+        "Better Weight Balance"
+      ]
+    }
+  },
   "perks": {
     "passive": [
       "Friendly",

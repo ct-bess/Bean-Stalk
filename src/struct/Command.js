@@ -41,7 +41,7 @@ class Command {
 
     // Default to base if no subcommand --> is a component or a command w/no subcommands
     const command = interaction.options?.getSubcommand() || this.name;
-    console.debug( "executing:", command );
+    console.debug( "executing command:", command );
 
     if( !command || !this[command] ) {
       console.warn( "no function to execute for:", command, interaction );
@@ -75,6 +75,7 @@ class Command {
     }
 
     interaction[response.method]( response.payload )?.catch( error => {
+      console.error( "interaction response failed for:", interaction, response );
       throw new InternalError( error );
     });
 

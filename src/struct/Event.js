@@ -1,27 +1,32 @@
 /**
- * data and time based
- * random based, ie. do something weird periodically (technically also time based)
- * regex based, ie. someone says something in a text channel, we might respond with a dad joke
- * voice based, ie. someone joins a voice channel, maybe bean joins the vc and then periodically plays random stuff
+ * types:
+ * - date/time based, ie. do thing at x time
+ * - message based, ie. meets a regex
+ * - voice based, ie. someone joins vc
+ * - random, ie. do thing unexpectibly
  */
 class Event {
 
   constructor( event ) {
     this.name = event.name;
-    // on "messageCreate", "voiceConnectionCreate", "eventInterval" (from Bot class)
-    this.trigger = event.trigger;
-    this.data = event.data;
-    this.exec = this.exec.bind( this );
+    this.type = event.type;
+    for( const f in this ) {
+      if( this[f] instanceof Function ) {
+        this[f] = this[f].bind( this );
+      }
+    }
   }
-
-  // do we need to specify an exec? yeah probably.but what should be the base exec?
 
   /**
    * @param {Bot} bot
    * @returns {Response}
    */
-  exec = ( bot ) => {
-
+  exec = ( bot, trigger ) => {
+    const shouldTrigger = !!trigger ? !!this?.canTrigger( trigger ) : !!this?.canTrigger();
+    if( shouldTrigger ) {
+      console.debug( "executing event:", this.name );
+      this[this.name].call( this, bot );
+    }
   }
 
 }

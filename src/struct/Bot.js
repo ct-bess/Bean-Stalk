@@ -17,10 +17,14 @@ class Bot extends Client {
 
     const memUsageMB = process.resourceUsage().maxRSS / 1000;
     if( memUsageMB > 150 ) {
-      console.warn( "Our little node process is using a huge amount of memory:", memUsageMB );
+      console.warn( "Our little node process is using a huge amount of memory:", memUsageMB, "MB" );
     }
 
-    // this.events.filter( event => event.trigger === "datetime" && event.time === timestamp )
+    /** @type {Collection<string,Event>} */
+    const events = this.events.datetime;
+    events.forEach( ( event, name ) => {
+      event.exec( this );
+    });
 
   }, Constants.time.ONE_MINUTE );
 
@@ -33,10 +37,18 @@ class Bot extends Client {
 
     /** @type {Collection<string,Command>} */
     this.commands = new Collection();
+
+    /** @type {{Collection<string,Event>}} */
+    this.events = {
+      datetime: new Collection()
+    };
+
     /** @type {Array<string>} */
     this.admins = ClientOptions.admins;
+
     /** @type {string} */
-    this.homeGuildId = ClientOptions.homeGuildId;
+    this.homeGuildId = ClientOptions.homeGuildId || homeGuildId;
+
     this.eventInterval.unref();
 
   }

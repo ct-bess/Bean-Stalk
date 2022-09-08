@@ -68,7 +68,9 @@ class Constants {
 
   static time = Object.freeze({
     /** in ms */
-    ONE_MINUTE: 60000
+    ONE_MINUTE: 60000,
+    /** in ms */
+    TWO_SECONDS: 2000
   });
 
 }

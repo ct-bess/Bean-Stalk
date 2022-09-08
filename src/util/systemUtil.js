@@ -1,10 +1,10 @@
 import { readdirSync, existsSync } from "fs";
 /**
- * Governs various file sytem functions
+ * Governs various client module loading functions
  * @module systemUtil
  */
 
-/** 
+/**
  * imports all or one command module into the bot. Overwrites the require cache if the command was already imported
  * @function loadCommands
  * @param {Bot} bot - client to load to
@@ -70,6 +70,39 @@ export const loadCommands = ( bot, override, commandName ) => {
       }
     }
 
+  }
+
+};
+
+/**
+ * reads and loads all events into client
+ * @param {Bot} bot - client to load to
+ * @returns {void}
+ */
+export const loadEvents = ( bot ) => {
+
+  console.info( "loading events ..." );
+  const events = readdirSync( "lib/events" );
+  for( const eventName of events ) {
+    if( !!eventName ) {
+      const path = `../events/${eventName}`;
+      if( !existsSync( `lib/events/${eventName}` ) ) {
+        console.info( `Did not find lib/events/${eventName} skipping ...` );
+      }
+      else {
+        if( !!require.cache[ require.resolve( path ) ] ) {
+          delete require.cache[ require.resolve( path ) ];
+        }
+        console.debug( "setting event:", eventName );
+        const event = require( path );
+        if( !!bot.events[ event.default?.type ] ) {
+          bot.events[ event.default.type ].set( event.default.name, event.default );
+        }
+        else {
+          console.warn( "no such event type mapping for:", event.default?.type );
+        }
+      }
+    }
   }
 
 };

@@ -1,7 +1,8 @@
-import { loadCommands } from "./util/systemUtil";
+import { loadCommands, loadEvents } from "./util/systemUtil";
 import { Intents } from "discord.js";
 import { token, admins, homeGuildId } from "../secrets.json";
 import Bot from "./struct/Bot";
+import Constants from "./util/constants";
 
 const bot = new Bot({
   intents: [
@@ -18,6 +19,7 @@ bot.on( "ready", () => {
 
   console.info( "INITIATING BEAN STALK ..." );
   loadCommands( bot, true );
+  loadEvents( bot );
   bot.user.setStatus( "idle" );
   bot.user.setActivity( "mc server sleep", { type: "WATCHING" } );
 
@@ -58,15 +60,24 @@ bot.on( "interactionCreate", ( interaction ) => {
 });
 
 bot.on( "messageDelete", ( message ) => {
-  console.info( "message deleted, oh nonono!", message.author.username, message.content );
   if( !message.author.bot && message.content.length > 0 ) {
     message.channel.send( message.content );
   }
 });
 
+bot.on( "messageUpdate", ( oldMessage, newMessage ) => {
+  if( !newMessage.author.bot && !!newMessage.editable && oldMessage.content.length > 0 ) {
+    setTimeout( () => {
+      newMessage.edit( oldMessage.content );
+    }, Constants.time.TWO_SECONDS );
+  }
+});
+
 bot.on( "channelCreate", ( channel ) => {
-  if( channel.type === "dm" ) channel.send( "Hey scuse me big guy. I heard some noises goin on in here, couple minutes ago" );
-  else if( channel.isText() ) {
+  if( channel.type === "dm" ) {
+    channel.send( "Hey scuse me big guy. I heard some noises goin on in here, couple minutes ago" );
+  }
+  else if( channel.isText() && channel.permissionsFor( bot.user.id ).has( 1 << 11 ) ) {
     channel.send( "Nice place" );
   }
 });

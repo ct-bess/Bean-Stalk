@@ -126,6 +126,12 @@ class Bean extends Command {
 
   }
 
+  /**
+   * git pull --> sudo systemctl restart bean
+   */
+  rebuild = () => {
+  }
+
 };
 
 export default new Bean();

@@ -57,4 +57,10 @@ describe( "src/struct/Bot.js", () => {
 
   });
 
+  it( "bot can try events", () => {
+    const spy = jest.spyOn( bot, "tryEvents" );
+    bot.tryEvents( "random" );
+    expect( spy ).toHaveBeenCalled();
+  });
+
 });

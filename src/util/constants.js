@@ -54,7 +54,10 @@ class Constants {
 
   static styles = Object.freeze({
     PRIMARY: "PRIMARY",
-    SECONDARY: "SECONDARY"
+    SECONDARY: "SECONDARY",
+    SUCCESS: "SUCCESS",
+    DANGER: "DANGER",
+    LINK: "LINK"
   });
 
   static limits = Object.freeze({
@@ -69,6 +72,8 @@ class Constants {
   static time = Object.freeze({
     /** in ms */
     ONE_MINUTE: 60000,
+    /** in ms */
+    ONE_HOUR: 60000000,
     /** in ms */
     TWO_SECONDS: 2000
   });

@@ -1,6 +1,6 @@
 # Bean-Stalk :seedling:
 
-A personal Discord bot using [Discord.js](https://discord.js.org) and questionable programming practices (proceed with caution).
+A personal Discord bot using [Discord.js](https://discord.js.org) and questionable programming practices now featuring INCREDIBLE unit tests.
 Utilizes Discord Slash Commands :tm: and event based commands to do very incredible things.
 
 ### Contents
@@ -16,8 +16,9 @@ Files:
 - `src/index.js` is the driver; Contains the event listeners
 - `src/struct/` contains the important classes
 - `src/commands/` contains command classes
+- `src/events/` contains events
 - `kb/` contains data and system admin scripts
-- `secrets.json` a very important file
+- `secrets.json` a very important file that is missing from this repository
 
 ## Build and Run
 

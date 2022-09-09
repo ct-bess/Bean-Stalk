@@ -99,7 +99,7 @@ export const loadEvents = ( bot ) => {
           bot.events[ event.default.type ].set( event.default.name, event.default );
         }
         else {
-          console.warn( "no such event type mapping for:", event.default?.type );
+          console.warn( "no such event type mapping for:", event.default?.name, "type:", event.default?.type );
         }
       }
     }

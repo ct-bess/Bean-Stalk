@@ -12,12 +12,11 @@ class Geefa extends Event {
   }
 
   /**
-   * based on the host location
+   * minutes == 20 --> it's probably 4:20am/pm somewhere in the world
    * @param {Date} [date] - date to use to determine if we should geefa; defaults to now
    */
   canTrigger = ( date = new Date() ) => {
-    const time = "" + date.getHours() + date.getMinutes();
-    if( time === "420" || time === "1620" ) {
+    if( date.getMinutes() === 20 ) {
       return( true );
     }
     return( false );
@@ -26,6 +25,7 @@ class Geefa extends Event {
   /**
    * blunt react all messages collected
    * maybe on rare occasions send the mf like button
+   * maybe make the react hit all channels?
    * @param {Bot} bot
    */
   geefa = ( bot ) => {

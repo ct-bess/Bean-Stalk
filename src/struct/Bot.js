@@ -15,16 +15,7 @@ class Bot extends Client {
    */
   eventInterval = setInterval( () => {
 
-    const memUsageMB = process.resourceUsage().maxRSS / 1000;
-    if( memUsageMB > 150 ) {
-      console.warn( "Our little node process is using a huge amount of memory:", memUsageMB, "MB" );
-    }
-
-    /** @type {Collection<string,Event>} */
-    const events = this.events.datetime;
-    events.forEach( ( event, name ) => {
-      event.exec( this );
-    });
+    this.tryEvents( "datetime" );
 
   }, Constants.time.ONE_MINUTE );
 
@@ -40,7 +31,8 @@ class Bot extends Client {
 
     /** @type {{Collection<string,Event>}} */
     this.events = {
-      datetime: new Collection()
+      datetime: new Collection(),
+      random: new Collection()
     };
 
     /** @type {Array<string>} */
@@ -71,10 +63,40 @@ class Bot extends Client {
     }
   }
 
+  /**
+   * try to execute all events for the given type
+   * @param {string} type - type of event to try
+   * @param {Channel} [channel] - generic channel to try execution in
+   * @param {string} [eventName] - specific event to try
+   */
+  tryEvents = ( type, channel, eventName ) => {
+
+    /** @type {Collection<string,Event>} */
+    const events = this.events[type];
+
+    if( !!events ) {
+
+      if( !events[eventName] ) {
+        events.forEach( ( event, name ) => {
+          event.exec( this, channel );
+        });
+      }
+      else {
+        events[eventName].exec( this, channel );
+      }
+
+    }
+    else {
+      console.warn( "recieved invalid event type to try:", type );
+    }
+
+  }
+
 };
 
 export default Bot;
 
 /**
+ * @typedef {import('discord.js').Channel} Channel
  * @typedef {import('discord.js').ClientOptions} ClientOptions
  */

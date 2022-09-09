@@ -22,6 +22,7 @@ bot.on( "ready", () => {
   loadEvents( bot );
   bot.user.setStatus( "idle" );
   bot.user.setActivity( "mc server sleep", { type: "WATCHING" } );
+  bot.tryEvents( "random" );
 
 });
 
@@ -45,6 +46,10 @@ bot.on( "interactionCreate", ( interaction ) => {
       const command = bot.commands.get( commandName );
       command.exec( interaction );
     }
+    else if( bot.events.random.has( commandName ) ) {
+      const event = bot.events.random.get( commandName );
+      event.handleInteraction( interaction );
+    }
     else {
       console.info( "interaction command name not found:", commandName );
     }
@@ -59,6 +64,10 @@ bot.on( "interactionCreate", ( interaction ) => {
 
 });
 
+bot.on( "messageCreate", ( message ) => {
+  bot.tryEvents( "random", message.channel );
+});
+
 bot.on( "messageDelete", ( message ) => {
   if( !message.author.bot && message.content.length > 0 ) {
     message.channel.send( message.content );
@@ -66,11 +75,15 @@ bot.on( "messageDelete", ( message ) => {
 });
 
 bot.on( "messageUpdate", ( oldMessage, newMessage ) => {
+
+  bot.tryEvents( "random", newMessage.channel );
+
   if( !newMessage.author.bot && !!newMessage.editable && oldMessage.content.length > 0 ) {
     setTimeout( () => {
       newMessage.edit( oldMessage.content );
     }, Constants.time.TWO_SECONDS );
   }
+
 });
 
 bot.on( "channelCreate", ( channel ) => {
@@ -79,6 +92,7 @@ bot.on( "channelCreate", ( channel ) => {
   }
   else if( channel.isText() && channel.permissionsFor( bot.user.id ).has( 1 << 11 ) ) {
     channel.send( "Nice place" );
+    bot.tryEvents( "random", channel );
   }
 });
 
@@ -91,6 +105,7 @@ bot.on( "error", ( error ) => {
 });
 
 process.on( "SIGTERM", () => {
+  bot.tryEvents( "random" );
   console.info( "Bean Stalk terminating ..." );
   bot.destroy();
   console.info( "Bean Stalk successfully logged out" );

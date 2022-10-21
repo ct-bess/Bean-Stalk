@@ -1,4 +1,4 @@
-import { Intents, Collection } from "discord.js";
+import { GatewayIntentBits } from "discord.js";
 import Bot from "../../src/struct/Bot";
 import LikeButton from "../../src/events/likeButton.js";
 
@@ -6,8 +6,7 @@ describe( "src/events/likeButton.js", () => {
 
   const bot = new Bot({
     intents: [
-      Intents.FLAGS.GUILD_MESSAGES,
-      Intents.FLAGS.GUILDS
+      GatewayIntentBits.Guilds
     ]
   });
   bot.user = {

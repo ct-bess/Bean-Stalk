@@ -1,6 +1,6 @@
 import Event from '../struct/Event';
 import Constants from '../util/constants';
-import { MessageActionRow, MessageButton } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } from "discord.js";
 
 /**
  * the mf like button
@@ -13,7 +13,6 @@ class LikeButton extends Event {
       onCooldown: false,
       timeout: null
     };
-    this.button = [];
     this.likeCount = 0;
   }
 
@@ -30,7 +29,6 @@ class LikeButton extends Event {
         this.cooldown.onCooldown = true;
         this.cooldown.timeout = setTimeout( () => {
           this.cooldown.onCooldown = false;
-          this.button = [];
         }, Constants.time.ONE_HOUR );
         this.cooldown.timeout.unref();
         return( true );
@@ -44,41 +42,50 @@ class LikeButton extends Event {
 
   /**
    * could also save the interaction and then disable the button when the cooldown is finished
+   * maybe pull the like count straight from the button label
    * @param {ButtonInteraction} interaction
    */
   handleInteraction = ( interaction ) => {
     this.likeCount += 1;
-    const updatedComponent = interaction.component;
-    updatedComponent.label = "LIKE x" + this.likeCount;
+    const label = "LIKE x" + this.likeCount;
     const roll = Math.floor( Math.random() * 11 );
+    const button = new ButtonBuilder( interaction.component.data );
     if( roll === 10 ) {
-      updatedComponent.disabled = true;
+      button.setDisabled( true );
     }
-    interaction.update({ components: [updatedComponent] });
+    button.setLabel( label );
+    const actionRow = new ActionRowBuilder().addComponents( [ button ] );
+    interaction.update({ components: [ actionRow ] });
   }
 
   /**
    * @param {Bot} bot
-   * @param {TextChannel} [channel]
    */
-  likebutton = ( bot, channel ) => {
+  likebutton = ( bot, context ) => {
 
-    if( !channel ) {
-      channel = bot.guilds.cache.random().channels.cache.find( c => { return c.isText() });
-    }
-
-    const component = new MessageButton({
-      label: "LIKE",
-      style: Constants.styles.SUCCESS,
-      disabled: false,
-      customId: `${this.name}-handleInteraction`
+    const channel = context.channel || bot.guilds.cache.random().channels.cache.find( c => {
+      return( c.isTextBased() && c.permissionsFor( bot.user.id ).has( PermissionsBitField.Flags.SendMessages ) );
     });
-    this.button = [ component ];
 
-    const actionRow = new MessageActionRow().addComponents( this.button );
+    if( !!channel ) {
 
-    channel.send({ components: actionRow });
-    bot.user.setActivity( "SMASH LIKE", { type: "WATCHING" } );
+      console.debug( "creating like button" );
+
+      const component = new ButtonBuilder({
+        label: "LIKE",
+        style: ButtonStyle.Primary,
+        disabled: false,
+        customId: `${this.name}-handleInteraction`
+      });
+
+      const actionRow = new ActionRowBuilder().addComponents( [ component ] );
+
+      channel.send({ components: [ actionRow ] });
+      bot.user.setActivity( "SMASH LIKE", { type: "WATCHING" } );
+    }
+    else {
+      console.info( "no valid channel to create that mf like button in" );
+    }
 
   }
 

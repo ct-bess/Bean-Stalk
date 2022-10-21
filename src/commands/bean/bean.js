@@ -1,5 +1,5 @@
 import Command from "../../struct/Command";
-import CommandOptions from "./options.json";
+import CommandOptions from "./options";
 import { postSlashCommands } from "../../util/clientUtil";
 import Response from "../../struct/Response";
 import Constants from "../../util/constants"
@@ -22,16 +22,34 @@ class Bean extends Command {
    * @param {CommandInteraction} interaction - The command interaction
    */
   bean = ( interaction ) => {
+
+    const interactionName = interaction.customId?.split( "-" )[1];
+
     if( interaction.isSelectMenu() ) {
-      if( /postCommand/i.test( interaction.customId ) ) {
-        const selected = interaction.values[0] + "";
-        postSlashCommands( interaction.client, selected );
-        return( new Response( Constants.interactionMethods.UPDATE, {
-            content: `Posted: **${selected}** ...`
-          })
-        );
+
+      const selectedValue = interaction.values[0] + "";
+      let content = "";
+      switch( interactionName.toLowerCase() ) {
+        case "postcommand":
+          content = `posting: ${selectedValue}`;
+          postSlashCommands( interaction.client, selectedValue );
+          break;
+        case "triggerevent":
+          const eventType = selectedValue.split( "-" )[1];
+          const eventName = selectedValue.split( "-" )[0];
+          content = `triggering: ${eventName}`;
+          interaction.client.tryEvents({ type: eventType, name: eventName, force: true, channel: interaction.channel });
+          break;
+        default:
+          console.info( "No such interaction name:", interactionName, "for customId:", interaction.customId );
+          return;
       }
+
+      console.info( content );
+      return( new Response( Constants.interactionMethods.UPDATE, { content } ) );
+
     }
+
   }
 
   status = ( interaction ) => {
@@ -54,6 +72,7 @@ class Bean extends Command {
   }
 
   logs = ( interaction ) => {
+    // IMAGINE if lines somehow could be a string and you could inject a malicious bash command
     const lines = parseInt( interaction.options.getNumber( "lines" ) ) || 15;
     const response = "```\n" + execSync( `journalctl -n ${lines} --no-pager -u bean` ).toString() + "\n```";
     return({ method: "reply", payload: response });
@@ -75,7 +94,7 @@ class Bean extends Command {
     }
     else {
       const selectData = {
-        customId: `${this.name}-postCommandSelector`,
+        customId: `${this.name}-postCommand`,
         placeHolder: "please select a command",
         options: interaction.client.commands.map( command => { return({
           label: command.name,
@@ -88,6 +107,41 @@ class Bean extends Command {
 
       response.payload = { content: "Select a command ... ", components: ComponentUtil.buildSelectMenus( selectData ), ephemeral: true }
     }
+
+    return( response );
+
+  }
+
+  /**
+   * manualy trigger bean events
+   * MAYBE we should collapse this w/post_command
+   * @param {CommandInteraction} interaction - The command interaction
+   */
+  trigger_event = ( interaction ) => {
+
+    let response = new Response();
+    response.method = Constants.interactionMethods.REPLY;
+    // this is not good
+    const datetimeEvents = interaction.client.events.datetime.map( event => { return({
+        label: event.name,
+        value: event.name + "-" + event.type,
+        description: event.type
+    })});
+    const randomEvents = interaction.client.events.random.map( event => { return({
+        label: event.name,
+        value: event.name + "-" + event.type,
+        description: event.type
+    })});
+
+    const selectData = {
+      customId: `${this.name}-triggerEvent`,
+      placeHolder: "please select an event",
+      options: [ ...datetimeEvents, ...randomEvents ],
+      minValues: 1,
+      maxValues: 1
+    };
+
+    response.payload = { content: "Select an event ... ", components: ComponentUtil.buildSelectMenus( selectData ), ephemeral: true }
 
     return( response );
 
@@ -127,9 +181,17 @@ class Bean extends Command {
   }
 
   /**
-   * git pull --> sudo systemctl restart bean
+   * rebuild: git pull --> sudo systemctl restart bean
    */
   rebuild = () => {
+  }
+
+  /**
+   * Create admin console
+   * bunch of buttons and menus do do the following:
+   * force trigger a specific event
+   */
+  admin_console = () => {
   }
 
 };

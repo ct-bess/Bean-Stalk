@@ -1,7 +1,7 @@
 import Command from "../../struct/Command";
 import { exec, execSync } from "child_process";
 import { minecraftIP, homeGuildId } from "../../../secrets.json";
-import CommandOptions from "./options.json";
+import CommandOptions from "./options";
 
 /**
  * This command is dependent on a minecraft server being registered with the host's systemd

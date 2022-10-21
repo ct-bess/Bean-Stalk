@@ -1,65 +1,67 @@
-{
+import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
+
+export default {
   "name": "minecraft",
   "description": "minecraft system commands",
-  "type": "SUB_COMMAND_GROUP",
+  "type": ApplicationCommandType.ChatInput,
   "options":
   [
     {
       "name": "ip",
       "description": "show server's ip address",
-      "type": "SUB_COMMAND"
+      "type": ApplicationCommandOptionType.Subcommand
     },
     {
       "name": "start",
       "description": "start server",
-      "type": "SUB_COMMAND"
+      "type": ApplicationCommandOptionType.Subcommand
     },
     {
       "name": "stop",
       "description": "stop server",
-      "type": "SUB_COMMAND"
+      "type": ApplicationCommandOptionType.Subcommand
     },
     {
       "name": "whitelist",
       "description": "add user to whitelist",
-      "type": "SUB_COMMAND",
+      "type": ApplicationCommandOptionType.Subcommand,
       "options":
       [
         {
           "name": "username",
           "description": "minecraft username",
           "required": true,
-          "type": "STRING"
+          "type": ApplicationCommandOptionType.String
         }
       ]
     },
     {
       "name": "say",
       "description": "broadcast a message to the server",
-      "type": "SUB_COMMAND",
+      "type": ApplicationCommandOptionType.Subcommand,
       "options":
       [
         {
           "name": "message",
           "description": "message to broadcast",
           "required": true,
-          "type": "STRING"
+          "type": ApplicationCommandOptionType.String
         }
       ]
     },
     {
       "name": "logs",
       "description": "get log entries",
-      "type": "SUB_COMMAND",
+      "type": ApplicationCommandOptionType.Subcommand,
       "options":
       [
         {
           "name": "lines",
           "description": "number of lines to retrieve",
           "required": false,
-          "type": "NUMBER"
+          "type": ApplicationCommandOptionType.Number
         }
       ]
     }
   ]
-}
+};

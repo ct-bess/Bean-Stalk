@@ -1,5 +1,6 @@
 import Event from '../struct/Event';
 import Constants from '../util/constants';
+import { PermissionsBitField } from "discord.js";
 
 /**
  * the sacred geefa
@@ -8,15 +9,15 @@ class Geefa extends Event {
 
   constructor() {
     super({ name: "geefa", type: "datetime" });
-    this.collector = null;
   }
 
   /**
    * minutes == 20 --> it's probably 4:20am/pm somewhere in the world
-   * @param {Date} [date] - date to use to determine if we should geefa; defaults to now
+   * @param {Boolean} [force=false] - force trigger to be true
    */
-  canTrigger = ( date = new Date() ) => {
-    if( date.getMinutes() === 20 ) {
+  canTrigger = ( force = false ) => {
+    const date = new Date();
+    if( date.getMinutes() === 20 || force === true ) {
       return( true );
     }
     return( false );
@@ -28,35 +29,37 @@ class Geefa extends Event {
    * maybe make the react hit all channels?
    * @param {Bot} bot
    */
-  geefa = ( bot ) => {
+  geefa = ( bot, context ) => {
 
     /** @type {TextChannel} */
-    const channel = bot.guilds.cache.get( bot.homeGuildId ).channels.cache.find( ( c ) => { return c.isText() } );
+    const channel = context.channel || bot.guilds.cache.get( bot.homeGuildId ).channels.cache.find( ( c ) => {
+      return( c.isTextBased() && c.permissionsFor( bot.user.id ).has([
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.AddReactions
+      ]));
+    });
 
     if( !!channel ) {
 
-      console.debug( "initiating geefa collector" );
-      const filter = () => {};
-      this.collector = channel.createMessageCollector({ filter, time: Constants.time.ONE_MINUTE });
-      const emoji = channel.guild.emojis.cache.find( ( e ) => { /blunt/i.test( e.name ) } ) || channel.guild.emojis.cache.random();
+      console.debug( "initiating geefa collector in:", channel.name );
+      const emoji = channel.guild.emojis.cache.find( ( e ) => { /blunt/i.test( e.name ) } ) || "\u{1F96C}";
+      const collector = channel.createMessageCollector({ time: Constants.time.ONE_MINUTE });
 
-      this.collector.on( "collect", ( message ) => {
-        if( !!emoji ) {
-          message.react( emoji );
-        }
+      collector.on( "collect", ( message ) => {
+        message.react( emoji ).catch( console.error );
       });
 
-      this.collector.on( "end", ( collected ) => {
+      collector.on( "end", ( collected ) => {
         if( collected.size > 0 ) {
           channel.send( "nice" );
         }
+        console.debug( "geefa collection over" );
       });
 
     }
     else {
-      console.info( "no text channel found to geefa to, sad" );
+      console.info( "no text channel to geefa to, sad" );
     }
-
   }
 
 }

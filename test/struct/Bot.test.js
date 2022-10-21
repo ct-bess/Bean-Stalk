@@ -1,4 +1,4 @@
-import { Intents } from "discord.js";
+import { GatewayIntentBits } from "discord.js";
 import Bot from "../../src/struct/Bot";
 import Event from "../../src/struct/Event";
 import { loadCommands, loadEvents } from "../../src/util/systemUtil";
@@ -7,8 +7,7 @@ describe( "src/struct/Bot.js", () => {
 
   const bot = new Bot({
     intents: [
-      Intents.FLAGS.GUILD_MESSAGES,
-      Intents.FLAGS.GUILDS
+      GatewayIntentBits.Guilds
     ]
   });
 
@@ -59,7 +58,7 @@ describe( "src/struct/Bot.js", () => {
 
   it( "bot can try events", () => {
     const spy = jest.spyOn( bot, "tryEvents" );
-    bot.tryEvents( "random" );
+    bot.tryEvents({ type: "random" });
     expect( spy ).toHaveBeenCalled();
   });
 

@@ -1,19 +1,21 @@
-{
+import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
+
+export default {
   "name": "bean",
   "description": "bean stalk system commands",
-  "type": "SUB_COMMAND_GROUP",
+  "type": ApplicationCommandType.ChatInput,
   "options":
   [
     {
       "name": "logs",
       "description": "fetch awesome logs",
-      "type": "SUB_COMMAND",
+      "type": ApplicationCommandOptionType.Subcommand,
       "options":
       [
         {
           "name": "lines",
           "description": "how many lines to fetch (defaults to 15)",
-          "type": "NUMBER",
+          "type": ApplicationCommandOptionType.Number,
           "required": false
         }
       ]
@@ -21,32 +23,37 @@
     {
       "name": "post_command",
       "description": "post a slash command",
-      "type": "SUB_COMMAND",
+      "type": ApplicationCommandOptionType.Subcommand,
       "options":
       [
         {
           "name": "command",
           "description": "command name to post",
-          "type": "STRING",
+          "type": ApplicationCommandOptionType.String,
           "required": false
         }
       ]
     },
     {
+      "name": "trigger_event",
+      "description": "manualy trigger a bean event",
+      "type": ApplicationCommandOptionType.Subcommand
+    },
+    {
       "name": "prune_commands",
       "description": "delete unused interactions",
-      "type": "SUB_COMMAND"
+      "type": ApplicationCommandOptionType.Subcommand
     },
     {
       "name": "status",
       "description": "get bean's awesome systemd status",
-      "type": "SUB_COMMAND",
+      "type": ApplicationCommandOptionType.Subcommand,
       "options":
       [
         {
           "name": "status",
           "description": "what kind of status",
-          "type": "STRING",
+          "type": ApplicationCommandOptionType.String,
           "required": false,
           "choices":
           [
@@ -57,4 +64,4 @@
       ]
     }
   ]
-}
+};

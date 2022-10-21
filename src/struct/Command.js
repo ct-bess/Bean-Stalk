@@ -89,7 +89,7 @@ export default Command;
  * @typedef {import('discord.js').Message} Message
  * @typedef {import('discord.js').Collection} Collection
  * @typedef {import('discord.js').CommandInteraction} CommandInteraction
- * @typedef {import('discord.js').MessageSelectMenuOptions} MessageSelectMenuOptions
+ * @typedef {import('discord.js').SelectMenuBuilderOptions} SelectMenuBuilderOptions
  * @typedef {import('./Bot').default} Bot
  * @typedef {import('./Response').default} Response
  */

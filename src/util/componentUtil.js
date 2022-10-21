@@ -1,4 +1,4 @@
-import { MessageActionRow, MessageSelectMenu } from "discord.js";
+import { ActionRowBuilder, SelectMenuBuilder } from "discord.js";
 import InternalError from "../struct/InternalError";
 import Constants from "./constants";
 
@@ -7,16 +7,16 @@ class ComponentUtil {
   /**
    * Builds select menus
    * - note: select menus can have 1 to 25 options, no duplicate options, 1 select menu per action row, and 5 max action rows
-   * @param {MessageSelectMenuOptions} selectData
-   * @returns {Array<MessageActionRow>}
+   * @param {SelectMenuBuilderOptions} selectData
+   * @returns {Array<ActionRowBuilder>}
    */
   static buildSelectMenus = ( selectData ) => {
 
     const actionRows = [];
 
     if( selectData.options.length <= Constants.limits.SELECT_MENU_OPTIONS ) {
-      actionRows.push( new MessageActionRow().addComponents(
-        new MessageSelectMenu( selectData )
+      actionRows.push( new ActionRowBuilder().addComponents(
+        new SelectMenuBuilder( selectData )
       ));
     }
     else {
@@ -28,8 +28,8 @@ class ComponentUtil {
         const data = Object.create( selectData );
         data.options = elements;
         data.customId = selectData.customId + i;
-        actionRows.push( new MessageActionRow().addComponents(
-          new MessageSelectMenu( data )
+        actionRows.push( new ActionRowBuilder().addComponents(
+          new SelectMenuBuilder( data )
         ));
         ++i;
       }
@@ -37,8 +37,8 @@ class ComponentUtil {
       // finally, push remaining options
       if( selectData.options.length > 0 ) {
         selectData.customId = selectData.customId + i;
-        actionRows.push( new MessageActionRow().addComponents(
-          new MessageSelectMenu( selectData )
+        actionRows.push( new ActionRowBuilder().addComponents(
+          new SelectMenuBuilder( selectData )
         ));
       }
 

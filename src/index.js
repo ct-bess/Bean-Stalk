@@ -1,13 +1,12 @@
 import { loadCommands, loadEvents } from "./util/systemUtil";
-import { Intents } from "discord.js";
+import { ChannelType, GatewayIntentBits, InteractionType, PermissionsBitField } from "discord.js";
 import { token, admins, homeGuildId } from "../secrets.json";
 import Bot from "./struct/Bot";
 import Constants from "./util/constants";
 
 const bot = new Bot({
   intents: [
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILDS
+    GatewayIntentBits.Guilds
   ],
   disableMentions: "everyone",
   messageEditHistoryMaxSize: 0,
@@ -22,7 +21,7 @@ bot.on( "ready", () => {
   loadEvents( bot );
   bot.user.setStatus( "idle" );
   bot.user.setActivity( "mc server sleep", { type: "WATCHING" } );
-  bot.tryEvents( "random" );
+  bot.tryEvents({ type: "random" });
 
 });
 
@@ -31,7 +30,7 @@ bot.on( "interactionCreate", ( interaction ) => {
   try {
     let commandName = null;
 
-    if( interaction.isCommand() ) {
+    if( interaction.type === InteractionType.ApplicationCommand ) {
       commandName = interaction.commandName;
     }
     else if( interaction.isSelectMenu() || interaction.isButton() ) {
@@ -59,13 +58,13 @@ bot.on( "interactionCreate", ( interaction ) => {
       interaction.user.createDM().then( channel => channel.send( "real and straight brother" ) );
     }
     console.error( error );
-    bot.postError( error );
+    //bot.postError( error );
   }
 
 });
 
 bot.on( "messageCreate", ( message ) => {
-  bot.tryEvents( "random", message.channel );
+  bot.tryEvents({ type: "random", channel: message.channel });
 });
 
 bot.on( "messageDelete", ( message ) => {
@@ -76,7 +75,7 @@ bot.on( "messageDelete", ( message ) => {
 
 bot.on( "messageUpdate", ( oldMessage, newMessage ) => {
 
-  bot.tryEvents( "random", newMessage.channel );
+  bot.tryEvents({ type: "random", channel: newMessage.channel });
 
   if( !newMessage.author.bot && !!newMessage.editable && oldMessage.content.length > 0 ) {
     setTimeout( () => {
@@ -87,12 +86,12 @@ bot.on( "messageUpdate", ( oldMessage, newMessage ) => {
 });
 
 bot.on( "channelCreate", ( channel ) => {
-  if( channel.type === "dm" ) {
+  if( channel.type === ChannelType.DM ) {
     channel.send( "Hey scuse me big guy. I heard some noises goin on in here, couple minutes ago" );
   }
-  else if( channel.isText() && channel.permissionsFor( bot.user.id ).has( 1 << 11 ) ) {
+  else if( channel.isTextBased() && channel.permissionsFor( bot.user.id ).has( PermissionsBitField.Flags.SendMessages ) ) {
     channel.send( "Nice place" );
-    bot.tryEvents( "random", channel );
+    bot.tryEvents({ type: "random", channel });
   }
 });
 
@@ -101,11 +100,11 @@ bot.on( "rateLimit", ( rateLimitInfo ) => {
 });
 
 bot.on( "error", ( error ) => {
-  bot.postError( error );
+  //bot.postError( error );
 });
 
 process.on( "SIGTERM", () => {
-  bot.tryEvents( "random" );
+  bot.tryEvents({ type: "random" });
   console.info( "Bean Stalk terminating ..." );
   bot.destroy();
   console.info( "Bean Stalk successfully logged out" );

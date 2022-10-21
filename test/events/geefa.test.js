@@ -1,4 +1,4 @@
-import { Intents, Collection } from "discord.js";
+import { GatewayIntentBits, Collection } from "discord.js";
 import Bot from "../../src/struct/Bot";
 import Geefa from "../../src/events/geefa.js";
 import { EventEmitter } from "events";
@@ -7,13 +7,12 @@ describe( "src/events/geefa.js", () => {
 
   const bot = new Bot({
     intents: [
-      Intents.FLAGS.GUILD_MESSAGES,
-      Intents.FLAGS.GUILDS
+      GatewayIntentBits.Guilds
     ]
   });
 
   const mockChannel = {
-    isText: () => { return true },
+    isTextBased: () => { return true },
     createMessageCollector: () => { return new EventEmitter() },
     send: () => {},
     guild: {

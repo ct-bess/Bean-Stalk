@@ -1,19 +1,21 @@
-{
+import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
+
+export default {
   "name": "connect4",
   "description": "play a fantastic game of connect4",
-  "type": "SUB_COMMAND_GROUP",
+  "type": ApplicationCommandType.ChatInput,
   "options":
   [
     {
       "name": "join",
       "description": "join the game",
-      "type": "SUB_COMMAND",
+      "type": ApplicationCommandOptionType.Subcommand,
       "options":
       [
         {
           "name": "emoji",
           "description": "specify an emoji to use as your marker (press TAB after typing it in)",
-          "type": "STRING",
+          "type": ApplicationCommandOptionType.String,
           "required": false
         }
       ]
@@ -21,13 +23,13 @@
     {
       "name": "new",
       "description": "create a new game (no custom board size, maybe ever)",
-      "type": "SUB_COMMAND",
+      "type": ApplicationCommandOptionType.Subcommand,
       "options":
       [
         {
           "name": "override",
           "description": "trigger a hard reset of the board and players",
-          "type": "BOOLEAN",
+          "type": ApplicationCommandOptionType.Boolean,
           "required": false
         }
       ]
@@ -35,16 +37,16 @@
     {
       "name": "kick",
       "description": "remove a user from the game (this is so sad)",
-      "type": "SUB_COMMAND",
+      "type": ApplicationCommandOptionType.Subcommand,
       "options":
       [
         {
           "name": "who",
           "description": "literally who?",
-          "type": "USER",
+          "type": ApplicationCommandOptionType.User,
           "required": true
         }
       ]
     }
   ]
-}
+};

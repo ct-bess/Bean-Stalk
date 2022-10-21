@@ -21,10 +21,10 @@ export const postSlashCommands = ( bot, command ) => {
   let slashCommandFiles = [];
 
   if( !command ) {
-    slashCommandFiles = readdirSync( "src/commands" ).map( elem => elem += "/options.json" );
+    slashCommandFiles = readdirSync( "src/commands" ).map( elem => elem += "/options.js" );
   }
   else {
-    slashCommandFiles.push( command + "/options.json" );
+    slashCommandFiles.push( command + "/options.js" );
   }
 
   for( const file of slashCommandFiles ) {
@@ -34,7 +34,7 @@ export const postSlashCommands = ( bot, command ) => {
       delete require.cache[ require.resolve( path ) ];
     }
 
-    const slashCommand = require( path );
+    const slashCommand = require( path ).default;
     const commandName = slashCommand.name;
 
     if( !!commandName && bot.commands.has( commandName ) ) {
@@ -63,6 +63,7 @@ export const postSlashCommands = ( bot, command ) => {
 
     }
     else {
+      console.error( "Command name or slash command not found:", slashCommand );
       throw new InternalError( `Command not found: ${commandName}` );
     }
 

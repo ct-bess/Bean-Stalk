@@ -1,9 +1,9 @@
 import Command from "../../struct/Command";
-import CommandOptions from "./options.json";
+import CommandOptions from "./options";
 import Response from "../../struct/Response";
 import Constants from "../../util/constants"
 import { homeGuildId, testGuild } from "../../../secrets.json";
-import { Collection, MessageActionRow, MessageButton } from "discord.js";
+import { Collection, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { place } from "./place";
 
 /**
@@ -99,9 +99,9 @@ class Connect4 extends Command {
 
     for( let i = 1; i < width + 1; ++i ){
 
-      components.push( new MessageButton({
+      components.push( new ButtonBuilder({
         label: i + "",
-        style: Constants.styles.PRIMARY,
+        style: ButtonStyle.Primary,
         customId: `${this.name}-place-${i}`
       }));
 
@@ -114,11 +114,11 @@ class Connect4 extends Command {
 
     while( components.length > Constants.limits.ACTION_ROW_COMPONENTS ) {
       const elements = components.splice( 0, Constants.limits.ACTION_ROW_COMPONENTS );
-      actionRows.push( new MessageActionRow().addComponents( elements ) );
+      actionRows.push( new ActionRowBuilder().addComponents( elements ) );
     }
 
     if( components.length > 0 ) {
-      actionRows.push( new MessageActionRow().addComponents( components ) );
+      actionRows.push( new ActionRowBuilder().addComponents( components ) );
     }
 
     this.state.actionRows = actionRows;

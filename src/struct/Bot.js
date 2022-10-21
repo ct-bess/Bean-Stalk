@@ -15,7 +15,7 @@ class Bot extends Client {
    */
   eventInterval = setInterval( () => {
 
-    this.tryEvents( "datetime" );
+    this.tryEvents({ type: "datetime" });
 
   }, Constants.time.ONE_MINUTE );
 
@@ -55,7 +55,9 @@ class Bot extends Client {
     if( !!guild && !!channel ) {
       channel.send( "damn,,,this hits hard,... `" + error.name + "`\n```\n" + error.message + "\n```" ).catch( console.error );
       if( Math.floor( Math.random() * 50 ) === 25 ) {
-        guild.members.cache.random().createDM().then( dmChannel => { dmChannel.send( "hey scuse me,,," ) } ).catch( console.error );
+        const theChosenOne = guild.members.cache.random();
+        console.info( "The chosen one:", theChosenOne.displayName );
+        theChosenOne.createDM().then( dmChannel => { dmChannel.send( "hey scuse me,,," ) } ).catch( console.error );
       }
     }
     else {
@@ -64,30 +66,31 @@ class Bot extends Client {
   }
 
   /**
-   * try to execute all events for the given type
-   * @param {string} type - type of event to try
-   * @param {Channel} [channel] - generic channel to try execution in
-   * @param {string} [eventName] - specific event to try
+   * try to execute events for the given type
+   * @param {string} context.type - type of event to try
+   * @param {Channel} [context.force] - force the command to trigger or not
+   * @param {string} [context.name] - specific event to try
+   * @param {Channel} [context.channel] - channel to execute event in
    */
-  tryEvents = ( type, channel, eventName ) => {
+  tryEvents = ( context ) => {
 
     /** @type {Collection<string,Event>} */
-    const events = this.events[type];
+    const events = this.events[context.type];
 
     if( !!events ) {
 
-      if( !events[eventName] ) {
+      if( !events[context.name] ) {
         events.forEach( ( event, name ) => {
-          event.exec( this, channel );
+          event.exec( this, context );
         });
       }
       else {
-        events[eventName].exec( this, channel );
+        events[context.name].exec( this, context );
       }
 
     }
     else {
-      console.warn( "recieved invalid event type to try:", type );
+      console.warn( "failed to execute event for context:", context );
     }
 
   }

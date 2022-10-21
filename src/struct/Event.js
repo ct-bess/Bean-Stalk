@@ -23,11 +23,11 @@ class Event {
    * @param {Bot} bot
    * @returns {Response}
    */
-  exec = ( bot, trigger ) => {
-    const shouldTrigger = !!trigger ? !!this.canTrigger( trigger ) : !!this.canTrigger();
-    if( shouldTrigger ) {
+  exec = ( bot, context ) => {
+    const shouldTrigger = this.canTrigger( context.force );
+    if( !!shouldTrigger ) {
       console.debug( "executing event:", this.name );
-      this[this.name].call( this, bot );
+      this[this.name].call( this, bot, context );
     }
   }
 

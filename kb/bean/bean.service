@@ -1,0 +1,17 @@
+[Unit]
+Description=Bean Stalk
+After=syslog.target network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=bessellc
+Group=minecraft
+Restart=no
+KillMode=control-group
+WorkingDirectory=/home/bessellc/Bean-Stalk
+KillSignal=SIGTERM
+FinalKillSignal=SIGTERM
+ExecStart=npm run build-start

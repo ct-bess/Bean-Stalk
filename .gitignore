@@ -1,8 +1,9 @@
 # Bot Secrets:
+secrets.json
 auth.json
 events.json
 guild.json
-kb/
+kb/radiant
 
 # Build Artifacts:
 lib/
@@ -22,3 +23,4 @@ src/commands/.ccs/decom/
 temp.js
 test.js
 *.awk
+*.zip

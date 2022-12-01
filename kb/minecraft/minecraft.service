@@ -1,0 +1,22 @@
+[Unit]
+Description=Minecraft Server Ya
+After=syslog.target network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=forking
+User=bessellc
+Group=minecraft
+Restart=no
+KillMode=control-group
+WorkingDirectory=/home/bessellc/mc-server
+RuntimeDirectory=mcsrv
+StandardOutput=journal
+PIDFile=/run/mcsrv/server.pid
+KillSignal=SIGCONT
+FinalKillSignal=SIGTERM
+ExecStartPre=mkfifo --mode=0660 /run/mcsrv/stdin
+ExecStart=/bin/bash start.sh /run/mcsrv
+ExecStop=/bin/sh -c 'echo /stop > /run/mcsrv/stdin'

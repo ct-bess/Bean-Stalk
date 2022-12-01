@@ -1,93 +1,105 @@
-import { Client, Collection, MessageEmbed, Constants } from "discord.js";
-import guild from "../../guild.json";
+import { Client, Collection } from "discord.js";
+import { homeGuildId } from "../../secrets.json";
+import Constants from "../util/constants";
 
 /**
  * A subclass of Discord.Client to include a selection of config variables.
  * Mainly just a bunch of hardcoded IDs
  * @extends Client
  * @property {Collection<string,Command>} commands - a map of {@link Command}s that the bot can execute
- * @property {Object} var - an object of useful bot variables for ease of access
- * @property {boolean} var.messageOpsEnabled - wether or not to respond to non commands with regex responses
- * @property {Object} var.config - configuration variables defined in config.json; Loaded seperatly
- * @property {string} var.guild - client's home server ID
- * @property {Object} var.emojis - hardcoded list of emojis, name & ID
- * @property {Object} var.roles - hardcoded list of roles
- * @property {Object} var.members - hardcoded list of members in home server
- * @property {Array<string>} var.admins - an array of the client's admins to run extreme commands
- * @property {Array<string>} var.bots - an array of bots for client to listen to
- * @property {Object} var.events - list of time sensitive client events defined in events.json; Loaded seperatly
- * @property {Object} var.channels - hard coded list of channels
  */
 class Bot extends Client {
 
   /**
-   * @param {ClientOptions} ClientOptions - Discord Client ClientOptions
+   * time events
+   */
+  eventInterval = setInterval( () => {
+
+    this.tryEvents({ type: "datetime" });
+
+  }, Constants.time.ONE_MINUTE );
+
+  /**
+   * @param {ClientOptions} ClientOptions - Discord Client ClientOptions plus some other greatness
    */
   constructor( ClientOptions ) {
 
     super( ClientOptions );
 
-    /**
-     * @type {Collection<string,Command>}
-     */
+    /** @type {Collection<string,Command>} */
     this.commands = new Collection();
-    this.var = {
-      messageOpsEnabled: true,
-      config: null,
-      guild: guild.id,
-      emojis: guild.emoji,
-      roles: guild.roles,
-      members: guild.members,
-      admins: guild.admins,
-      bots: guild.bots,
-      events: null,
-      channels: guild.channels
+
+    /** @type {{Collection<string,Event>}} */
+    this.events = {
+      datetime: new Collection(),
+      random: new Collection()
     };
 
-  } // EO constructor
+    /** @type {Array<string>} */
+    this.admins = ClientOptions.admins;
 
-  /**
-   * initialize Bean's standard embed with the proper colors and footer.
-   * @method createEmbed
-   * @memberof Bot
-   * @param {(MessageEmbed|object)} data - the data to create the embed with
-   * @returns {MessageEmbed} embed object to send in text channels
-   */
-  createEmbed = ( data = { type: "rich", color: Constants.Colors.YELLOW } ) => {
+    /** @type {string} */
+    this.homeGuildId = ClientOptions.homeGuildId || homeGuildId;
 
-    if( !( data instanceof Object ) ) {
-      console.error( "Embed data recieved was not an object, was:", typeof( data ) );
-      data = {};
-    }
-
-    const types = [ "rich", "image", "video", "gifv", "article", "link" ];
-    data.type = (data.type + "").toLowerCase();
-
-    if( !types.includes( data.type ) ) {
-      console.error( "No such embed type:", data.type, "falling back to:", types[0] );
-      data.type = types[0];
-    }
-    if( !( data.color instanceof Number ) ) {
-      console.error( "The given color:", data.color, "Is not a number, falling back to default color" );
-      data.color = Constants.Colors.YELLOW;
-    }
-    if( !data.footer ) {
-      data.footer = {
-        text: "A certified Bean-Stalk moment",
-        icon_url: this.user.displayAvatarURL()
-      }
-    }
-
-    const embed = new MessageEmbed( data );
-
-    return( embed );
+    this.eventInterval.unref();
 
   }
 
-}; // EO Bat
+  /**
+   * incredible
+   * @param {Error} error
+   */
+  postError = ( error ) => {
+    const guild = this.guilds.resolve( homeGuildId );
+    const channel = guild?.channels.cache.find( channel => /^b[o0]t/i.test( channel?.name ) );
+    if( !!guild && !!channel ) {
+      channel.send( "damn,,,this hits hard,... `" + error.name + "`\n```\n" + error.message + "\n```" ).catch( console.error );
+      if( Math.floor( Math.random() * 50 ) === 25 ) {
+        const theChosenOne = guild.members.cache.random();
+        console.info( "The chosen one:", theChosenOne.displayName );
+        theChosenOne.createDM().then( dmChannel => { dmChannel.send( "hey scuse me,,," ) } ).catch( console.error );
+      }
+    }
+    else {
+      console.info( "no guild channel found to post error to" );
+    }
+  }
+
+  /**
+   * try to execute events for the given type
+   * @param {string} context.type - type of event to try
+   * @param {Channel} [context.force] - force the command to trigger or not
+   * @param {string} [context.name] - specific event to try
+   * @param {Channel} [context.channel] - channel to execute event in
+   */
+  tryEvents = ( context ) => {
+
+    /** @type {Collection<string,Event>} */
+    const events = this.events[context.type];
+
+    if( !!events ) {
+
+      if( !events[context.name] ) {
+        events.forEach( ( event, name ) => {
+          event.exec( this, context );
+        });
+      }
+      else {
+        events[context.name].exec( this, context );
+      }
+
+    }
+    else {
+      console.warn( "failed to execute event for context:", context );
+    }
+
+  }
+
+};
 
 export default Bot;
 
 /**
+ * @typedef {import('discord.js').Channel} Channel
  * @typedef {import('discord.js').ClientOptions} ClientOptions
  */

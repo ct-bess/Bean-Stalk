@@ -1,13 +1,13 @@
 {
   "name": "beanstalk",
   "version": "1.0.0",
-  "description": "Discord Bot",
+  "description": "Personal Discord Bot",
   "main": "index.js",
   "scripts": {
-    "bundle": "babel src -d lib",
+    "build": "babel src -d lib --copy-files",
     "start": "node lib/index.js",
-    "dab": "npm run bundle && npm run start",
-    "test": "babel src/test.js -o lib/test.js && node lib/test.js",
+    "build-start": "npm run build && npm run start",
+    "test": "jest",
     "clean": "rm -r lib/"
   },
   "keywords": [
@@ -16,14 +16,14 @@
   "author": "connor",
   "license": "ISC",
   "devDependencies": {
-    "@babel/cli": "^7.13.16",
-    "@babel/core": "^7.12.3",
-    "@babel/preset-env": "^7.12.1",
-    "discord.js": "^12.4.1"
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.5",
+    "@babel/preset-env": "^7.16.5",
+    "discord.js": "^14.3.0",
+    "jest": "^27.5.1"
   },
   "dependencies": {
-    "@discordjs/opus": "^0.4.0",
-    "ffmpeg-static": "^4.2.7",
-    "opusscript": "^0.0.8"
+    "@discordjs/voice": "^0.7.5",
+    "ffmpeg-static": "^4.4.0"
   }
 }
